@@ -1,6 +1,6 @@
-import os
+from pathlib import Path
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(REPO_ROOT, "data")
-FIGURES_DIR = os.path.join(REPO_ROOT, "figures")
-SRC_DIR = os.path.join(REPO_ROOT, "src")
+REPO_ROOT = Path(__file__).resolve().parent
+DATA_DIR = REPO_ROOT / "data"
+FIGURES_DIR = REPO_ROOT / "figures"
+SRC_DIR = REPO_ROOT / "src"
