@@ -192,3 +192,18 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# macos directory files
+.DS_Store
+
+# latex build files
+report/*.synctex.gz
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.bbl
+report/*.blg
+report/*.run.xml
+report/*.bcf
+report/*-blx.bib
