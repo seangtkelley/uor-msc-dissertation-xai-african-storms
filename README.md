@@ -19,15 +19,19 @@ For the instructions below, the use of `REPO_ROOT` will refer to the fully quali
 
 ## Minimum Setup Instructions
 
-The following instructions assume you have `python` and `conda` installed.
+The following instructions assume you have `python` installed.
 
 ### Conda
 
 Recommended for complete python environment isolation.
 
-1. `conda env create -f environment.yml`
-2. `conda activate uor-msc-dissertation-xai-african-storms`
+1. [Install conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+2. `conda env create -f environment.yml`
+3. `conda activate uor-msc-dissertation-xai-african-storms`
 
-### Pip
+### Venv
 
-1. `pip install -r requirements.txt`
+1. `pip install venv`
+2. `python -m venv venv`
+3. `source venv/bin/activate`
+4. `pip install -r requirements.txt`
