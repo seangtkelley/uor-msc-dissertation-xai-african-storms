@@ -1,0 +1,28 @@
+[project]
+name = "uor-msc-dissertation-xai-african-storms"
+version = "0.1.0"
+requires-python = ">=3.13"
+
+description = "Using machine learning to predict the intensification and propagation of East African storms"
+authors = [
+    { name = "Sean Kelley", email = "seangtkelley@gmail.com" },
+]
+keywords = ["explainable AI", "mesoscale convective systems", "east africa"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+]
+
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/seangtkelley/uor-msc-dissertation-xai-african-storms"
+
+[tool.black]
+line-length = 80
+skip-string-normalization = false
+skip-magic-trailing-comma = false
+target-version = ['py313']
+
