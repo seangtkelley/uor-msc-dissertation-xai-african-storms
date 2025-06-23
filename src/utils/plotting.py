@@ -12,9 +12,10 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 import cartopy.crs as ccrs
@@ -25,8 +26,8 @@ import config
 
 
 def plot_kde_map(
-    lons: np.ndarray,
-    lats: np.ndarray,
+    lons: Union[np.ndarray, pd.Series],
+    lats: Union[np.ndarray, pd.Series],
     ax: Optional[Axes] = None,
     title: Optional[str] = None,
     alpha: float = 1.0,
