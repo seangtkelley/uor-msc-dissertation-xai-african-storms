@@ -7,3 +7,4 @@ xarray==2025.6.1
 Cartopy==0.24.1
 scipy==1.16.0
 MetPy==1.7.0
+netCDF4==1.7.2
