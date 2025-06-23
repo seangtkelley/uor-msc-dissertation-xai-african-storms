@@ -20,13 +20,16 @@ from scipy.stats import gaussian_kde
 
 import config
 
-def plot_kde_map(lons, lats, ax=None, title=None) -> None:
+def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True) -> None:
     """Plot a KDE map of the given data.
 
     :param lons: Array of longitudes.
     :param lats: Array of latitudes.
     :param ax: Matplotlib axis to plot on. If None, a new figure and
         axis will be created.
+    :param title: Title for the plot.
+    :param alpha: Transparency level for the KDE map.
+    :type alpha: float
     :return: The axis with the KDE map plotted.
     """
     # 2D kernel density estimation
@@ -54,13 +57,12 @@ def plot_kde_map(lons, lats, ax=None, title=None) -> None:
     gl.right_labels = False
 
     # add filled contours and contour lines
-    ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr")
-    ax.contour(X, Y, Z, levels=15, colors='k', linewidths=0.5, alpha=0.5)
-    cbar = plt.colorbar(ctf, ax=ax, orientation='horizontal', pad=0.1, aspect=50)
-    cbar.set_label("Density")
+    ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
+    ax.contour(X, Y, Z, levels=15, colors='k', linewidths=0.5, alpha=0.5*alpha)
+    if add_colorbar:
+        cbar = plt.colorbar(ctf, ax=ax, orientation='horizontal', pad=0.1, aspect=50)
+        cbar.set_label("Density")
 
     if title:
         ax.set_title(title)
-    else:
-        ax.set_title("KDE Map of Locations")
     
