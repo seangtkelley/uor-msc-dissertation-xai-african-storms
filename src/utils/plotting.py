@@ -12,15 +12,27 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 
+from typing import Optional
+
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 import cartopy.crs as ccrs
 import cartopy.feature as cf
 from scipy.stats import gaussian_kde
 
 import config
 
-def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True, contour_lines_only=False) -> None:
+
+def plot_kde_map(
+    lons: np.ndarray,
+    lats: np.ndarray,
+    ax: Optional[Axes] = None,
+    title: Optional[str] = None,
+    alpha: float = 1.0,
+    add_colorbar: bool = True,
+    contour_lines_only: bool = False,
+) -> None:
     """Plot a KDE map of the given data.
 
     :param lons: Array of longitudes.
@@ -29,7 +41,6 @@ def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True, 
         axis will be created.
     :param title: Title for the plot.
     :param alpha: Transparency level for the KDE map.
-    :type alpha: float
     :return: The axis with the KDE map plotted.
     """
     # 2D kernel density estimation
@@ -50,20 +61,29 @@ def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True, 
         ax = plt.axes(projection=ccrs.PlateCarree())
 
     # ax.set_extent(config.MAP_AREA_EXTENT, crs=ccrs.PlateCarree())
-    ax.coastlines(resolution='50m', color='black', linewidth=1)
+    ax.coastlines(resolution="50m", color="black", linewidth=1)
     ax.add_feature(cf.BORDERS, linewidth=0.5)
     gl = ax.gridlines(draw_labels=True)
     gl.top_labels = False
     gl.right_labels = False
 
     # add filled contours and contour lines
-    ax.contour(X, Y, Z, levels=15, colors="k", linewidths=0.5, alpha=0.5*alpha if not contour_lines_only else 1.0)
+    ax.contour(
+        X,
+        Y,
+        Z,
+        levels=15,
+        colors="k",
+        linewidths=0.5,
+        alpha=0.5 * alpha if not contour_lines_only else 1.0,
+    )
     if not contour_lines_only:
         ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
         if add_colorbar:
-            cbar = plt.colorbar(ctf, ax=ax, orientation='horizontal', pad=0.1, aspect=50)
+            cbar = plt.colorbar(
+                ctf, ax=ax, orientation="horizontal", pad=0.1, aspect=50
+            )
             cbar.set_label("Density")
 
     if title:
         ax.set_title(title)
-    
