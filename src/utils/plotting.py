@@ -20,7 +20,7 @@ from scipy.stats import gaussian_kde
 
 import config
 
-def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True) -> None:
+def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True, contour_lines_only=False) -> None:
     """Plot a KDE map of the given data.
 
     :param lons: Array of longitudes.
@@ -57,11 +57,12 @@ def plot_kde_map(lons, lats, ax=None, title=None, alpha=1.0, add_colorbar=True) 
     gl.right_labels = False
 
     # add filled contours and contour lines
-    ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
-    ax.contour(X, Y, Z, levels=15, colors='k', linewidths=0.5, alpha=0.5*alpha)
-    if add_colorbar:
-        cbar = plt.colorbar(ctf, ax=ax, orientation='horizontal', pad=0.1, aspect=50)
-        cbar.set_label("Density")
+    ax.contour(X, Y, Z, levels=15, colors="k", linewidths=0.5, alpha=0.5*alpha if not contour_lines_only else 1.0)
+    if not contour_lines_only:
+        ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
+        if add_colorbar:
+            cbar = plt.colorbar(ctf, ax=ax, orientation='horizontal', pad=0.1, aspect=50)
+            cbar.set_label("Density")
 
     if title:
         ax.set_title(title)
