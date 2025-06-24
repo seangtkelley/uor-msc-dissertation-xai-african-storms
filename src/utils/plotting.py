@@ -33,8 +33,8 @@ TERRAIN_CMAP = ListedColormap(
 def plot_kde_map(
     lons: Union[np.ndarray, pd.Series],
     lats: Union[np.ndarray, pd.Series],
+    kde: np.ndarray,
     ax: Optional[Axes] = None,
-    title: Optional[str] = None,
     alpha: float = 1.0,
     add_colorbar: bool = True,
     contour_lines_only: bool = False,
@@ -49,47 +49,124 @@ def plot_kde_map(
     :param alpha: Transparency level for the KDE map.
     :return: The axis with the KDE map plotted.
     """
-    # 2D kernel density estimation
-    xy = np.vstack([lons, lats])
-    kde = gaussian_kde(xy)
-    xmin, xmax = config.STORM_DATA_EXTENT[0], config.STORM_DATA_EXTENT[1]
-    ymin, ymax = config.STORM_DATA_EXTENT[2], config.STORM_DATA_EXTENT[3]
-    X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
-    positions = np.vstack([X.ravel(), Y.ravel()])
-    Z = np.reshape(kde(positions).T, X.shape)
-
-    # normalize Z for consistent color scaling
-    Z /= Z.max()
 
     # setup plot of east africa
     if ax is None:
         plt.figure(figsize=(5, 5))
         ax = plt.axes(projection=ccrs.PlateCarree())
 
-    # ax.set_extent(config.MAP_AREA_EXTENT, crs=ccrs.PlateCarree())
-    ax.coastlines(resolution="50m", color="black", linewidth=1)  # type: ignore
-    ax.add_feature(cf.BORDERS, linewidth=0.5)  # type: ignore
-    gl = ax.gridlines(draw_labels=True)  # type: ignore
-    gl.top_labels = False
-    gl.right_labels = False
-
     # add filled contours and contour lines
     ax.contour(
-        X,
-        Y,
-        Z,
+        lons,
+        lats,
+        kde,
         levels=15,
         colors="k",
         linewidths=0.5,
         alpha=0.5 * alpha if not contour_lines_only else 1.0,
     )
     if not contour_lines_only:
-        ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
+        ctf = ax.contourf(
+            lons, lats, kde, levels=15, cmap="YlOrBr", alpha=alpha
+        )
         if add_colorbar:
             cbar = plt.colorbar(
                 ctf, ax=ax, orientation="horizontal", pad=0.1, aspect=50
             )
             cbar.set_label("Density")
 
-    if title:
-        ax.set_title(title)
+    # add other map features
+    add_borders(ax)
+    add_gridlines(ax)
+
+
+def init_map(
+    ax: Optional[Axes] = None,
+    projection: ccrs.Projection = ccrs.PlateCarree(),
+    extent: Optional[tuple[float, float, float, float]] = None,
+) -> Axes:
+    """Initialize a map with the given extent and projection.
+
+    :param extent: Tuple of (lon_min, lon_max, lat_min, lat_max) to set the map extent.
+    :param projection: Cartopy projection to use for the map.
+    :return: Matplotlib axis with the initialized map.
+    """
+    if ax is None:
+        ax = plt.axes(projection=projection)
+    if extent is not None:
+        ax.set_extent(extent, crs=ccrs.PlateCarree())  # type: ignore
+    return ax
+
+
+def add_water_features(
+    ax: Axes,
+) -> None:
+    """Add water features to the given axis.
+
+    :param ax: Matplotlib axis to add the water features to.
+    """
+    ax.add_feature(  # type: ignore
+        cf.NaturalEarthFeature(
+            "physical",
+            "ocean",
+            scale="110m",
+            edgecolor="none",
+            facecolor=cf.COLORS["water"],
+        )
+    )
+    ax.add_feature(cf.LAKES, color=cf.COLORS["water"])  # type: ignore
+    ax.add_feature(cf.RIVERS, color=cf.COLORS["water"])  # type: ignore
+
+
+def add_borders(
+    ax: Axes,
+    color: str = "black",
+) -> None:
+    """Add borders to the given axis.
+
+    :param ax: Matplotlib axis to add the borders to.
+    """
+    ax.coastlines(resolution="50m", color=color, linewidth=1)  # type: ignore
+    ax.add_feature(cf.BORDERS, color=color, linewidth=0.5)  # type: ignore
+
+
+def add_gridlines(
+    ax: Axes,
+) -> None:
+    """Add gridlines to the given axis.
+
+    :param ax: Matplotlib axis to add the gridlines to.
+    """
+    gl = ax.gridlines(draw_labels=True)  # type: ignore
+    gl.top_labels = False
+    gl.right_labels = False
+
+
+def add_all_map_features(
+    ax: Axes,
+) -> None:
+    """Add all map features to the given axis.
+
+    :param ax: Matplotlib axis to add the map features to.
+    """
+    add_water_features(ax)
+    add_borders(ax)
+    add_gridlines(ax)
+
+
+def save_plot(
+    filename: str,
+    dpi: int = 300,
+    show: bool = True,
+) -> None:
+    """Save the current plot to a file and optionally show it.
+
+    :param filename: Filename to save the plot to.
+    :param dpi: Dots per inch for the saved figure.
+    :param show: Whether to show the plot after saving.
+    """
+    plt.tight_layout()
+    plt.savefig(config.FIGURES_DIR / filename, dpi=dpi, bbox_inches="tight")
+    if show:
+        plt.show()
+    plt.close()
