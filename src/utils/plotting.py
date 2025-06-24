@@ -37,7 +37,7 @@ _cached_geop: xr.Dataset = None  # type: ignore
 _cached_height: Quantity = None  # type: ignore
 
 
-def _load_geopotential_data():
+def _load_geopotential_data() -> tuple[xr.Dataset, Quantity]:
     """Load and cache geopotential data and height."""
     global _cached_geop, _cached_height
     if _cached_geop is None or _cached_height is None:
@@ -52,9 +52,9 @@ def _load_geopotential_data():
 
 
 def plot_kde_map(
-    lons: Union[np.ndarray, pd.Series],
-    lats: Union[np.ndarray, pd.Series],
-    kde: np.ndarray,
+    X: Union[np.ndarray, pd.Series],
+    Y: Union[np.ndarray, pd.Series],
+    Z: np.ndarray,
     ax: Optional[Axes] = None,
     alpha: float = 1.0,
     add_colorbar: bool = True,
@@ -78,18 +78,16 @@ def plot_kde_map(
 
     # add filled contours and contour lines
     ax.contour(
-        lons,
-        lats,
-        kde,
+        X,
+        Y,
+        Z,
         levels=15,
         colors="k",
         linewidths=0.5,
         alpha=0.5 * alpha if not contour_lines_only else 1.0,
     )
     if not contour_lines_only:
-        ctf = ax.contourf(
-            lons, lats, kde, levels=15, cmap="YlOrBr", alpha=alpha
-        )
+        ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
         if add_colorbar:
             cbar = plt.colorbar(
                 ctf, ax=ax, orientation="horizontal", pad=0.1, aspect=50
