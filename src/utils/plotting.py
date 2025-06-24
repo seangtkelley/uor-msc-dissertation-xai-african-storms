@@ -20,9 +20,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
-from scipy.stats import gaussian_kde
+from matplotlib.colors import ListedColormap
 
 import config
+
+# scope cmap terrain to start at green
+TERRAIN_CMAP = ListedColormap(
+    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
+)
 
 
 def plot_kde_map(

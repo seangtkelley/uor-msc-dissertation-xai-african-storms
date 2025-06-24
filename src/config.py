@@ -1,9 +1,5 @@
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.colors import ListedColormap
-
 # file paths
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
@@ -35,8 +31,3 @@ ERA5_DATA_EXTENT = (
 # date range for data
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
-
-# scope cmap terrain to start at green
-TERRAIN_CMAP = ListedColormap(
-    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
-)
