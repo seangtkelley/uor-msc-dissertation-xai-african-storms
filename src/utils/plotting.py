@@ -14,12 +14,12 @@ __status__ = "Development"
 
 from typing import Optional, Union
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
 import cartopy.crs as ccrs
 import cartopy.feature as cf
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.axes import Axes
 from scipy.stats import gaussian_kde
 
 import config
