@@ -19,8 +19,11 @@ import cartopy.feature as cf
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.axes import Axes
 from matplotlib.colors import ListedColormap
+from metpy.calc import geopotential_to_height
+from metpy.units import units
 
 import config
 
@@ -28,6 +31,13 @@ import config
 TERRAIN_CMAP = ListedColormap(
     plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
 )
+
+geop = xr.open_dataset(config.DATA_DIR / "std" / "geop.nc")
+geop_vals = geop["geop"].values.squeeze()
+
+# source: https://unidata.github.io/MetPy/latest/api/generated/metpy.calc.geopotential_to_height.html#metpy.calc.geopotential_to_height
+geopot = units.Quantity(geop_vals, "m^2/s^2")
+height = geopotential_to_height(geopot)
 
 
 def plot_kde_map(
@@ -140,6 +150,26 @@ def add_gridlines(
     gl = ax.gridlines(draw_labels=True)  # type: ignore
     gl.top_labels = False
     gl.right_labels = False
+
+
+def add_geopotential_height(ax: Axes, add_colorbar: bool = False) -> None:
+    """Add geopotential height contours to the given axis.
+
+    :param ax: Matplotlib axis to add the geopotential height contours to.
+    :param add_colorbar: Whether to add a colorbar for the geopotential height.
+    """
+    terrain = ax.pcolormesh(
+        geop["longitude"],
+        geop["latitude"],
+        height,
+        cmap=TERRAIN_CMAP,
+        transform=ccrs.PlateCarree(),
+    )
+    if add_colorbar:
+        cbar = plt.colorbar(
+            terrain, ax=ax, orientation="horizontal", pad=0.1, aspect=50
+        )
+        cbar.set_label("Elevation (m)")
 
 
 def add_all_map_features(
