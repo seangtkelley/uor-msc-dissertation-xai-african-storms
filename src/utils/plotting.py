@@ -62,9 +62,9 @@ def plot_kde_map(
         ax = plt.axes(projection=ccrs.PlateCarree())
 
     # ax.set_extent(config.MAP_AREA_EXTENT, crs=ccrs.PlateCarree())
-    ax.coastlines(resolution="50m", color="black", linewidth=1)
-    ax.add_feature(cf.BORDERS, linewidth=0.5)
-    gl = ax.gridlines(draw_labels=True)
+    ax.coastlines(resolution="50m", color="black", linewidth=1)  # type: ignore
+    ax.add_feature(cf.BORDERS, linewidth=0.5)  # type: ignore
+    gl = ax.gridlines(draw_labels=True)  # type: ignore
     gl.top_labels = False
     gl.right_labels = False
 
