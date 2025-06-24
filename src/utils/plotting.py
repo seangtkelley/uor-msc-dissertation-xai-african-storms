@@ -47,8 +47,8 @@ def plot_kde_map(
     # 2D kernel density estimation
     xy = np.vstack([lons, lats])
     kde = gaussian_kde(xy)
-    xmin, xmax = config.DATA_EXTENT[0], config.DATA_EXTENT[1]
-    ymin, ymax = config.DATA_EXTENT[2], config.DATA_EXTENT[3]
+    xmin, xmax = config.STORM_DATA_EXTENT[0], config.STORM_DATA_EXTENT[1]
+    ymin, ymax = config.STORM_DATA_EXTENT[2], config.STORM_DATA_EXTENT[3]
     X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
     positions = np.vstack([X.ravel(), Y.ravel()])
     Z = np.reshape(kde(positions).T, X.shape)
