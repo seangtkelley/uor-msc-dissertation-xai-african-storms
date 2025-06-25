@@ -129,24 +129,24 @@ def add_water_features(
             "physical",
             "ocean",
             scale="110m",
-            edgecolor="none",
+            edgecolor="face",
             facecolor=cf.COLORS["water"],
         )
     )
-    ax.add_feature(cf.LAKES, color=cf.COLORS["water"])  # type: ignore
-    ax.add_feature(cf.RIVERS, color=cf.COLORS["water"])  # type: ignore
+    ax.add_feature(cf.LAKES, edgecolor="face", facecolor=cf.COLORS["water"])  # type: ignore
+    ax.add_feature(cf.RIVERS, edgecolor=cf.COLORS["water"])  # type: ignore
 
 
 def add_borders(
     ax: Axes,
-    color: str = "black",
+    edgecolor: str = "black",
 ) -> None:
     """Add borders to the given axis.
 
     :param ax: Matplotlib axis to add the borders to.
     """
-    ax.coastlines(resolution="50m", color=color, linewidth=1)  # type: ignore
-    ax.add_feature(cf.BORDERS, color=color, linewidth=0.5)  # type: ignore
+    ax.add_feature(cf.COASTLINE, edgecolor=edgecolor, linewidth=1)  # type: ignore
+    ax.add_feature(cf.BORDERS, edgecolor=edgecolor, linewidth=0.5)  # type: ignore
 
 
 def add_gridlines(
