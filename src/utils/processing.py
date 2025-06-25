@@ -18,7 +18,8 @@ import config
 
 
 def calc_kde(lons, lats) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Calculate the 2D kernel density estimate (KDE) for the given longitudes and latitudes.
+    """
+    Calculate the 2D kernel density estimate (KDE) for the given longitudes and latitudes.
 
     :param lons: Array of longitudes.
     :param lats: Array of latitudes.
