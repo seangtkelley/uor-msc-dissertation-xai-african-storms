@@ -19,54 +19,68 @@ import cartopy.feature as cf
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.axes import Axes
-from scipy.stats import gaussian_kde
+from matplotlib.colors import ListedColormap
+from metpy.calc import geopotential_to_height
+from metpy.units import units
+from pint import Quantity
 
 import config
 
+# scope cmap terrain to start at green
+TERRAIN_CMAP = ListedColormap(
+    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
+)
+
+_cached_geop: xr.Dataset = None  # type: ignore
+_cached_height: Quantity = None  # type: ignore
+
+
+def _load_geopotential_data() -> tuple[xr.Dataset, Quantity]:
+    """
+    Load and cache geopotential data and height.
+
+    :return: Tuple containing the geopotential dataset and height as a Quantity.
+    :rtype: tuple[xr.Dataset, Quantity]
+    """
+    global _cached_geop, _cached_height
+    if _cached_geop is None or _cached_height is None:
+        geop = xr.open_dataset(config.DATA_DIR / "std" / "geop.nc")
+        geop_vals = geop["geop"].values.squeeze()
+        # source: https://unidata.github.io/MetPy/latest/api/generated/metpy.calc.geopotential_to_height.html#metpy.calc.geopotential_to_height
+        geopot = units.Quantity(geop_vals, "m^2/s^2")
+        height = geopotential_to_height(geopot)
+        _cached_geop = geop
+        _cached_height = height
+    return _cached_geop, _cached_height
+
 
 def plot_kde_map(
-    lons: Union[np.ndarray, pd.Series],
-    lats: Union[np.ndarray, pd.Series],
+    X: np.ndarray,
+    Y: np.ndarray,
+    Z: np.ndarray,
     ax: Optional[Axes] = None,
-    title: Optional[str] = None,
     alpha: float = 1.0,
     add_colorbar: bool = True,
     contour_lines_only: bool = False,
 ) -> None:
-    """Plot a KDE map of the given data.
-
-    :param lons: Array of longitudes.
-    :param lats: Array of latitudes.
-    :param ax: Matplotlib axis to plot on. If None, a new figure and
-        axis will be created.
-    :param title: Title for the plot.
-    :param alpha: Transparency level for the KDE map.
-    :return: The axis with the KDE map plotted.
     """
-    # 2D kernel density estimation
-    xy = np.vstack([lons, lats])
-    kde = gaussian_kde(xy)
-    xmin, xmax = config.STORM_DATA_EXTENT[0], config.STORM_DATA_EXTENT[1]
-    ymin, ymax = config.STORM_DATA_EXTENT[2], config.STORM_DATA_EXTENT[3]
-    X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
-    positions = np.vstack([X.ravel(), Y.ravel()])
-    Z = np.reshape(kde(positions).T, X.shape)
+    Plot the result of scipy.stats.gaussian_kde on a map.
 
-    # normalize Z for consistent color scaling
-    Z /= Z.max()
+    :param X: Meshgrid of longitudes.
+    :param Y: Meshgrid of latitudes.
+    :param Z: KDE values corresponding to the meshgrid.
+    :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
+    :param alpha: Transparency level for the KDE map.
+    :param add_colorbar: Whether to add a colorbar to the plot.
+    :param contour_lines_only: If True, only plot contour lines without filled contours.
+    """
 
     # setup plot of east africa
     if ax is None:
         plt.figure(figsize=(5, 5))
         ax = plt.axes(projection=ccrs.PlateCarree())
-
-    # ax.set_extent(config.MAP_AREA_EXTENT, crs=ccrs.PlateCarree())
-    ax.coastlines(resolution="50m", color="black", linewidth=1)  # type: ignore
-    ax.add_feature(cf.BORDERS, linewidth=0.5)  # type: ignore
-    gl = ax.gridlines(draw_labels=True)  # type: ignore
-    gl.top_labels = False
-    gl.right_labels = False
 
     # add filled contours and contour lines
     ax.contour(
@@ -86,5 +100,126 @@ def plot_kde_map(
             )
             cbar.set_label("Density")
 
-    if title:
-        ax.set_title(title)
+    # add other map features
+    add_borders(ax)
+    add_gridlines(ax)
+
+
+def init_map(
+    ax: Optional[Axes] = None,
+    projection: ccrs.Projection = ccrs.PlateCarree(),
+    extent: Optional[tuple[float, float, float, float]] = None,
+) -> Axes:
+    """
+    Initialize a map with the given extent and projection.
+
+    :param extent: Tuple of (lon_min, lon_max, lat_min, lat_max) to set the map extent.
+    :param projection: Cartopy projection to use for the map.
+    :return: Matplotlib axis with the initialized map.
+    """
+    if ax is None:
+        ax = plt.axes(projection=projection)
+    if extent is not None:
+        ax.set_extent(extent, crs=ccrs.PlateCarree())  # type: ignore
+    return ax
+
+
+def add_water_features(
+    ax: Axes,
+) -> None:
+    """
+    Add water features to the given axis.
+
+    :param ax: Matplotlib axis to add the water features to.
+    """
+    ax.add_feature(  # type: ignore
+        cf.NaturalEarthFeature(
+            "physical",
+            "ocean",
+            scale="110m",
+            edgecolor="face",
+            facecolor=cf.COLORS["water"],
+        )
+    )
+    ax.add_feature(cf.LAKES, edgecolor="face", facecolor=cf.COLORS["water"])  # type: ignore
+    ax.add_feature(cf.RIVERS, edgecolor=cf.COLORS["water"])  # type: ignore
+
+
+def add_borders(
+    ax: Axes,
+    edgecolor: str = "black",
+) -> None:
+    """
+    Add borders to the given axis.
+
+    :param ax: Matplotlib axis to add the borders to.
+    """
+    ax.add_feature(cf.COASTLINE, edgecolor=edgecolor, linewidth=1)  # type: ignore
+    ax.add_feature(cf.BORDERS, edgecolor=edgecolor, linewidth=0.5)  # type: ignore
+
+
+def add_gridlines(
+    ax: Axes,
+) -> None:
+    """
+    Add gridlines to the given axis.
+
+    :param ax: Matplotlib axis to add the gridlines to.
+    """
+    gl = ax.gridlines(draw_labels=True)  # type: ignore
+    gl.top_labels = False
+    gl.right_labels = False
+
+
+def add_geopotential_height(ax: Axes, add_colorbar: bool = False) -> None:
+    """
+    Add geopotential height contours to the given axis.
+
+    :param ax: Matplotlib axis to add the geopotential height contours to.
+    :param add_colorbar: Whether to add a colorbar for the geopotential height.
+    """
+    geop, height = _load_geopotential_data()
+    terrain = ax.pcolormesh(
+        geop["longitude"],
+        geop["latitude"],
+        height,
+        cmap=TERRAIN_CMAP,
+        transform=ccrs.PlateCarree(),
+    )
+    if add_colorbar:
+        cbar = plt.colorbar(
+            terrain, ax=ax, orientation="horizontal", pad=0.1, aspect=50
+        )
+        cbar.set_label("Elevation (m)")
+
+
+def add_all_map_features(
+    ax: Axes,
+) -> None:
+    """
+    Add all map features to the given axis.
+
+    :param ax: Matplotlib axis to add the map features to.
+    """
+    add_water_features(ax)
+    add_borders(ax)
+    add_gridlines(ax)
+
+
+def save_plot(
+    filename: str,
+    dpi: int = 300,
+    show: bool = True,
+) -> None:
+    """
+    Save the current plot to a file and optionally show it.
+
+    :param filename: Filename to save the plot to.
+    :param dpi: Dots per inch for the saved figure.
+    :param show: Whether to show the plot after saving.
+    """
+    plt.tight_layout()
+    plt.savefig(config.FIGURES_DIR / filename, dpi=dpi, bbox_inches="tight")
+    if show:
+        plt.show()
+    plt.close()
