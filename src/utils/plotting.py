@@ -110,7 +110,8 @@ def init_map(
     projection: ccrs.Projection = ccrs.PlateCarree(),
     extent: Optional[tuple[float, float, float, float]] = None,
 ) -> Axes:
-    """Initialize a map with the given extent and projection.
+    """
+    Initialize a map with the given extent and projection.
 
     :param extent: Tuple of (lon_min, lon_max, lat_min, lat_max) to set the map extent.
     :param projection: Cartopy projection to use for the map.
@@ -126,7 +127,8 @@ def init_map(
 def add_water_features(
     ax: Axes,
 ) -> None:
-    """Add water features to the given axis.
+    """
+    Add water features to the given axis.
 
     :param ax: Matplotlib axis to add the water features to.
     """
@@ -147,7 +149,8 @@ def add_borders(
     ax: Axes,
     edgecolor: str = "black",
 ) -> None:
-    """Add borders to the given axis.
+    """
+    Add borders to the given axis.
 
     :param ax: Matplotlib axis to add the borders to.
     """
@@ -158,7 +161,8 @@ def add_borders(
 def add_gridlines(
     ax: Axes,
 ) -> None:
-    """Add gridlines to the given axis.
+    """
+    Add gridlines to the given axis.
 
     :param ax: Matplotlib axis to add the gridlines to.
     """
@@ -168,7 +172,8 @@ def add_gridlines(
 
 
 def add_geopotential_height(ax: Axes, add_colorbar: bool = False) -> None:
-    """Add geopotential height contours to the given axis.
+    """
+    Add geopotential height contours to the given axis.
 
     :param ax: Matplotlib axis to add the geopotential height contours to.
     :param add_colorbar: Whether to add a colorbar for the geopotential height.
@@ -191,7 +196,8 @@ def add_geopotential_height(ax: Axes, add_colorbar: bool = False) -> None:
 def add_all_map_features(
     ax: Axes,
 ) -> None:
-    """Add all map features to the given axis.
+    """
+    Add all map features to the given axis.
 
     :param ax: Matplotlib axis to add the map features to.
     """
@@ -205,7 +211,8 @@ def save_plot(
     dpi: int = 300,
     show: bool = True,
 ) -> None:
-    """Save the current plot to a file and optionally show it.
+    """
+    Save the current plot to a file and optionally show it.
 
     :param filename: Filename to save the plot to.
     :param dpi: Dots per inch for the saved figure.
