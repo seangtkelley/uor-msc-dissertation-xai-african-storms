@@ -38,7 +38,12 @@ _cached_height: Quantity = None  # type: ignore
 
 
 def _load_geopotential_data() -> tuple[xr.Dataset, Quantity]:
-    """Load and cache geopotential data and height."""
+    """
+    Load and cache geopotential data and height.
+
+    :return: Tuple containing the geopotential dataset and height as a Quantity.
+    :rtype: tuple[xr.Dataset, Quantity]
+    """
     global _cached_geop, _cached_height
     if _cached_geop is None or _cached_height is None:
         geop = xr.open_dataset(config.DATA_DIR / "std" / "geop.nc")
