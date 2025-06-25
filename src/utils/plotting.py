@@ -57,23 +57,24 @@ def _load_geopotential_data() -> tuple[xr.Dataset, Quantity]:
 
 
 def plot_kde_map(
-    X: Union[np.ndarray, pd.Series],
-    Y: Union[np.ndarray, pd.Series],
+    X: np.ndarray,
+    Y: np.ndarray,
     Z: np.ndarray,
     ax: Optional[Axes] = None,
     alpha: float = 1.0,
     add_colorbar: bool = True,
     contour_lines_only: bool = False,
 ) -> None:
-    """Plot a KDE map of the given data.
+    """
+    Plot the result of scipy.stats.gaussian_kde on a map.
 
-    :param lons: Array of longitudes.
-    :param lats: Array of latitudes.
-    :param ax: Matplotlib axis to plot on. If None, a new figure and
-        axis will be created.
-    :param title: Title for the plot.
+    :param X: Meshgrid of longitudes.
+    :param Y: Meshgrid of latitudes.
+    :param Z: KDE values corresponding to the meshgrid.
+    :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
     :param alpha: Transparency level for the KDE map.
-    :return: The axis with the KDE map plotted.
+    :param add_colorbar: Whether to add a colorbar to the plot.
+    :param contour_lines_only: If True, only plot contour lines without filled contours.
     """
 
     # setup plot of east africa
