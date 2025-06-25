@@ -62,8 +62,9 @@ def plot_kde_map(
     Z: np.ndarray,
     ax: Optional[Axes] = None,
     alpha: float = 1.0,
-    add_colorbar: bool = True,
     contour_lines_only: bool = False,
+    add_colorbar: bool = True,
+    colorbar_padding: float = 0.1,
 ) -> None:
     """
     Plot the result of scipy.stats.gaussian_kde on a map.
@@ -73,8 +74,9 @@ def plot_kde_map(
     :param Z: KDE values corresponding to the meshgrid.
     :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
     :param alpha: Transparency level for the KDE map.
-    :param add_colorbar: Whether to add a colorbar to the plot.
     :param contour_lines_only: If True, only plot contour lines without filled contours.
+    :param add_colorbar: Whether to add a colorbar to the plot.
+    :param colorbar_padding: Padding for the colorbar.
     """
 
     # setup plot of east africa
@@ -96,7 +98,11 @@ def plot_kde_map(
         ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
         if add_colorbar:
             cbar = plt.colorbar(
-                ctf, ax=ax, orientation="horizontal", pad=0.1, aspect=50
+                ctf,
+                ax=ax,
+                orientation="horizontal",
+                pad=colorbar_padding,
+                aspect=50,
             )
             cbar.set_label("Density")
 
