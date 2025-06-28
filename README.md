@@ -39,7 +39,7 @@ Recommended for complete python environment isolation.
 ## Data Description
 
 ### Storm Database:
-- file: East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv
+- file: `East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv`
 - 27,982 storms longer than 3 hours and that had all storm centroids along the track within (3-15N, 34-52E)
 
 ### ERA5 Data:
@@ -51,21 +51,27 @@ Recommended for complete python environment isolation.
 - `processed/` - I advise to save processed data in this directory, e.g. gradients etc so we don’t accidentally overwrite std/ data
 
 #### Invariant Data:
-- `geop.nc` - geopotential (m2/s2), divide by 9.81 m/s to get orography
-- `lsm.nc` - land-sea mask
+
+| File Pattern | Description | Units/Notes |
+|--------------|-------------|-------------|
+| `geop.nc` | Geopotential | m2/s2 (divide by 9.81 m/s to get orography) |
+| `lsm.nc` |  land-sea mask | Boolean |
 
 #### Hourly data stored in yearly files:
-- `cape_0_*.nc` - convective available potential energy (J/kg)
-- `olr_toa_*.nc` - top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) (W/m2)
-- `prcp_tot_*.nc` - thickness of rainfall amount (m) (hourly accumulations)
-- `rhum_*_*.nc` - relative humidity (%) at 500, 750 and 900 hPa [was used for theta e calculations]
-- `shum_*_*.nc` - specific humidity (kg/kg) at 200, 500, 850 hPa
-- `skt_sfc_*.nc` - surface temperature on land (K)
-- `sst_sfc_*.nc` - sea surface temperature (K)
-- `swvl1_d1_*.nc` - volumetric soil water layer 1 (m3/m3)
-- `swvl2_d2_*.nc` - volumetric soil water layer 2 (m3/m3)
-- `ta_*_*.nc` - air temperature (K) at 500, 750 and 900 hPa [was used for theta e calculations]
-- `tcwv_tot_*.nc` - thickness of atmosphere mass content of water vapor (kg/m2) [total column water vapor]
-- `thetae_*_*.nc` - equivalent potential temperature (K) at 500, 750 and 900 hP; first calculated dewpoint, then LCL temperature and finally theta e (all done using metpy library, ask Eliza for code if needed)
-- `uwnd_*_*.nc` - zonal wind at 200, 500 and 850 hPa
-- `vwnd_*_*.nc` - meridional wind at 200, 500 and 850 hPa
+
+| File Pattern | Description | Units/Notes |
+|--------------|-------------|-------------|
+| `cape_0_*.nc` | Convective available potential energy | J/kg |
+| `olr_toa_*.nc` | Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) | W/m² |
+| `prcp_tot_*.nc` | Thickness of rainfall amount (hourly accumulations) | m |
+| `rhum_*_*.nc` | Relative humidity at 500, 750 and 900 hPa | % [was used for theta e calculations] |
+| `shum_*_*.nc` | Specific humidity at 200, 500, 850 hPa | kg/kg |
+| `skt_sfc_*.nc` | Surface temperature on land | K |
+| `sst_sfc_*.nc` | Sea surface temperature | K |
+| `swvl1_d1_*.nc` | Volumetric soil water layer 1 | m³/m³ |
+| `swvl2_d2_*.nc` | Volumetric soil water layer 2 | m³/m³ |
+| `ta_*_*.nc` | Air temperature at 500, 750 and 900 hPa | K [was used for theta e calculations] |
+| `tcwv_tot_*.nc` | Thickness of atmosphere mass content of water vapor | kg/m² [total column water vapor] |
+| `thetae_*_*.nc` | Equivalent potential temperature at 500, 750 and 900 hPa | K [first calculated dewpoint, then LCL temperature and finally theta e using metpy library] |
+| `uwnd_*_*.nc` | Zonal wind at 200, 500 and 850 hPa | - |
+| `vwnd_*_*.nc` | Meridional wind at 200, 500 and 850 hPa | - |
