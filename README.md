@@ -54,7 +54,7 @@ Recommended for complete python environment isolation.
 
 | File Pattern | Description | Units/Notes |
 |--------------|-------------|-------------|
-| `geop.nc` | Geopotential | m2/s2 (divide by 9.81 m/s to get orography) |
+| `geop.nc` | Geopotential | m²/s² (divide by 9.81 m/s to get orography) |
 | `lsm.nc` |  land-sea mask | Boolean |
 
 #### Hourly data stored in yearly files:
