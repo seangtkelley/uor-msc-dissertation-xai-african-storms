@@ -38,11 +38,11 @@ Recommended for complete python environment isolation.
 
 ## Data Description
 
-### Storm Database:
+### Storm Database
 - file: `East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv`
 - 27,982 storms longer than 3 hours and that had all storm centroids along the track within (3-15N, 34-52E)
 
-### ERA5 Data:
+### ERA5 Data
 - ERA5 data for 31-53E, 2-16N region for 2014-2019, in total 27 GB. The ERA5 area is wider by a few grid points for edge cases in the database + for calculating gradients
 
 #### Folder Structure
