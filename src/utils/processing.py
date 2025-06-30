@@ -21,7 +21,7 @@ from scipy.stats import gaussian_kde
 
 import config
 
-pandarallel.initialize(progress_bar=False)
+pandarallel.initialize(progress_bar=True)
 
 
 def load_geop_and_calc_elevation() -> tuple[xr.Dataset, Quantity]:
