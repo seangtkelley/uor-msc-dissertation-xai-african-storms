@@ -12,9 +12,23 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 import numpy as np
+import pandas as pd
 from scipy.stats import gaussian_kde
 
 import config
+
+
+def rename_columns(df, column_map: dict[str, str]) -> pd.DataFrame:
+    """
+    Rename columns in a DataFrame based on a provided mapping.
+
+    :param df: The DataFrame whose columns are to be renamed.
+    :param column_map: A dictionary mapping old column names to new column names.
+    :return: A DataFrame with renamed columns.
+    :rtype: pd.DataFrame
+    """
+    column_map = {k: v for k, v in column_map.items() if k in df.columns}
+    return df.rename(columns=column_map)
 
 
 def calc_kde(lons, lats) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

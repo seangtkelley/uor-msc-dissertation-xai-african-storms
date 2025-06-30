@@ -31,3 +31,28 @@ ERA5_DATA_EXTENT = (
 # date range for data
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
+
+COL_RENAME_MAP = {
+    "Lon": "x",
+    "Lat": "y",
+    "duration_hr": "total_duration",
+}
+
+FEATURE_COL_NAMES = [
+    "x",
+    "y",
+    "orography_height",
+    "anor",
+    "total_duration",
+    "zonal_speed",
+    "meridional_speed",
+    "mean_land_skt",
+    "mean_dthetae_dp_900_750",
+    "mean_dthetae_dp_750_500",
+    "ushear_850",
+    "mean_prcp_400",
+    "mjo_phase",
+    "mjo_amplitude",
+]
+
+TARGET_COL_NAMES = ["total_duration", "mean_prcp_400"]

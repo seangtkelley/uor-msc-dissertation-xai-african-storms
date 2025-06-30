@@ -47,6 +47,7 @@ Recommended for complete python environment isolation.
 | x |	Longitude of LPS centre | ° E |
 | y |	Latitude of LPS centre | ° N |
 | orography_height | Elevation of land surface under centre | m |
+| anor | Angle of sub-gridscale orography | radians |
 | total_duration | Total duration of storm | hr |
 | zonal_speed | $x$-component of LPS propagation vector | km/hr |
 | meridional_speed | $y$-component of LPS propagation vector | km/hr |
