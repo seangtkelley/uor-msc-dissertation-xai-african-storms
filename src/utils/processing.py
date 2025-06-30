@@ -14,6 +14,7 @@ __status__ = "Development"
 import numpy as np
 import pandas as pd
 import xarray as xr
+from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
@@ -21,6 +22,27 @@ from scipy.stats import gaussian_kde
 import config
 
 pandarallel.initialize(progress_bar=False)
+
+
+def load_geop_and_calc_elevation() -> tuple[xr.Dataset, Quantity]:
+    """
+    Load and cache geopotential data and height.
+
+    :return: Tuple containing the geopotential dataset and height as a Quantity.
+    :rtype: tuple[xr.Dataset, Quantity]
+    """
+    # load geopotential data
+    geop = xr.open_dataset(config.DATA_DIR / "std" / "geop.nc")
+    geop_vals = geop["geop"].values.squeeze()
+
+    # convert geopotential values to a Quantity
+    # source: https://unidata.github.io/MetPy/latest/api/generated/metpy.calc.geopotential_to_height.html#metpy.calc.geopotential_to_height
+    geop_units = Quantity(geop_vals, "m^2/s^2")
+
+    # convert geopotential to height
+    height = geopotential_to_height(geop_units)
+
+    return geop, height
 
 
 def rename_columns(df, column_map: dict[str, str]) -> pd.DataFrame:
