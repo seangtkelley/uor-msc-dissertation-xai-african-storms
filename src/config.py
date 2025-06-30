@@ -3,8 +3,14 @@ from pathlib import Path
 # file paths
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
+PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures"
 SRC_DIR = REPO_ROOT / "src"
+
+RAW_STORM_DB_PATH = (
+    DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"
+)
+PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
 
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
