@@ -14,10 +14,13 @@ __status__ = "Development"
 import numpy as np
 import pandas as pd
 import xarray as xr
+from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
 
 import config
+
+pandarallel.initialize(progress_bar=False)
 
 
 def rename_columns(df, column_map: dict[str, str]) -> pd.DataFrame:
@@ -45,28 +48,8 @@ def closest_indices(values: np.ndarray, search_space: np.ndarray) -> np.ndarray:
     return np.abs(search_space[:, None] - values).argmin(axis=0)
 
 
-def get_era5_indices_for_coords(
-    df: pd.DataFrame,
-    era5_lons: np.ndarray,
-    era5_lats: np.ndarray,
-) -> pd.DataFrame:
-    """
-    Get the indices of the nearest ERA5 grid points for given longitudes and latitudes.
-
-    :param df: DataFrame containing 'x' and 'y' columns representing longitudes and latitudes.
-    :param era5_lons: Array of ERA5 longitudes.
-    :param era5_lats: Array of ERA5 latitudes.
-    :return: DataFrame with additional columns 'era5_x_idx' and 'era5_y_idx'
-             containing the indices of the closest ERA5 grid points.
-    :rtype: pd.DataFrame
-    """
-    df["era5_x_idx"] = closest_indices(df["x"].to_numpy(), era5_lons)
-    df["era5_y_idx"] = closest_indices(df["y"].to_numpy(), era5_lats)
-    return df
-
-
 def get_orography_features(
-    df: pd.DataFrame, height: Quantity, anor: xr.Dataset
+    df: pd.DataFrame, geop: xr.Dataset, height: Quantity, anor: xr.Dataset
 ) -> pd.DataFrame:
     """
     Calculate orography features for the dataset.
@@ -75,8 +58,31 @@ def get_orography_features(
     for the storm dataset. It uses the ERA5 data to calculate these features based on
     the storm coordinates.
     """
-    df["orography_height"] = height[df["era5_y_idx"], df["era5_x_idx"]]
-    df["anor"] = anor["anor"].values[df["era5_y_idx"], df["era5_x_idx"]]
+
+    def get_orography_at_lon_lat(row):
+        # find the closest point in the geopotential data
+        closest = geop.sel(
+            longitude=row["x"], latitude=row["y"], method="nearest"
+        )
+
+        # get the indices of the closest point
+        i = np.where(
+            np.isclose(geop.latitude.values, closest.latitude.values.item())
+        )[0][0]
+        j = np.where(
+            np.isclose(geop.longitude.values, closest.longitude.values.item())
+        )[0][0]
+
+        # return the geopotential height at the closest point
+        return height[i, j].magnitude
+
+    df["orography_height"] = df.parallel_apply(get_orography_at_lon_lat, axis=1)
+    df["anor"] = df.parallel_apply(
+        lambda row: anor.sel(
+            longitude=row["x"], latitude=row["y"], method="nearest"
+        )["anor"].item(),
+        axis=1,
+    )
     return df
 
 

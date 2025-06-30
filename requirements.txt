@@ -9,3 +9,4 @@ scipy==1.16.0
 MetPy==1.7.0
 netCDF4==1.7.2
 scikit-learn==1.7.0
+pandarallel==1.6.5
