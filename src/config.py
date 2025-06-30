@@ -41,10 +41,12 @@ DATA_END = "2019-12-31"
 COL_RENAME_MAP = {
     "Lon": "x",
     "Lat": "y",
+    "Storm": "storm_id",
     "duration_hr": "total_duration",
 }
 
 FEATURE_COL_NAMES = [
+    "eat_hours",
     "x",
     "y",
     "orography_height",
@@ -62,3 +64,5 @@ FEATURE_COL_NAMES = [
 ]
 
 TARGET_COL_NAMES = ["total_duration", "mean_prcp_400"]
+
+DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
