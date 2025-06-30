@@ -42,6 +42,20 @@ Recommended for complete python environment isolation.
 - file: `East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv`
 - 27,982 storms longer than 3 hours and that had all storm centroids along the track within (3-15N, 34-52E)
 
+| Variable name | Description | Units |
+|--------------|-------------|-------------|
+| x |	Longitude of LPS centre | ° E |
+| y |	Latitude of LPS centre | ° N |
+| orography_height | Elevation of land surface under centre | m |
+| total_duration | Total duration of storm | hr |
+| zonal_speed | $x$-component of LPS propagation vector | km/hr |
+| meridional_speed | $y$-component of LPS propagation vector | km/hr |
+| mean_land_skt | Land surface temperature (NaN over ocean) | K |
+| mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
+| mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
+| ushear_850 | Meridional shear of 850 hPa zonal wind over India | m/s deg |
+| mean_prcp_400 | Mean precipitation within 400 km over the next 6 hr | mm/hr |
+
 ### ERA5 Data
 - ERA5 data for 31-53E, 2-16N region for 2014-2019, in total 27 GB. The ERA5 area is wider by a few grid points for edge cases in the database + for calculating gradients
 
@@ -55,7 +69,8 @@ Recommended for complete python environment isolation.
 | File Pattern | Description | Units/Notes |
 |--------------|-------------|-------------|
 | `geop.nc` | Geopotential | m²/s² (divide by 9.81 m/s to get orography) |
-| `lsm.nc` |  land-sea mask | Boolean |
+| `lsm.nc`  |  land-sea mask | Boolean |
+| `anor.nc` | Angle of sub-gridscale orography | radians | 
 
 #### Hourly data stored in yearly files:
 
