@@ -51,6 +51,17 @@ if os.path.exists(config.PROCESSED_DATASET_PATH):
 
     # load the existing processed dataset
     processed_df = pd.read_csv(config.PROCESSED_DATASET_PATH)
+
+    # get columns from raw_df that aren't in processed_df (excluding merge keys)
+    merge_keys = ['storm_id', 'timestamp']
+    raw_cols_to_add = [col for col in raw_df.columns 
+                    if col not in processed_df.columns and col not in merge_keys]
+
+    # select only the merge keys and new columns from raw_df
+    raw_df_subset = raw_df[merge_keys + raw_cols_to_add]
+
+    # merge with processed_df
+    processed_df = processed_df.merge(raw_df_subset, on=merge_keys, how='left')
 else:
     print("Processed dataset does not exist, creating a new one...")
 
