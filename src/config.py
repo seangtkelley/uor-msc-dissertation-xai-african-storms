@@ -55,6 +55,7 @@ COL_RENAME_MAP = {
     "Lon": "x",
     "Lat": "y",
     "Storm": "storm_id",
+    "Area": "area",
     "duration_hr": "total_duration",
 }
 
@@ -67,6 +68,7 @@ FEATURE_COL_NAMES = [
     "total_duration",
     "zonal_speed",
     "meridional_speed",
+    "area",
     "mean_land_skt",
     "mean_dthetae_dp_900_750",
     "mean_dthetae_dp_750_500",

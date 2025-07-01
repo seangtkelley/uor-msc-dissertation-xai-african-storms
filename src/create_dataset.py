@@ -60,9 +60,8 @@ else:
     # processed_df will start as the raw dataframe
     processed_df = raw_df.copy()
 
-if (
-    args.recalc_all
-    and "orography_height" not in processed_df.columns
+if args.recalc_all or (
+    "orography_height" not in processed_df.columns
     and "anor" not in processed_df.columns
 ):
     print("Calculating orography features...")
@@ -77,6 +76,13 @@ if (
     processed_df = processing.get_orography_features(
         processed_df, raw_df, geop, height, anor
     )
+
+if args.recalc_all or "area" not in processed_df.columns:
+    print("Calculating storm area...")
+
+    # convert storm area from number of pixels to km^2
+    # area is given in pixels. 18 pixels is roughly 350 km^2 (18.7 km x 18.7 km)
+    processed_df["area"] = (raw_df["area"] / 18) * (18.7**2)
 
 # select only the columns that are in the config
 processed_df = processed_df[
