@@ -57,6 +57,8 @@ COL_RENAME_MAP = {
     "Storm": "storm_id",
     "Area": "area",
     "duration_hr": "total_duration",
+    "u_ms": "zonal_speed",
+    "v_ms": "meridional_speed",
 }
 
 FEATURE_COL_NAMES = [
