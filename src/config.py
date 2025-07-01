@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""config.py: Constants and configuration for the project"""
+
+__author__ = "Sean Kelley"
+__copyright__ = "Copyright 2025, University of Reading"
+__credits__ = ["Sean Kelley"]
+__license__ = "MIT"
+__version__ = "0.1.0"
+__maintainer__ = "Sean Kelley"
+__email__ = "s.g.t.kelley@student.reading.ac.uk"
+__status__ = "Development"
+
 from pathlib import Path
 
 # file paths
