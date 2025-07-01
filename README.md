@@ -92,6 +92,9 @@ Predictands in **bold**
 | zonal_speed | $x$-component of LPS propagation vector | km/hr |
 | meridional_speed | $y$-component of LPS propagation vector | km/hr |
 | area | Area of the storm | km² |
+| mjo_phase | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
+| mjo_amplitude | Amplitude of Madden–Julian oscillation | - |
+|--------------|-------------|-------------|
 | mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
 | mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
