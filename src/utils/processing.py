@@ -71,14 +71,22 @@ def closest_indices(values: np.ndarray, search_space: np.ndarray) -> np.ndarray:
 
 
 def get_orography_features(
-    df: pd.DataFrame, geop: xr.Dataset, height: Quantity, anor: xr.Dataset
+    processed_df: pd.DataFrame,
+    raw_df: pd.DataFrame,
+    geop: xr.Dataset,
+    height: Quantity,
+    anor: xr.Dataset,
 ) -> pd.DataFrame:
     """
     Calculate orography features for the dataset.
 
-    This function computes the orography height and anor (anomaly of orography) features
-    for the storm dataset. It uses the ERA5 data to calculate these features based on
-    the storm coordinates.
+    :param processed_df: DataFrame containing storm data with 'x' and 'y' columns for longitude and latitude.
+    :param raw_df: Raw DataFrame containing storm data.
+    :param geop: Geopotential dataset containing 'geop' variable.
+    :param height: Height calculated from geopotential data.
+    :param anor: Dataset containing subgrid orography angle data.
+    :return: DataFrame with additional columns for orography height and subgrid orography angle (anor).
+    :rtype: pd.DataFrame
     """
 
     def get_orography_at_lon_lat(row):
@@ -98,14 +106,16 @@ def get_orography_features(
         # return the geopotential height at the closest point
         return height[i, j].magnitude
 
-    df["orography_height"] = df.parallel_apply(get_orography_at_lon_lat, axis=1)
-    df["anor"] = df.parallel_apply(
+    processed_df["orography_height"] = raw_df.parallel_apply(
+        get_orography_at_lon_lat, axis=1
+    )
+    processed_df["anor"] = raw_df.parallel_apply(
         lambda row: anor.sel(
             longitude=row["x"], latitude=row["y"], method="nearest"
         )["anor"].item(),
         axis=1,
     )
-    return df
+    return processed_df
 
 
 def calc_kde(lons, lats) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
