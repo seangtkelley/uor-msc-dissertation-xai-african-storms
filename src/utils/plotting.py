@@ -33,28 +33,6 @@ TERRAIN_CMAP = ListedColormap(
     plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
 )
 
-_cached_geop: xr.Dataset = None  # type: ignore
-_cached_height: Quantity = None  # type: ignore
-
-
-def _load_geopotential_data() -> tuple[xr.Dataset, Quantity]:
-    """
-    Load and cache geopotential data and height.
-
-    :return: Tuple containing the geopotential dataset and height as a Quantity.
-    :rtype: tuple[xr.Dataset, Quantity]
-    """
-    global _cached_geop, _cached_height
-    if _cached_geop is None or _cached_height is None:
-        geop = xr.open_dataset(config.DATA_DIR / "std" / "geop.nc")
-        geop_vals = geop["geop"].values.squeeze()
-        # source: https://unidata.github.io/MetPy/latest/api/generated/metpy.calc.geopotential_to_height.html#metpy.calc.geopotential_to_height
-        geopot = units.Quantity(geop_vals, "m^2/s^2")
-        height = geopotential_to_height(geopot)
-        _cached_geop = geop
-        _cached_height = height
-    return _cached_geop, _cached_height
-
 
 def plot_kde_map(
     X: np.ndarray,
@@ -172,19 +150,18 @@ def add_gridlines(
 
     :param ax: Matplotlib axis to add the gridlines to.
     """
-    gl = ax.gridlines(draw_labels=True)  # type: ignore
+    gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
     gl.top_labels = False
     gl.right_labels = False
 
 
-def add_geopotential_height(ax: Axes, add_colorbar: bool = False) -> None:
+def add_geopotential_height(geop: xr.Dataset, height: Quantity, ax: Axes, add_colorbar: bool = False) -> None:
     """
     Add geopotential height contours to the given axis.
 
     :param ax: Matplotlib axis to add the geopotential height contours to.
     :param add_colorbar: Whether to add a colorbar for the geopotential height.
     """
-    geop, height = _load_geopotential_data()
     terrain = ax.pcolormesh(
         geop["longitude"],
         geop["latitude"],
