@@ -73,7 +73,7 @@ else:
 
 if args.recalc_all or (
     "orography_height" not in processed_df.columns
-    and "anor" not in processed_df.columns
+    or "anor" not in processed_df.columns
 ):
     print("Calculating orography features...")
 
