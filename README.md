@@ -88,12 +88,12 @@ Predictands in **bold**
 | y | Latitude of LPS centre | ° N |
 | orography_height | Elevation of land surface under centre | m |
 | anor | Angle of sub-gridscale orography | radians |
-| **total_duration** | Total duration of storm | hr |
 | zonal_speed | $x$-component of LPS propagation vector | km/hr |
 | meridional_speed | $y$-component of LPS propagation vector | km/hr |
 | area | Area of the storm | km² |
 | mjo_phase | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
 | mjo_amplitude | Amplitude of Madden–Julian oscillation | - |
+| **total_duration** | Total duration of storm | hr |
 |--------------|-------------|-------------|
 | mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
