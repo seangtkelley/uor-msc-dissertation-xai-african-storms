@@ -84,8 +84,8 @@ Predictands in **bold**
 | Variable name | Description | Units |
 |--------------|-------------|-------------|
 | eat_hours | Time step hour of day | EAT (UTC +3) |
-| x |	Longitude of LPS centre | ° E |
-| y |	Latitude of LPS centre | ° N |
+| x | Longitude of LPS centre | ° E |
+| y | Latitude of LPS centre | ° N |
 | orography_height | Elevation of land surface under centre | m |
 | anor | Angle of sub-gridscale orography | radians |
 | **total_duration** | Total duration of storm | hr |
