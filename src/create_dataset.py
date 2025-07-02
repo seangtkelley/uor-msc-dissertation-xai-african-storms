@@ -85,7 +85,7 @@ if args.recalc_all or (
 
     # add orography features to the dataframe
     processed_df = processing.get_orography_features(
-        processed_df, raw_df, geop, height, anor
+        processed_df, geop, height, anor
     )
 
 if args.recalc_all or "area" not in processed_df.columns:
