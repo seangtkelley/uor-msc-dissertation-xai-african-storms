@@ -10,3 +10,5 @@ MetPy==1.7.0
 netCDF4==1.7.2
 scikit-learn==1.7.0
 pandarallel==1.6.5
+plotly==6.2.0
+geopy==2.4.1
