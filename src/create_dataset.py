@@ -103,7 +103,6 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
         processed_df.groupby("storm_id")["area"].transform("max")
     )
 
-
 if args.recalc_all or (
     "distance_from_prev" not in processed_df.columns
     or "bearing_from_prev" not in processed_df.columns
