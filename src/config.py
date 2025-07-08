@@ -78,6 +78,7 @@ FEATURE_COL_NAMES = [
 
     ### storm aggregated features ###
     "storm_total_duration",
+    "storm_max_area",
     # "mean_prcp_400",
 
     ### external features ###

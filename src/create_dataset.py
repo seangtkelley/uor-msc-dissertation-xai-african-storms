@@ -95,6 +95,14 @@ if args.recalc_all or "area" not in processed_df.columns:
     # area is given in pixels. 18 pixels is roughly 350 km^2 (18.7 km x 18.7 km)
     processed_df["area"] = (raw_df["area"] / 18) * (18.7**2)
 
+if args.recalc_all or "storm_max_area" not in processed_df.columns:
+    print("Calculating storm maximum area...")
+
+    # calculate the maximum storm area for each storm
+    processed_df["storm_max_area"] = (
+        processed_df.groupby("storm_id")["area"].transform("max")
+    )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
