@@ -72,6 +72,8 @@ FEATURE_COL_NAMES = [
     "zonal_speed",
     "meridional_speed",
     "area",
+    "distance_from_prev",
+    "bearing_from_prev",
     # "mean_land_skt",
     # "mean_dthetae_dp_900_750",
     # "mean_dthetae_dp_750_500",
@@ -79,6 +81,9 @@ FEATURE_COL_NAMES = [
     ### storm aggregated features ###
     "storm_total_duration",
     "storm_max_area",
+    "storm_straight_line_distance",
+    "storm_bearing",
+    "storm_distance_traversed",
     # "mean_prcp_400",
 
     ### external features ###
