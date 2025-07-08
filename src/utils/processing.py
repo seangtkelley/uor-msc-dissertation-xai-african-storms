@@ -111,10 +111,10 @@ def get_orography_features(
         # return the geopotential height at the closest point
         return height[i, j].magnitude
 
-    processed_df["orography_height"] = processed_df.parallel_apply(
+    processed_df["orography_height"] = processed_df.parallel_apply( # type: ignore
         get_orography_at_lon_lat, axis=1
     )
-    processed_df["anor"] = processed_df.parallel_apply(
+    processed_df["anor"] = processed_df.parallel_apply( # type: ignore
         lambda row: anor.sel(
             longitude=row["x"], latitude=row["y"], method="nearest"
         )["anor"].item(),
