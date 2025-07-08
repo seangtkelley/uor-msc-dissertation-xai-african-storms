@@ -13,12 +13,13 @@ __status__ = "Development"
 
 import numpy as np
 import pandas as pd
+import pyproj
 import xarray as xr
 from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
-import pyproj
+from tqdm import tqdm
 
 import config
 
@@ -114,7 +115,7 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
     processed_df["storm_straight_line_distance"] = np.nan
     processed_df["storm_bearing"] = np.nan
     # TODO: can this be vectorized or parallelized?
-    for _, group in processed_df.groupby("storm_id"):
+    for _, group in tqdm(processed_df.groupby("storm_id"), total=processed_df["storm_id"].nunique()):
         for i in range(1, len(group)):
             # get previous and current point coords
             prev_lon, prev_lat = group.iloc[i - 1]["y"], group.iloc[i - 1]["x"]

@@ -12,3 +12,4 @@ scikit-learn==1.7.0
 pandarallel==1.6.5
 plotly==6.2.0
 pyproj==3.7.1
+tqdm==4.67.1
