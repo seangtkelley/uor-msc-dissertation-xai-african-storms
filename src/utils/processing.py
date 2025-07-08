@@ -18,10 +18,16 @@ from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
+import pyproj
 
 import config
 
+# initialize pandarallel for parallel processing with progress bar
 pandarallel.initialize(progress_bar=True)
+
+# initialize the geodesic calculator with WGS84 ellipsoid
+# TODO: is there a better projection for East Africa?
+geod = pyproj.Geod(ellps='WGS84')
 
 
 def load_geop_and_calc_elevation() -> tuple[xr.Dataset, Quantity]:
@@ -99,6 +105,53 @@ def get_orography_features(
     # perform batch indexing for subgrid orography angle (anor)
     closest_anor = anor.sel(longitude=longitudes, latitude=latitudes, method="nearest")
     processed_df["anor"] = closest_anor["anor"].values
+
+    return processed_df
+
+def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFrame:
+    processed_df["distance_from_prev"] = np.nan
+    processed_df["bearing_from_prev"] = np.nan
+    processed_df["storm_straight_line_distance"] = np.nan
+    processed_df["storm_bearing"] = np.nan
+    # TODO: can this be vectorized or parallelized?
+    for _, group in processed_df.groupby("storm_id"):
+        for i in range(1, len(group)):
+            # get previous and current point coords
+            prev_lon, prev_lat = group.iloc[i - 1]["y"], group.iloc[i - 1]["x"]
+            curr_lon, curr_lat = group.iloc[i]["y"], group.iloc[i]["x"]
+
+            # calc forward azimuth, back azimuth, and distance
+            fwd_azimuth, _, distance_m = geod.inv(
+                prev_lon, prev_lat, curr_lon, curr_lat
+            )
+
+            # update the dataframe with the calculated values
+            processed_df.loc[group.index[i], "distance_from_prev"] = distance_m / 1000
+            processed_df.loc[group.index[i], "bearing_from_prev"] = fwd_azimuth + 180
+
+        # get first and last point coords
+        first_lon, first_lat = group.iloc[0]["y"], group.iloc[0]["x"]
+        last_lon, last_lat = group.iloc[-1]["y"], group.iloc[-1]["x"]
+        
+        # calc forward azimuth, back azimuth, and distance
+        fwd_azimuth, _, distance_m = geod.inv(
+            first_lon, first_lat, last_lon, last_lat
+        )
+
+        # write the storm direction and distance to the entire group
+        processed_df.loc[group.index, "storm_straight_line_distance"] = distance_m / 1000
+        processed_df.loc[group.index, "storm_bearing"] = fwd_azimuth + 180
+
+    # fill in NaN values in distance_from_prev with 0 for the first point in each storm
+    # Note: leave bearing_from_prev as NaN for the first point in each storm as the storm has not yet moved
+    processed_df["distance_from_prev"] = processed_df["distance_from_prev"].fillna(0)
+    
+    # calc storm distance traversed via cumulative sum of distance_from_prev
+    processed_df["storm_distance_traversed"] = (
+        processed_df.groupby("storm_id")["distance_from_prev"]
+        .cumsum()
+        .fillna(0)
+    )
 
     return processed_df
 

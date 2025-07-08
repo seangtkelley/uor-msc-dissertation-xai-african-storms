@@ -103,6 +103,21 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
         processed_df.groupby("storm_id")["area"].transform("max")
     )
 
+
+if args.recalc_all or (
+    "distance_from_prev" not in processed_df.columns
+    or "bearing_from_prev" not in processed_df.columns
+    or "storm_straight_line_distance" not in processed_df.columns
+    or "storm_bearing" not in processed_df.columns
+    or "storm_distance_traversed" not in processed_df.columns
+):
+    print("Calculating storm distances and bearings...")
+
+    # calculate the distance and bearing from the previous point for each storm
+    processed_df = processing.calc_storm_distances_and_bearings(
+        processed_df
+    )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
