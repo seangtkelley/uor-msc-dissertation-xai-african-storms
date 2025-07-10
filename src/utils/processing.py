@@ -131,8 +131,8 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
     for _, group in tqdm(processed_df.groupby("storm_id"), total=processed_df["storm_id"].nunique()):
         for i in range(1, len(group)):
             # get previous and current point coords
-            prev_lon, prev_lat = group.iloc[i - 1]["y"], group.iloc[i - 1]["x"]
-            curr_lon, curr_lat = group.iloc[i]["y"], group.iloc[i]["x"]
+            prev_lon, prev_lat = group.iloc[i - 1]["x"], group.iloc[i - 1]["y"]
+            curr_lon, curr_lat = group.iloc[i]["x"], group.iloc[i]["y"]
 
             # calc forward azimuth, back azimuth, and distance
             fwd_azimuth, _, distance_m = geod.inv(
@@ -144,8 +144,8 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
             processed_df.loc[group.index[i], "bearing_from_prev"] = (fwd_azimuth + 180) % 360  # normalize to [0, 360)
 
         # get first and last point coords
-        first_lon, first_lat = group.iloc[0]["y"], group.iloc[0]["x"]
-        last_lon, last_lat = group.iloc[-1]["y"], group.iloc[-1]["x"]
+        first_lon, first_lat = group.iloc[0]["x"], group.iloc[0]["y"]
+        last_lon, last_lat = group.iloc[-1]["x"], group.iloc[-1]["y"]
         
         # calc forward azimuth, back azimuth, and distance
         fwd_azimuth, _, distance_m = geod.inv(
