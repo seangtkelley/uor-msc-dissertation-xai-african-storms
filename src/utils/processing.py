@@ -127,32 +127,20 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
     processed_df["bearing_from_prev"] = np.nan
     processed_df["storm_straight_line_distance"] = np.nan
     processed_df["storm_bearing"] = np.nan
-    # TODO: can this be vectorized or parallelized?
     for _, group in tqdm(processed_df.groupby("storm_id"), total=processed_df["storm_id"].nunique()):
-        for i in range(1, len(group)):
-            # get previous and current point coords
-            prev_lon, prev_lat = group.iloc[i - 1]["x"], group.iloc[i - 1]["y"]
-            curr_lon, curr_lat = group.iloc[i]["x"], group.iloc[i]["y"]
+        # extract coordinates for all points in the group
+        lons = group["y"].values
+        lats = group["x"].values
 
-            # calc forward azimuth, back azimuth, and distance
-            fwd_azimuth, _, distance_m = geod.inv(
-                prev_lon, prev_lat, curr_lon, curr_lat
-            )
+        # calculate distances and bearings between consecutive points
+        fwd_azimuths, _, distances_m = geod.inv(lons[:-1], lats[:-1], lons[1:], lats[1:])
 
-            # update the dataframe with the calculated values
-            processed_df.loc[group.index[i], "distance_from_prev"] = distance_m / 1000
-            processed_df.loc[group.index[i], "bearing_from_prev"] = fwd_azimuth % 360  # normalize to [0, 360)
+        # update the DataFrame with the calculated values
+        processed_df.loc[group.index[1:], "distance_from_prev"] = distances_m / 1000
+        processed_df.loc[group.index[1:], "bearing_from_prev"] = (fwd_azimuths + 180) % 360  # normalize to [0, 360)
 
-        # get first and last point coords
-        first_lon, first_lat = group.iloc[0]["x"], group.iloc[0]["y"]
-        last_lon, last_lat = group.iloc[-1]["x"], group.iloc[-1]["y"]
-        
-        # calc forward azimuth, back azimuth, and distance
-        fwd_azimuth, _, distance_m = geod.inv(
-            first_lon, first_lat, last_lon, last_lat
-        )
-
-        # write the storm direction and distance to the entire group
+        # calculate straight-line distance and bearing for the entire storm
+        fwd_azimuth, _, distance_m = geod.inv(lons[0], lats[0], lons[-1], lats[-1])
         processed_df.loc[group.index, "storm_straight_line_distance"] = distance_m / 1000
         processed_df.loc[group.index, "storm_bearing"] = fwd_azimuth % 360  # normalize to [0, 360)
 
