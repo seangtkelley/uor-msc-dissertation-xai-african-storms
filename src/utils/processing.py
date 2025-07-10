@@ -141,7 +141,7 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
 
             # update the dataframe with the calculated values
             processed_df.loc[group.index[i], "distance_from_prev"] = distance_m / 1000
-            processed_df.loc[group.index[i], "bearing_from_prev"] = (fwd_azimuth + 180) % 360  # normalize to [0, 360)
+            processed_df.loc[group.index[i], "bearing_from_prev"] = fwd_azimuth % 360  # normalize to [0, 360)
 
         # get first and last point coords
         first_lon, first_lat = group.iloc[0]["x"], group.iloc[0]["y"]
@@ -154,7 +154,7 @@ def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFram
 
         # write the storm direction and distance to the entire group
         processed_df.loc[group.index, "storm_straight_line_distance"] = distance_m / 1000
-        processed_df.loc[group.index, "storm_bearing"] = (fwd_azimuth + 180) % 360  # normalize to [0, 360)
+        processed_df.loc[group.index, "storm_bearing"] = fwd_azimuth % 360  # normalize to [0, 360)
 
     # fill in NaN values in distance_from_prev with 0 for the first point in each storm
     # Note: leave bearing_from_prev as NaN for the first point in each storm as the storm has not yet moved
