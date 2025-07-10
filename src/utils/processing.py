@@ -93,33 +93,27 @@ def get_orography_features(
     :return: DataFrame with additional columns for orography height and subgrid orography angle (anor).
     :rtype: pd.DataFrame
     """
+    # extract longitude and latitude arrays
+    # source: https://stackoverflow.com/questions/40544846/read-multiple-coordinates-with-xarray#62784295
+    lons = xr.DataArray(processed_df["x"].values)
+    lats = xr.DataArray(processed_df["y"].values)
 
-    def get_orography_at_lon_lat(row):
-        # find the closest point in the geopotential data
-        closest = geop.sel(
-            longitude=row["x"], latitude=row["y"], method="nearest"
-        )
-
-        # get the indices of the closest point
-        i = np.where(
-            np.isclose(geop.latitude.values, closest.latitude.values.item())
-        )[0][0]
-        j = np.where(
-            np.isclose(geop.longitude.values, closest.longitude.values.item())
-        )[0][0]
-
-        # return the geopotential height at the closest point
-        return height[i, j].magnitude
-
-    processed_df["orography_height"] = processed_df.parallel_apply(  # type: ignore
-        get_orography_at_lon_lat, axis=1
+    # perform batch indexing for geopotential height
+    closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
+    closest_lat_indices = closest_indices(
+        closest_geop.latitude.values, geop.latitude.values
     )
-    processed_df["anor"] = processed_df.parallel_apply(  # type: ignore
-        lambda row: anor.sel(
-            longitude=row["x"], latitude=row["y"], method="nearest"
-        )["anor"].item(),
-        axis=1,
+    closest_lon_indices = closest_indices(
+        closest_geop.longitude.values, geop.longitude.values
     )
+    processed_df["orography_height"] = height[
+        closest_lat_indices, closest_lon_indices
+    ].magnitude
+
+    # perform batch indexing for subgrid orography angle (anor)
+    closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
+    processed_df["anor"] = closest_anor["anor"].values.squeeze()
+
     return processed_df
 
 
