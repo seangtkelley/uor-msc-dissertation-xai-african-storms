@@ -71,6 +71,9 @@ else:
     # processed_df will start as the raw dataframe
     processed_df = raw_df.copy()
 
+# sort by storm_id and timestamp to ensure consistent order
+processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
+
 if args.recalc_all or (
     "orography_height" not in processed_df.columns
     or "anor" not in processed_df.columns
