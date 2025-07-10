@@ -49,7 +49,7 @@ raw_df["timestamp"] = pd.to_datetime(raw_df["timestamp"], utc=True)
 
 # check if the processed dataset already exists
 processed_df = None
-if os.path.exists(config.PROCESSED_DATASET_PATH):
+if not args.recalc_all and os.path.exists(config.PROCESSED_DATASET_PATH):
     print("Loading existing processed dataset...")
 
     # load the existing processed dataset
@@ -74,7 +74,11 @@ if os.path.exists(config.PROCESSED_DATASET_PATH):
     # merge with processed_df
     processed_df = processed_df.merge(raw_df_subset, on=merge_keys, how="left")
 else:
-    print("Processed dataset does not exist, creating a new one...")
+    print("Creating processed dataset from scratch...")
+    if not args.recalc_all:
+        print(
+            "Warning: args.recalc_all was set to False but existing processed dataset does not exist."
+        )
 
     # overwrite arg since the processed dataset does not exist
     args.recalc_all = True
