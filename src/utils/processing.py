@@ -28,7 +28,7 @@ pandarallel.initialize(progress_bar=True)
 
 # initialize the geodesic calculator with WGS84 ellipsoid
 # TODO: is there a better projection for East Africa?
-geod = pyproj.Geod(ellps='WGS84')
+geod = pyproj.Geod(ellps="WGS84")
 
 
 def load_geop_and_calc_elevation() -> tuple[xr.Dataset, Quantity]:
@@ -111,10 +111,10 @@ def get_orography_features(
         # return the geopotential height at the closest point
         return height[i, j].magnitude
 
-    processed_df["orography_height"] = processed_df.parallel_apply( # type: ignore
+    processed_df["orography_height"] = processed_df.parallel_apply(  # type: ignore
         get_orography_at_lon_lat, axis=1
     )
-    processed_df["anor"] = processed_df.parallel_apply( # type: ignore
+    processed_df["anor"] = processed_df.parallel_apply(  # type: ignore
         lambda row: anor.sel(
             longitude=row["x"], latitude=row["y"], method="nearest"
         )["anor"].item(),
@@ -122,32 +122,52 @@ def get_orography_features(
     )
     return processed_df
 
-def calc_storm_distances_and_bearings(processed_df: pd.DataFrame) -> pd.DataFrame:
+
+def calc_storm_distances_and_bearings(
+    processed_df: pd.DataFrame,
+) -> pd.DataFrame:
     processed_df["distance_from_prev"] = np.nan
     processed_df["bearing_from_prev"] = np.nan
     processed_df["storm_straight_line_distance"] = np.nan
     processed_df["storm_bearing"] = np.nan
-    for _, group in tqdm(processed_df.groupby("storm_id"), total=processed_df["storm_id"].nunique()):
+    for _, group in tqdm(
+        processed_df.groupby("storm_id"),
+        total=processed_df["storm_id"].nunique(),
+    ):
         # extract coordinates for all points in the group
         lons = group["y"].values
         lats = group["x"].values
 
         # calculate distances and bearings between consecutive points
-        fwd_azimuths, _, distances_m = geod.inv(lons[:-1], lats[:-1], lons[1:], lats[1:])
+        fwd_azimuths, _, distances_m = geod.inv(
+            lons[:-1], lats[:-1], lons[1:], lats[1:]
+        )
 
         # update the DataFrame with the calculated values
-        processed_df.loc[group.index[1:], "distance_from_prev"] = distances_m / 1000
-        processed_df.loc[group.index[1:], "bearing_from_prev"] = (fwd_azimuths + 180) % 360  # normalize to [0, 360)
+        processed_df.loc[group.index[1:], "distance_from_prev"] = (
+            distances_m / 1000
+        )
+        processed_df.loc[group.index[1:], "bearing_from_prev"] = (
+            fwd_azimuths + 180
+        ) % 360  # normalize to [0, 360)
 
         # calculate straight-line distance and bearing for the entire storm
-        fwd_azimuth, _, distance_m = geod.inv(lons[0], lats[0], lons[-1], lats[-1])
-        processed_df.loc[group.index, "storm_straight_line_distance"] = distance_m / 1000
-        processed_df.loc[group.index, "storm_bearing"] = fwd_azimuth % 360  # normalize to [0, 360)
+        fwd_azimuth, _, distance_m = geod.inv(
+            lons[0], lats[0], lons[-1], lats[-1]
+        )
+        processed_df.loc[group.index, "storm_straight_line_distance"] = (
+            distance_m / 1000
+        )
+        processed_df.loc[group.index, "storm_bearing"] = (
+            fwd_azimuth % 360
+        )  # normalize to [0, 360)
 
     # fill in NaN values in distance_from_prev with 0 for the first point in each storm
     # Note: leave bearing_from_prev as NaN for the first point in each storm as the storm has not yet moved
-    processed_df["distance_from_prev"] = processed_df["distance_from_prev"].fillna(0)
-    
+    processed_df["distance_from_prev"] = processed_df[
+        "distance_from_prev"
+    ].fillna(0)
+
     # calc storm distance traversed via cumulative sum of distance_from_prev
     processed_df["storm_distance_traversed"] = (
         processed_df.groupby("storm_id")["distance_from_prev"]
