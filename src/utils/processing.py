@@ -129,8 +129,8 @@ def calc_storm_distances_and_bearings(
         total=processed_df["storm_id"].nunique(),
     ):
         # extract coordinates for all points in the group
-        lons = group["y"].values
-        lats = group["x"].values
+        lons = group["x"].values
+        lats = group["y"].values
 
         # calculate distances and bearings between consecutive points
         fwd_azimuths, _, distances_m = geod.inv(
