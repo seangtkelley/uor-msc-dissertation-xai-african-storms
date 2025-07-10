@@ -52,8 +52,8 @@ DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
 
 COL_RENAME_MAP = {
-    "Lon": "x",
-    "Lat": "y",
+    "Lon": "lon",
+    "Lat": "lat",
     "Storm": "storm_id",
     "Area": "area",
     "u_ms": "zonal_speed",
@@ -65,10 +65,10 @@ COL_RENAME_MAP = {
 FEATURE_COL_NAMES = [
     ### point features ###
     "eat_hours",
-    "x",
-    "y",
+    "lon",
+    "lat",
     "orography_height",
-    "anor", 
+    "anor",
     "zonal_speed",
     "meridional_speed",
     "area",
@@ -77,7 +77,6 @@ FEATURE_COL_NAMES = [
     # "mean_land_skt",
     # "mean_dthetae_dp_900_750",
     # "mean_dthetae_dp_750_500",
-
     ### storm aggregated features ###
     "storm_total_duration",
     "storm_max_area",
@@ -85,7 +84,6 @@ FEATURE_COL_NAMES = [
     "storm_bearing",
     "storm_distance_traversed",
     # "mean_prcp_400",
-
     ### external features ###
     # "ushear_850",
     "mjo_phase",
