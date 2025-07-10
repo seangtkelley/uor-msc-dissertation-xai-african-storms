@@ -44,6 +44,9 @@ else:
 raw_df = pd.read_csv(config.RAW_STORM_DB_PATH)
 raw_df = processing.rename_columns(raw_df, column_map=config.COL_RENAME_MAP)
 
+# convert the timestamp to a datetime object
+raw_df["timestamp"] = pd.to_datetime(raw_df["timestamp"], utc=True)
+
 # check if the processed dataset already exists
 processed_df = None
 if os.path.exists(config.PROCESSED_DATASET_PATH):
@@ -52,16 +55,24 @@ if os.path.exists(config.PROCESSED_DATASET_PATH):
     # load the existing processed dataset
     processed_df = pd.read_csv(config.PROCESSED_DATASET_PATH)
 
+    # convert the timestamp to a datetime object
+    processed_df["timestamp"] = pd.to_datetime(
+        processed_df["timestamp"], utc=True
+    )
+
     # get columns from raw_df that aren't in processed_df (excluding merge keys)
-    merge_keys = ['storm_id', 'timestamp']
-    raw_cols_to_add = [col for col in raw_df.columns 
-                    if col not in processed_df.columns and col not in merge_keys]
+    merge_keys = ["storm_id", "timestamp"]
+    raw_cols_to_add = [
+        col
+        for col in raw_df.columns
+        if col not in processed_df.columns and col not in merge_keys
+    ]
 
     # select only the merge keys and new columns from raw_df
     raw_df_subset = raw_df[merge_keys + raw_cols_to_add]
 
     # merge with processed_df
-    processed_df = processed_df.merge(raw_df_subset, on=merge_keys, how='left')
+    processed_df = processed_df.merge(raw_df_subset, on=merge_keys, how="left")
 else:
     print("Processed dataset does not exist, creating a new one...")
 
@@ -71,7 +82,7 @@ else:
     # processed_df will start as the raw dataframe
     processed_df = raw_df.copy()
 
-# sort by storm_id and timestamp to ensure consistent order
+# sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
 if args.recalc_all or (
@@ -102,9 +113,9 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
     print("Calculating storm maximum area...")
 
     # calculate the maximum storm area for each storm
-    processed_df["storm_max_area"] = (
-        processed_df.groupby("storm_id")["area"].transform("max")
-    )
+    processed_df["storm_max_area"] = processed_df.groupby("storm_id")[
+        "area"
+    ].transform("max")
 
 if args.recalc_all or (
     "distance_from_prev" not in processed_df.columns
@@ -116,9 +127,7 @@ if args.recalc_all or (
     print("Calculating storm distances and bearings...")
 
     # calculate the distance and bearing from the previous point for each storm
-    processed_df = processing.calc_storm_distances_and_bearings(
-        processed_df
-    )
+    processed_df = processing.calc_storm_distances_and_bearings(processed_df)
 
 # select only the columns that are in the config
 processed_df = processed_df[
