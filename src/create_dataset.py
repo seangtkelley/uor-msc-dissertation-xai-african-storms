@@ -41,11 +41,8 @@ else:
     )
 
 # load the raw storm database and rename the columns
-raw_df = pd.read_csv(config.RAW_STORM_DB_PATH)
+raw_df = pd.read_csv(config.RAW_STORM_DB_PATH, parse_dates=["timestamp"])
 raw_df = processing.rename_columns(raw_df, column_map=config.COL_RENAME_MAP)
-
-# convert the timestamp to a datetime object
-raw_df["timestamp"] = pd.to_datetime(raw_df["timestamp"], utc=True)
 
 # check if the processed dataset already exists
 processed_df = None
@@ -53,11 +50,8 @@ if not args.recalc_all and os.path.exists(config.PROCESSED_DATASET_PATH):
     print("Loading existing processed dataset...")
 
     # load the existing processed dataset
-    processed_df = pd.read_csv(config.PROCESSED_DATASET_PATH)
-
-    # convert the timestamp to a datetime object
-    processed_df["timestamp"] = pd.to_datetime(
-        processed_df["timestamp"], utc=True
+    processed_df = pd.read_csv(
+        config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"]
     )
 
     # get columns from raw_df that aren't in processed_df (excluding merge keys)
