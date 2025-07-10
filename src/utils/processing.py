@@ -95,8 +95,8 @@ def get_orography_features(
     """
     # extract longitude and latitude arrays
     # source: https://stackoverflow.com/questions/40544846/read-multiple-coordinates-with-xarray#62784295
-    lons = xr.DataArray(processed_df["lon"].values)
-    lats = xr.DataArray(processed_df["lat"].values)
+    lons = xr.DataArray(processed_df["lon"].to_numpy())
+    lats = xr.DataArray(processed_df["lat"].to_numpy())
 
     # perform batch indexing for geopotential height
     closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
@@ -129,8 +129,8 @@ def calc_storm_distances_and_bearings(
         total=processed_df["storm_id"].nunique(),
     ):
         # extract coordinates for all points in the group
-        lons = group["lon"].values
-        lats = group["lat"].values
+        lons = group["lon"].to_numpy()
+        lats = group["lat"].to_numpy()
 
         # calculate distances and bearings between consecutive points
         fwd_azimuths, _, distances_m = geod.inv(
