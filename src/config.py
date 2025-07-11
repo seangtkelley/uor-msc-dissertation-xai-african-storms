@@ -52,34 +52,44 @@ DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
 
 COL_RENAME_MAP = {
-    "Lon": "x",
-    "Lat": "y",
+    "Lon": "lon",
+    "Lat": "lat",
     "Storm": "storm_id",
     "Area": "area",
-    "duration_hr": "total_duration",
     "u_ms": "zonal_speed",
     "v_ms": "meridional_speed",
+    "duration_hr": "storm_total_duration",
 }
 
+# TODO: Uncomment when the features are ready
 FEATURE_COL_NAMES = [
+    ### point features ###
     "eat_hours",
-    "x",
-    "y",
+    "lon",
+    "lat",
     "orography_height",
     "anor",
-    "total_duration",
     "zonal_speed",
     "meridional_speed",
     "area",
-    "mean_land_skt",
-    "mean_dthetae_dp_900_750",
-    "mean_dthetae_dp_750_500",
-    "ushear_850",
-    "mean_prcp_400",
+    "distance_from_prev",
+    "bearing_from_prev",
+    # "mean_land_skt",
+    # "mean_dthetae_dp_900_750",
+    # "mean_dthetae_dp_750_500",
+    ### storm aggregated features ###
+    "storm_total_duration",
+    "storm_max_area",
+    "storm_straight_line_distance",
+    "storm_bearing",
+    "storm_distance_traversed",
+    # "mean_prcp_400",
+    ### external features ###
+    # "ushear_850",
     "mjo_phase",
     "mjo_amplitude",
 ]
 
-TARGET_COL_NAMES = ["total_duration", "mean_prcp_400"]
+TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES

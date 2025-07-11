@@ -13,15 +13,22 @@ __status__ = "Development"
 
 import numpy as np
 import pandas as pd
+import pyproj
 import xarray as xr
 from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
+from tqdm import tqdm
 
 import config
 
+# initialize pandarallel for parallel processing with progress bar
 pandarallel.initialize(progress_bar=True)
+
+# initialize the geodesic calculator with WGS84 ellipsoid
+# TODO: is there a better projection for East Africa?
+geod = pyproj.Geod(ellps="WGS84")
 
 
 def load_geop_and_calc_elevation() -> tuple[xr.Dataset, Quantity]:
@@ -87,18 +94,80 @@ def get_orography_features(
     :rtype: pd.DataFrame
     """
     # extract longitude and latitude arrays
-    longitudes = processed_df["x"].values
-    latitudes = processed_df["y"].values
+    # source: https://stackoverflow.com/questions/40544846/read-multiple-coordinates-with-xarray#62784295
+    lons = xr.DataArray(processed_df["lon"].to_numpy())
+    lats = xr.DataArray(processed_df["lat"].to_numpy())
 
     # perform batch indexing for geopotential height
-    closest_geop = geop.sel(longitude=longitudes, latitude=latitudes, method="nearest")
-    closest_lat_indices = closest_indices(closest_geop.latitude.values, geop.latitude.values)
-    closest_lon_indices = closest_indices(closest_geop.longitude.values, geop.longitude.values)
-    processed_df["orography_height"] = height[closest_lat_indices, closest_lon_indices].magnitude
+    closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
+    closest_lat_indices = closest_indices(
+        closest_geop.latitude.values, geop.latitude.values
+    )
+    closest_lon_indices = closest_indices(
+        closest_geop.longitude.values, geop.longitude.values
+    )
+    processed_df["orography_height"] = height[
+        closest_lat_indices, closest_lon_indices
+    ].magnitude
 
     # perform batch indexing for subgrid orography angle (anor)
-    closest_anor = anor.sel(longitude=longitudes, latitude=latitudes, method="nearest")
-    processed_df["anor"] = closest_anor["anor"].values
+    closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
+    processed_df["anor"] = closest_anor["anor"].values.squeeze()
+
+    return processed_df
+
+
+def calc_storm_distances_and_bearings(
+    processed_df: pd.DataFrame,
+) -> pd.DataFrame:
+    processed_df["distance_from_prev"] = np.nan
+    processed_df["bearing_from_prev"] = np.nan
+    processed_df["storm_straight_line_distance"] = np.nan
+    processed_df["storm_bearing"] = np.nan
+    for _, group in tqdm(
+        processed_df.groupby("storm_id"),
+        total=processed_df["storm_id"].nunique(),
+    ):
+        # extract coordinates for all points in the group
+        lons = group["lon"].to_numpy()
+        lats = group["lat"].to_numpy()
+
+        # calculate distances and bearings between consecutive points
+        fwd_azimuths, _, distances_m = geod.inv(
+            lons[:-1], lats[:-1], lons[1:], lats[1:]
+        )
+
+        # update the DataFrame with the calculated values
+        processed_df.loc[group.index[1:], "distance_from_prev"] = (
+            distances_m / 1000
+        )
+        processed_df.loc[group.index[1:], "bearing_from_prev"] = (
+            fwd_azimuths % 360  # normalize to [0, 360)
+        )
+
+        # calculate straight-line distance and bearing for the entire storm
+        fwd_azimuth, _, distance_m = geod.inv(
+            lons[0], lats[0], lons[-1], lats[-1]
+        )
+        processed_df.loc[group.index, "storm_straight_line_distance"] = (
+            distance_m / 1000
+        )
+        processed_df.loc[group.index, "storm_bearing"] = (
+            fwd_azimuth % 360  # normalize to [0, 360)
+        )
+
+    # fill in NaN values in distance_from_prev with 0 for the first point in each storm
+    # Note: leave bearing_from_prev as NaN for the first point in each storm as the storm has not yet moved
+    processed_df["distance_from_prev"] = processed_df[
+        "distance_from_prev"
+    ].fillna(0)
+
+    # calc storm distance traversed via cumulative sum of distance_from_prev
+    processed_df["storm_distance_traversed"] = (
+        processed_df.groupby("storm_id")["distance_from_prev"]
+        .cumsum()
+        .fillna(0)
+    )
 
     return processed_df
 
