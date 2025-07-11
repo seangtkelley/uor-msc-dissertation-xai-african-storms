@@ -11,6 +11,8 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 import pyproj
@@ -168,6 +170,38 @@ def calc_storm_distances_and_bearings(
         .cumsum()
         .fillna(0)
     )
+
+    return processed_df
+
+
+def calc_temporal_rate_of_change(
+    processed_df: pd.DataFrame,
+    col_name: str,
+    time_interval: int,
+    ddt_col_name: Optional[str] = None,
+) -> pd.DataFrame:
+    """
+    Calculate the rate of change of a specified column over a given time interval.
+
+    :param processed_df: DataFrame containing storm data.
+    :param col_name: Name of the column to calculate the rate of change for.
+    :param time_interval: Time interval in seconds over which to calculate the rate of change.
+    :param ddt_col_name: Optional name for the new column to store the rate of change.
+                         If None, defaults to "d{col_name}_dt".
+    :type ddt_col_name: Optional[str]
+    :return: None
+    """
+    if ddt_col_name is None:
+        ddt_col_name = "d" + col_name + "_dt"
+
+    # calculate the rate of change of the specified column
+    processed_df[ddt_col_name] = processed_df[col_name].diff() / (
+        processed_df["timestamp"].diff().dt.total_seconds() / time_interval
+    )
+
+    # fill the rate of change column with 0 for the first point in each storm
+    storm_inits_idx = processed_df.groupby("storm_id").head(1).index
+    processed_df.loc[storm_inits_idx, ddt_col_name] = 0
 
     return processed_df
 
