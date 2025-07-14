@@ -59,6 +59,8 @@ COL_RENAME_MAP = {
     "u_ms": "zonal_speed",
     "v_ms": "meridional_speed",
     "duration_hr": "storm_total_duration",
+    "Min BT": "min_bt",
+    "Mean BT": "mean_bt",
 }
 
 # TODO: Uncomment when the features are ready
@@ -74,6 +76,11 @@ FEATURE_COL_NAMES = [
     "area",
     "distance_from_prev",
     "bearing_from_prev",
+    "min_bt",
+    "dmin_bt_dt",
+    "mean_bt",
+    "dmean_bt_dt",
+    # "mean_prcp_400",
     # "mean_land_skt",
     # "mean_dthetae_dp_900_750",
     # "mean_dthetae_dp_750_500",
@@ -83,7 +90,6 @@ FEATURE_COL_NAMES = [
     "storm_straight_line_distance",
     "storm_bearing",
     "storm_distance_traversed",
-    # "mean_prcp_400",
     ### external features ###
     # "ushear_850",
     "mjo_phase",

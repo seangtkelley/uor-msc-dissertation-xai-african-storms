@@ -127,6 +127,21 @@ if args.recalc_all or (
     # calculate the distance and bearing from the previous point for each storm
     processed_df = processing.calc_storm_distances_and_bearings(processed_df)
 
+if args.recalc_all or "dmin_bt_dt" not in processed_df.columns:
+    print("Calculating the rate of change of minimum cloudtop brightness...")
+
+    processed_df = processing.calc_temporal_rate_of_change(
+        processed_df, "min_bt", 24 * 60 * 60  # 24 hours in seconds
+    )
+
+if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
+    print("Calculating the rate of change of mean cloudtop brightness...")
+
+    processed_df = processing.calc_temporal_rate_of_change(
+        processed_df, "mean_bt", 24 * 60 * 60  # 24 hours in seconds
+    )
+
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
