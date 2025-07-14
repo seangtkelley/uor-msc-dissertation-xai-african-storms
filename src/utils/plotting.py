@@ -155,7 +155,9 @@ def add_gridlines(
     gl.right_labels = False
 
 
-def add_geopotential_height(geop: xr.Dataset, height: Quantity, ax: Axes, add_colorbar: bool = False) -> None:
+def add_geopotential_height(
+    geop: xr.Dataset, height: Quantity, ax: Axes, add_colorbar: bool = False
+) -> None:
     """
     Add geopotential height contours to the given axis.
 
