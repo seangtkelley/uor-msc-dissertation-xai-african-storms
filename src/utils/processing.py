@@ -203,7 +203,8 @@ def calc_temporal_rate_of_change(
     :param ddt_col_name: Optional name for the new column to store the rate of change.
                          If None, defaults to "d{col_name}_dt".
     :type ddt_col_name: Optional[str]
-    :return: None
+    :return: A DataFrame with the calculated rate of change added as a new column.
+    :rtype: pd.DataFrame
     """
     if ddt_col_name is None:
         ddt_col_name = "d" + col_name + "_dt"
