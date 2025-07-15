@@ -221,6 +221,89 @@ def calc_temporal_rate_of_change(
     return processed_df
 
 
+def interpolate_storm_to_n_points(group, n_points=10):
+    """
+    Interpolate a storm track to exactly n points
+
+    :param group: DataFrame group representing a single storm.
+    :param n_points: Number of points to interpolate the storm track to.
+    :return: DataFrame with interpolated points and their storm stage.
+    :rtype: pd.DataFrame
+    """
+    # ignore storms with less than 2 points
+    if len(group) < 2:
+        return group
+
+    # create normalized time indices from 0 to 1 (start to end of storm)
+    # for both the original and target time
+    normalized_time = np.linspace(0, 1, len(group))
+    target_time = np.linspace(0, 1, n_points)
+
+    # interpolate each numeric column
+    interpolated_data = {}
+    for col in group.select_dtypes(include=[np.number]).columns:
+        interpolated_data[col] = np.interp(
+            target_time, normalized_time, group[col]
+        )
+
+    # add back storm_id and create storm stage and storm progress columns
+    interpolated_data["storm_id"] = group["storm_id"].iloc[0]
+    interpolated_data["storm_stage"] = np.arange(
+        n_points
+    )  # eg: 0-9 for 10 points
+    interpolated_data["storm_progress"] = target_time  # eg: 0.0 to 1.0
+
+    return pd.DataFrame(interpolated_data)
+
+
+def sample_storm_at_quantiles(group, n_points=10):
+    """
+    Sample storm at specific quantiles of its duration
+
+    :param group: DataFrame group representing a single storm.
+    :param n_points: Number of points to sample from the storm.
+    :return: DataFrame with sampled points and their storm stage.
+    :rtype: pd.DataFrame
+    """
+    # ignore storms with less than 2 points
+    if len(group) < 2:
+        return group
+
+    # calculate quantiles for sampling
+    quantiles = np.linspace(0, 1, n_points)
+    indices = (quantiles * (len(group) - 1)).astype(int)
+
+    # select the points at the calculated indices
+    sampled = group.iloc[indices].copy()
+
+    # create storm stage and storm progress columns
+    sampled["storm_stage"] = np.arange(n_points)
+    sampled["storm_progress"] = quantiles
+
+    return sampled
+
+
+def interpolate_all_storms(
+    df: pd.DataFrame, n_points: int = 10
+) -> pd.DataFrame:
+    """
+    Interpolate all storms in the DataFrame to have exactly n_points.
+
+    :param df: DataFrame containing storm data with 'storm_id' and 'timestamp' columns.
+    :param n_points: Number of points to interpolate each storm to.
+    :return: DataFrame with interpolated storm tracks.
+    :rtype: pd.DataFrame
+    """
+    # group by storm_id and apply interpolation
+    interpolated_df = (
+        df.groupby("storm_id", group_keys=False)
+        .parallel_apply(lambda x: interpolate_storm_to_n_points(x, n_points))  # type: ignore
+        .reset_index(drop=True)
+    )
+
+    return interpolated_df
+
+
 def calc_kde(lons, lats) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate the 2D kernel density estimate (KDE) for the given longitudes and latitudes.
