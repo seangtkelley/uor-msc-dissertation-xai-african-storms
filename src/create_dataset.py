@@ -141,6 +141,33 @@ if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
         processed_df, "mean_bt", 24 * 60 * 60  # 24 hours in seconds
     )
 
+if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
+    print("Calculating mean precipitation...")
+
+    processed_df["mean_prcp_400"] = None
+
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # for each year, calculate the spatial mean precipitation
+    for year, group in grouped:
+        print(f"Processing year: {year}")
+
+        # load the precipitation dataset for the year
+        precip = xr.open_dataset(
+            config.DATA_DIR / "std" / f"prcp_tot_{year}.nc"
+        )
+
+        processed_df.loc[group.index, "mean_prcp_400"] = group.parallel_apply(  # type: ignore
+            lambda row: processing.calc_spatiotemporal_mean(
+                row["timestamp"], row["lon"], row["lat"], precip, "prcp"
+            ),
+            axis=1,
+        )
+
+        # clear the dataset from memory
+        precip.close()
+
 
 # select only the columns that are in the config
 processed_df = processed_df[
