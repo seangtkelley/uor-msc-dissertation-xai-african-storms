@@ -78,15 +78,6 @@ def closest_indices(
     """
     return np.abs(search_space[:, None] - values).argmin(axis=0)
 
-    # # find the indices of the closest values in the search space
-    # indices = np.abs(search_space[:, None] - values).argmin(axis=0)
-
-    # # if only one value, return a single index
-    # if len(indices) == 1:
-    #     return indices.item()
-    # else:
-    #     return indices
-
 
 def get_orography_features(
     processed_df: pd.DataFrame,
