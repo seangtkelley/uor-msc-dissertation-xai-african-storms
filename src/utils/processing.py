@@ -238,7 +238,7 @@ def calc_spatiotemporal_mean(
     variable_name: str,
     radius_km: float = 400,
     time_hrs: int = 6,
-) -> np.typing.float:
+) -> np.floating:
     """
     Calculate the spatial mean of a specified variable from an xarray dataset
     within a specified radius from a storm's location.
@@ -279,8 +279,8 @@ def calc_spatiotemporal_mean(
     )
 
     # calculate the number of grid cells in the radius for a square-ish area
-    area_width_cells = radius_m // grid_width_m
-    area_height_cells = radius_m // grid_height_m
+    area_width_cells = int(radius_m // grid_width_m)
+    area_height_cells = int(radius_m // grid_height_m)
 
     # calculate the indices of the grid cells within the radius
     lon_start = max(0, lon_idx - area_width_cells)
