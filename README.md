@@ -100,8 +100,8 @@ Recommended for complete python environment isolation.
 | `storm_straight_line_distance` | Distance from first to last point of storm | km |
 | `storm_bearing` | Compass bearing from first to last point of storm | ° |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km |
-| mjo_phase | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
-| mjo_amplitude | Amplitude of Madden–Julian oscillation | - |
+| `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
+| `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - |
 <!--
 | mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
