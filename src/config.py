@@ -75,6 +75,7 @@ FEATURE_COL_NAMES = [
     "meridional_speed",
     "area",
     "distance_from_prev",
+    "distance_traversed",
     "bearing_from_prev",
     "min_bt",
     "dmin_bt_dt",

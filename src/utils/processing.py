@@ -187,10 +187,17 @@ def calc_storm_distances_and_bearings(
     ].ffill()
     processed_df["storm_bearing"] = processed_df["storm_bearing"].ffill()
 
-    # calc storm distance traversed via cumulative sum of distance_from_prev
-    processed_df["storm_distance_traversed"] = (
+    # calc distance traversed via cumulative sum of distance_from_prev
+    processed_df["distance_traversed"] = (
         processed_df.groupby("storm_id")["distance_from_prev"]
         .cumsum()
+        .fillna(0)
+    )
+
+    # get total storm distance traversed
+    processed_df["storm_distance_traversed"] = (
+        processed_df.groupby("storm_id")["distance_traversed"]
+        .transform("max")
         .fillna(0)
     )
 

@@ -90,6 +90,7 @@ Recommended for complete python environment isolation.
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr |
 | `area` | Area of the storm | km² |
 | `distance_from_prev` | Distance traversed from previous point | km |
+| `distance_traversed` | Cumulative sum of `distance_from_prev` | km |
 | `bearing_from_prev` | Compass bearing from previous point | ° |
 | `min_bt` | Minimum cloudtop brightness within storm area | brightness (0-255) |
 | `dmin_bt_dt` | Rate of change of `min_bt` | brightness/6 hr |
@@ -98,7 +99,7 @@ Recommended for complete python environment isolation.
 | `storm_max_area` | Max value of `area` over storm | km² |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km |
 | `storm_bearing` | Compass bearing from first to last point of storm | ° |
-| `storm_distance_traversed` | Total cumulative distance traversed by storm (cumulative sum of `distance_from_prev`) | km |
+| `storm_distance_traversed` | Total cumulative distance traversed by storm | km |
 | mjo_phase | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
 | mjo_amplitude | Amplitude of Madden–Julian oscillation | - |
 <!--
