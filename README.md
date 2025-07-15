@@ -77,26 +77,39 @@ Recommended for complete python environment isolation.
 | `uwnd_*_*.nc` | Zonal wind at 200, 500 and 850 hPa | - |
 | `vwnd_*_*.nc` | Meridional wind at 200, 500 and 850 hPa | - |
 
-## Predictors and Predictands
-
-Predictands in **bold**
+## Predictors
 
 | Variable name | Description | Units |
 |--------------|-------------|-------------|
-| eat_hours | Time step hour of day | EAT (UTC +3) |
-| x | Longitude of LPS centre | ° E |
-| y | Latitude of LPS centre | ° N |
-| orography_height | Elevation of land surface under centre | m |
-| anor | Angle of sub-gridscale orography | radians |
-| zonal_speed | $x$-component of LPS propagation vector | km/hr |
-| meridional_speed | $y$-component of LPS propagation vector | km/hr |
-| area | Area of the storm | km² |
+| `eat_hours` | Time step hour of day | EAT (UTC +3) |
+| `lon` | Longitude of LPS centre | ° E |
+| `lat` | Latitude of LPS centre | ° N |
+| `orography_height` | Elevation of land surface under centre | m |
+| `anor` | Angle of sub-gridscale orography | radians |
+| `zonal_speed` | $x$-component of LPS propagation vector | km/hr |
+| `meridional_speed` | $y$-component of LPS propagation vector | km/hr |
+| `area` | Area of the storm | km² |
+| `distance_from_prev` | Distance traversed from previous point | km |
+| `bearing_from_prev` | Compass bearing from previous point | ° |
+| `min_bt` | Minimum cloudtop brightness within storm area | brightness (0-255) |
+| `dmin_bt_dt` | Rate of change of `min_bt` | brightness/6 hr |
+| `mean_bt` | Mean cloudtop brightness within storm area | brightness (0-255) |
+| `dmean_bt_dt` | Rate of change of `mean_bt` | brightness/6 hr |
+| `storm_max_area` | Max value of `area` over storm | km² |
+| `storm_straight_line_distance` | Distance from first to last point of storm | km |
+| `storm_bearing` | Compass bearing from first to last point of storm | ° |
+| `storm_distance_traversed` | Total cumulative distance traversed by storm (cumulative sum of `distance_from_prev`) | km |
 | mjo_phase | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
 | mjo_amplitude | Amplitude of Madden–Julian oscillation | - |
-| **total_duration** | Total duration of storm | hr |
-|--------------|-------------|-------------|
+<!--
 | mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
 | mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
 | ushear_850 | Meridional shear of 850 hPa zonal wind over India | m/s deg |
+-->
+
+## Predictands
+
+| Variable name | Description | Units |
 | **mean_prcp_400** | Mean precipitation within 400 km over the next 6 hr | mm/hr |
+| **storm_total_duration** | Total duration of storm | hr |
