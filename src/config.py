@@ -80,7 +80,7 @@ FEATURE_COL_NAMES = [
     "dmin_bt_dt",
     "mean_bt",
     "dmean_bt_dt",
-    # "mean_prcp_400",
+    "mean_prcp_400",
     # "mean_land_skt",
     # "mean_dthetae_dp_900_750",
     # "mean_dthetae_dp_750_500",
