@@ -111,5 +111,6 @@ Recommended for complete python environment isolation.
 ## Predictands
 
 | Variable name | Description | Units |
-| **mean_prcp_400** | Mean precipitation within 400 km over the next 6 hr | mm/hr |
-| **storm_total_duration** | Total duration of storm | hr |
+|--------------|-------------|-------------|
+| `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr |
+| `storm_total_duration` | Total duration of storm | hr |
