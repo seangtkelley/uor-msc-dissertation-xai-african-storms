@@ -129,7 +129,7 @@ def calc_storm_distances_and_bearings(
     processed_df["storm_bearing"] = np.nan
 
     # calculate distances and bearings between consecutive points
-    fwd_azimuth, _, distance_m = geod.inv(
+    fwd_azimuths, _, distances_m = geod.inv(
         processed_df["lon"][:-1],
         processed_df["lat"][:-1],
         processed_df["lon"][1:],
@@ -138,10 +138,10 @@ def calc_storm_distances_and_bearings(
 
     # update the df with the calculated values
     processed_df.loc[processed_df.index[1:], "distance_from_prev"] = (
-        distance_m / 1000
+        distances_m / 1000
     )
     processed_df.loc[processed_df.index[1:], "bearing_from_prev"] = (
-        fwd_azimuth % 360  # normalize to [0, 360)
+        fwd_azimuths % 360  # normalize to [0, 360)
     )
 
     # get storm init and end indices
@@ -150,17 +150,17 @@ def calc_storm_distances_and_bearings(
     storm_ends = storm_groups.tail(1)
 
     # calculate straight-line distance and bearing for the entire storm
-    fwd_azimuth, _, distance_m = geod.inv(
+    fwd_azimuths, _, distances_m = geod.inv(
         storm_inits["lon"],
         storm_inits["lat"],
         storm_ends["lon"],
         storm_ends["lat"],
     )
     processed_df.loc[storm_inits.index, "storm_straight_line_distance"] = (
-        distance_m / 1000
+        distances_m / 1000
     )
     processed_df.loc[storm_inits.index, "storm_bearing"] = (
-        fwd_azimuth % 360  # normalize to [0, 360)
+        fwd_azimuths % 360  # normalize to [0, 360)
     )
 
     # fill in first point for each storm with 0 distance_from_prev
