@@ -21,7 +21,6 @@ from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
-from tqdm import tqdm
 
 import config
 
@@ -67,7 +66,9 @@ def rename_columns(df, column_map: dict[str, str]) -> pd.DataFrame:
     return df.rename(columns=column_map)
 
 
-def closest_indices(values: np.ndarray, search_space: np.ndarray) -> np.ndarray:
+def closest_indices(
+    values: np.typing.ArrayLike, search_space: np.ndarray
+) -> np.ndarray:
     """
     Find the indices of the closest values in a search space for each value in the input array.
 
@@ -75,7 +76,6 @@ def closest_indices(values: np.ndarray, search_space: np.ndarray) -> np.ndarray:
     :param search_space: Array of values to search within.
     :return: Indices of the closest values in the search space.
     """
-    # find the indices of the closest values in the search space
     return np.abs(search_space[:, None] - values).argmin(axis=0)
 
 
@@ -150,17 +150,17 @@ def calc_storm_distances_and_bearings(
     storm_ends = storm_groups.tail(1)
 
     # calculate straight-line distance and bearing for the entire storm
-    fwd_azimuth, _, distance_m = geod.inv(
+    fwd_azimuths, _, distances_m = geod.inv(
         storm_inits["lon"],
         storm_inits["lat"],
         storm_ends["lon"],
         storm_ends["lat"],
     )
     processed_df.loc[storm_inits.index, "storm_straight_line_distance"] = (
-        distance_m / 1000
+        distances_m / 1000
     )
     processed_df.loc[storm_inits.index, "storm_bearing"] = (
-        fwd_azimuth % 360  # normalize to [0, 360)
+        fwd_azimuths % 360  # normalize to [0, 360)
     )
 
     # fill in first point for each storm with 0 distance_from_prev
@@ -178,10 +178,17 @@ def calc_storm_distances_and_bearings(
     ].ffill()
     processed_df["storm_bearing"] = processed_df["storm_bearing"].ffill()
 
-    # calc storm distance traversed via cumulative sum of distance_from_prev
-    processed_df["storm_distance_traversed"] = (
+    # calc distance traversed via cumulative sum of distance_from_prev
+    processed_df["distance_traversed"] = (
         processed_df.groupby("storm_id")["distance_from_prev"]
         .cumsum()
+        .fillna(0)
+    )
+
+    # get total storm distance traversed
+    processed_df["storm_distance_traversed"] = (
+        processed_df.groupby("storm_id")["distance_traversed"]
+        .transform("max")
         .fillna(0)
     )
 
@@ -192,7 +199,7 @@ def calc_temporal_rate_of_change(
     processed_df: pd.DataFrame,
     col_name: str,
     time_interval: int,
-    ddt_col_name: Optional[str] = None,
+    new_col_name: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Calculate the rate of change of a specified column over a given time interval.
@@ -200,25 +207,101 @@ def calc_temporal_rate_of_change(
     :param processed_df: DataFrame containing storm data.
     :param col_name: Name of the column to calculate the rate of change for.
     :param time_interval: Time interval in seconds over which to calculate the rate of change.
-    :param ddt_col_name: Optional name for the new column to store the rate of change.
+    :param new_col_name: Optional name for the new column to store the rate of change.
                          If None, defaults to "d{col_name}_dt".
-    :type ddt_col_name: Optional[str]
+    :type new_col_name: Optional[str]
     :return: A DataFrame with the calculated rate of change added as a new column.
     :rtype: pd.DataFrame
     """
-    if ddt_col_name is None:
-        ddt_col_name = "d" + col_name + "_dt"
+    if new_col_name is None:
+        new_col_name = "d" + col_name + "_dt"
 
     # calculate the rate of change of the specified column
-    processed_df[ddt_col_name] = processed_df[col_name].diff() / (
+    processed_df[new_col_name] = processed_df[col_name].diff() / (
         processed_df["timestamp"].diff().dt.total_seconds() / time_interval
     )
 
     # fill the rate of change column with 0 for the first point in each storm
     storm_inits_idx = processed_df.groupby("storm_id").head(1).index
-    processed_df.loc[storm_inits_idx, ddt_col_name] = 0
+    processed_df.loc[storm_inits_idx, new_col_name] = 0
 
     return processed_df
+
+
+def calc_spatiotemporal_mean(
+    timestamp: pd.Timestamp,
+    lon: float,
+    lat: float,
+    dataset: xr.Dataset,
+    variable_name: str,
+    radius_km: float = 400,
+    time_hrs: int = 6,
+) -> np.floating:
+    """
+    Calculate the spatial mean of a specified variable from an xarray dataset
+    within a specified radius from a storm's location.
+
+    :param timestamp: Timestamp of the storm's location.
+    :param lon: Longitude of the storm's location.
+    :param lat: Latitude of the storm's location.
+    :param dataset: xarray Dataset containing the variable to calculate the spatial mean for.
+    :param variable_name: Name of the variable in the dataset to calculate the spatial mean for.
+    :param radius_km: Radius in kilometers for the spatial mean calculation.
+    :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :return: Spatial mean of the specified variable within the radius.
+    :rtype: float
+    """
+    # convert radius to meters
+    radius_m = radius_km * 1000
+
+    # vars for dataset longitude and latitude arrays
+    dataset_lons = dataset["longitude"].values
+    dataset_lats = dataset["latitude"].values
+
+    # find the grid cell closest to the storm's location
+    lon_idx = closest_indices([lon], dataset_lons).item()
+    lat_idx = closest_indices([lat], dataset_lats).item()
+
+    # find the grid height and width near the storm's location
+    _, _, grid_width_m = geod.inv(
+        dataset_lons[lon_idx],
+        dataset_lats[lat_idx],
+        dataset_lons[min(lon_idx + 1, len(dataset_lons) - 1)],
+        dataset_lats[lat_idx],
+    )
+    _, _, grid_height_m = geod.inv(
+        dataset_lons[lon_idx],
+        dataset_lats[lat_idx],
+        dataset_lons[lon_idx],
+        dataset_lats[min(lat_idx + 1, len(dataset_lats) - 1)],
+    )
+
+    # calculate the number of grid cells in the radius for a square-ish area
+    area_width_cells = int(radius_m // grid_width_m)
+    area_height_cells = int(radius_m // grid_height_m)
+
+    # calculate the indices of the grid cells within the radius
+    lon_start = max(0, lon_idx - area_width_cells)
+    lon_end = min(len(dataset_lons), lon_idx + area_width_cells + 1)
+    lat_start = max(0, lat_idx - area_height_cells)
+    lat_end = min(len(dataset_lats), lat_idx + area_height_cells + 1)
+
+    # extract the relevant grid cells
+    var_over_grid = (
+        dataset.isel(
+            longitude=slice(lon_start, lon_end),
+            latitude=slice(lat_start, lat_end),
+        )
+        .sel(
+            valid_time=slice(
+                timestamp, timestamp + pd.Timedelta(hours=time_hrs)
+            )
+        )[variable_name]
+        .values
+    )
+
+    # return the mean over all the grid cells
+    return np.mean(var_over_grid)
 
 
 def interpolate_storm_to_n_points(group, n_points=10):
