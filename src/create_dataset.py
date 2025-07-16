@@ -26,7 +26,6 @@ parser = argparse.ArgumentParser(
     description="Create processed dataset from raw storm database and era5 data"
 )
 parser.add_argument(
-    # if set to False, the script will only recalculate features that are not already present in the dataset
     "--recalc_all",
     action="store_true",
     help="Recalculate all features",
@@ -116,8 +115,9 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
         "area"
     ].transform("max")
 
-if args.recalc_all or (
-    "distance_from_prev" not in processed_df.columns
+if (
+    args.recalc_all
+    or "distance_from_prev" not in processed_df.columns
     or "bearing_from_prev" not in processed_df.columns
     or "storm_straight_line_distance" not in processed_df.columns
     or "storm_bearing" not in processed_df.columns
@@ -127,6 +127,38 @@ if args.recalc_all or (
 
     # calculate the distance and bearing from the previous point for each storm
     processed_df = processing.calc_storm_distances_and_bearings(processed_df)
+
+if (
+    args.recalc_all
+    or "storm_min_bt" not in processed_df.columns
+    or "storm_min_bt_reached" not in processed_df.columns
+):
+    print("Calculating storm minimum cloudtop brightness...")
+
+    # calculate the minimum cloudtop brightness for each storm
+    processed_df["storm_min_bt"] = processed_df.groupby("storm_id")[
+        "min_bt"
+    ].transform("min")
+
+    # check if the storm minimum cloudtop brightness was reached
+    processed_df["storm_min_bt_reached"] = None
+    min_indices = processed_df[
+        processed_df["min_bt"] == processed_df["storm_min_bt"]
+    ].index
+    processed_df.loc[min_indices, "storm_min_bt_reached"] = True
+
+    # set storm_min_bt_reached to False for storm initial points if the storm
+    # minimum cloudtop brightness was not reached at the initial point
+    storm_init_indices = processed_df.groupby("storm_id").head(1).index
+    processed_df.loc[
+        [idx for idx in storm_init_indices if idx not in min_indices],
+        "storm_min_bt_reached",
+    ] = False
+
+    # forward fill the remaining values
+    processed_df["storm_min_bt_reached"] = (
+        processed_df["storm_min_bt_reached"].astype(bool).ffill()
+    )
 
 if args.recalc_all or "dmin_bt_dt" not in processed_df.columns:
     print("Calculating the rate of change of minimum cloudtop brightness...")
