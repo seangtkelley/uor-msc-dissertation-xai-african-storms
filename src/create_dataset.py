@@ -14,6 +14,7 @@ __status__ = "Development"
 import argparse
 import os
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -144,7 +145,7 @@ if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
 if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
     print("Calculating mean precipitation...")
 
-    processed_df["mean_prcp_400"] = None
+    processed_df["mean_prcp_400"] = np.nan
 
     # group storm data by year
     grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
