@@ -101,7 +101,7 @@ Recommended for complete python environment isolation.
 | `storm_bearing` | Compass bearing from first to last point of storm | ° |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km |
 | `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K |
-| `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean
+| `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean |
 | `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
 | `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - |
 <!--
