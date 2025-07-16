@@ -266,14 +266,14 @@ def calc_spatiotemporal_mean(
     _, _, grid_width_m = geod.inv(
         dataset_lons[lon_idx],
         dataset_lats[lat_idx],
-        dataset_lons[lon_idx + 1],
+        dataset_lons[min(lon_idx + 1, len(dataset_lons) - 1)],
         dataset_lats[lat_idx],
     )
     _, _, grid_height_m = geod.inv(
         dataset_lons[lon_idx],
         dataset_lats[lat_idx],
         dataset_lons[lon_idx],
-        dataset_lats[lat_idx + 1],
+        dataset_lats[min(lat_idx + 1, len(dataset_lats) - 1)],
     )
 
     # calculate the number of grid cells in the radius for a square-ish area
