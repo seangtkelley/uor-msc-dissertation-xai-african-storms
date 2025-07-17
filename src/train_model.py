@@ -136,6 +136,7 @@ for target_col in target_cols:
     evals = None
     if args.val_size is not None:
         # adjust val size for train size
+        # source: https://datascience.stackexchange.com/a/15136
         val_size = args.val_size / (1 - args.test_size)
         X_train, X_val, y_train, y_val = train_test_split(
             X_train, y_train, test_size=val_size, random_state=args.random_state
@@ -160,7 +161,7 @@ for target_col in target_cols:
 
     # evaluate the model on the test set
     dtest = xgb.DMatrix(X_test, label=y_test)
-    print(model.eval(dtest))
+    print(model.eval(dtest, name="test"))
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
