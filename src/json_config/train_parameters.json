@@ -1,5 +1,4 @@
 {
     "early_stopping_rounds": 10,
-    "num_boost_round": 1000,
-    "eval_metric": "rmse"
+    "num_boost_round": 1000
 }
