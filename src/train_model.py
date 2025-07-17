@@ -129,9 +129,6 @@ for target_col in target_cols:
         X, y, test_size=args.test_size, random_state=args.random_state
     )
 
-    # create DMatrix for XGBoost
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-
     # train/val split
     evals = None
     if args.val_size is not None:
@@ -155,6 +152,9 @@ for target_col in target_cols:
         raise ValueError(
             "Early stopping requires a validation set. Please provide a validation set."
         )
+
+    # create DMatrix for training set
+    dtrain = xgb.DMatrix(X_train, label=y_train)
 
     # train the model
     model = xgb.train(hyperparams, dtrain, evals=evals, **train_params)
