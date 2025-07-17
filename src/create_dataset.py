@@ -204,6 +204,9 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
     # fill any remaining NaN values with 0
     processed_df["mean_prcp_400"] = processed_df["mean_prcp_400"].fillna(0.0)
 
+    # multiply by 1000 to convert from m to mm
+    processed_df["mean_prcp_400"] *= 1000.0
+
 
 # select only the columns that are in the config
 processed_df = processed_df[
