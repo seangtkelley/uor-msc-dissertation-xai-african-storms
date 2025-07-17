@@ -19,11 +19,15 @@ DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures"
 SRC_DIR = REPO_ROOT / "src"
+OUTPUT_MODEL_DIR = REPO_ROOT / "models"
 
 RAW_STORM_DB_PATH = (
     DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"
 )
 PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
+
+HYPERPARAMETER_JSON_PATH = SRC_DIR / "json_config" / "hyperparameters.json"
+TRAIN_PARAMETERS_JSON_PATH = SRC_DIR / "json_config" / "train_parameters.json"
 
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
