@@ -103,6 +103,6 @@ FEATURE_COL_NAMES = [
     "mjo_amplitude",
 ]
 
-TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400"]
+TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
