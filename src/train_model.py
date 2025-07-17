@@ -158,7 +158,11 @@ for target_col in target_cols:
     # train the model
     model = xgb.train(hyperparams, dtrain, evals=evals, **train_params)
 
+    # evaluate the model on the test set
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    print(model.eval(dtest))
+
     # save the model
-    model_path = output_model_dir / f"{target_col}_model.xgb"
+    model_path = output_model_dir / f"{target_col}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
