@@ -18,9 +18,13 @@ from typing import List
 
 import pandas as pd
 import xgboost as xgb
+from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 
 import config
+import wandb
+
+load_dotenv()
 
 # parse cli arguments
 parser = argparse.ArgumentParser(
@@ -80,6 +84,12 @@ parser.add_argument(
     type=int,
     help="Random state for train/test split",
 )
+parser.add_argument(
+    "--use_wandb",
+    action="store_true",
+    help="Use Weights & Biases for experiment tracking",
+    default=True,
+)
 args = parser.parse_args()
 
 if args.target_all and args.target_col_name is not None:
@@ -103,6 +113,17 @@ with open(args.hyperparameter_json, "r") as f:
 # load training parameters from JSON file
 with open(args.train_parameters_json, "r") as f:
     train_params = json.load(f)
+
+if args.use_wandb:
+    wandb.init(
+        entity="uor-msc",
+        project="uor-msc-dissertation-xai-african-storms",
+        config={
+            "model_type": args.model_type,
+            "hyperparams": hyperparams,
+            "train_params": train_params,
+        },
+    )
 
 # load the processed dataset
 print("Loading processed dataset...")
