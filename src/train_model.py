@@ -119,7 +119,7 @@ for target_col in target_cols:
     print(f"Training model for target column: {target_col}")
 
     # separate features and target variable
-    feature_cols = config.FEATURE_COL_NAMES
+    feature_cols = config.FEATURE_COL_NAMES.copy()
     feature_cols.remove(target_col)
     X = processed_df[feature_cols]
     y = processed_df[target_col]
