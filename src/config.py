@@ -91,6 +91,8 @@ FEATURE_COL_NAMES = [
     "storm_straight_line_distance",
     "storm_bearing",
     "storm_distance_traversed",
+    "storm_min_bt",
+    "storm_min_bt_reached",
     ### external features ###
     # "ushear_850",
     "mjo_phase",

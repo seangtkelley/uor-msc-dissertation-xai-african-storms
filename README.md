@@ -92,14 +92,16 @@ Recommended for complete python environment isolation.
 | `distance_from_prev` | Distance traversed from previous point | km |
 | `distance_traversed` | Cumulative sum of `distance_from_prev` | km |
 | `bearing_from_prev` | Compass bearing from previous point | ° |
-| `min_bt` | Minimum cloudtop brightness within storm area | brightness (0-255) |
-| `dmin_bt_dt` | Rate of change of `min_bt` | brightness/6 hr |
-| `mean_bt` | Mean cloudtop brightness within storm area | brightness (0-255) |
-| `dmean_bt_dt` | Rate of change of `mean_bt` | brightness/6 hr |
+| `min_bt` | Minimum cloudtop brightness within storm area | K |
+| `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr |
+| `mean_bt` | Mean cloudtop brightness within storm area | K |
+| `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr |
 | `storm_max_area` | Max value of `area` over storm | km² |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km |
 | `storm_bearing` | Compass bearing from first to last point of storm | ° |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km |
+| `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K |
+| `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean |
 | `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
 | `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - |
 <!--
