@@ -210,3 +210,6 @@ report/*-blx.bib
 
 # ignore data directory
 data
+
+# ignore model files
+models/run_*

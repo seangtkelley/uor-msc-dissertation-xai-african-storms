@@ -1,0 +1,4 @@
+{
+    "early_stopping_rounds": 10,
+    "num_boost_round": 100
+}
