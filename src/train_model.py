@@ -86,10 +86,11 @@ parser.add_argument(
     help="Random state for train/test split",
 )
 parser.add_argument(
-    "--use_wandb",
-    action="store_true",
-    help="Use Weights & Biases for experiment tracking",
-    default=False,
+    "--wandb_mode",
+    type=str,
+    choices=["online", "offline", "disabled"],
+    default="disabled",
+    help="Mode for Weights & Biases logging",
 )
 args = parser.parse_args()
 
@@ -119,18 +120,19 @@ with open(args.hyperparameter_json, "r") as f:
 with open(args.train_parameters_json, "r") as f:
     train_params = json.load(f)
 
-if args.use_wandb:
-    wandb.init(
-        entity="uor-msc",
-        project="uor-msc-dissertation-xai-african-storms",
-        name=run_name,
-        config={
-            "model_type": args.model_type,
-            "train_script_params": vars(args),
-            "model_hyperparams": hyperparams,
-            "train_params": train_params,
-        },
-    )
+# initialize Weights & Biases
+wandb.init(
+    entity="uor-msc",
+    project="uor-msc-dissertation-xai-african-storms",
+    name=run_name,
+    config={
+        "model_type": args.model_type,
+        "train_script_params": vars(args),
+        "model_hyperparams": hyperparams,
+        "train_params": train_params,
+    },
+    mode=args.wandb_mode,
+)
 
 # load the processed dataset
 print("Loading processed dataset...")
@@ -184,10 +186,8 @@ for target_col in target_cols:
     # create DMatrix for training set
     dtrain = xgb.DMatrix(X_train, label=y_train)
 
-    # if args.use_wandb, add callback to log metrics to Weights & Biases
-    callbacks = []
-    if args.use_wandb:
-        callbacks.append(WandbCallback(log_model=True))
+    # add callback to log metrics to Weights & Biases
+    callbacks = [WandbCallback(log_model=True)]
 
     # train the model
     model = xgb.train(
@@ -202,15 +202,16 @@ for target_col in target_cols:
     dtest = xgb.DMatrix(X_test, label=y_test)
     eval_res = model.eval(dtest, name="test").split(":")
     print(eval_res)
-    if args.use_wandb:
-        eval_res[0] = eval_res[0].split("[0]\t")[-1]
-        wandb.log({eval_res[0]: float(eval_res[1])})
+    eval_res[0] = eval_res[0].split("[0]\t")[-1]
+    wandb.log({eval_res[0]: float(eval_res[1])})
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
 
-    if args.use_wandb:
-        wandb.log_artifact(model_path, type="model", name=f"{target_col}_model")
-        wandb.finish()
+    # log the model as an artifact
+    wandb.log_artifact(model_path, type="model", name=f"{target_col}_model")
+
+    # finish the Weights & Biases run
+    wandb.finish()
