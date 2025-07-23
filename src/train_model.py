@@ -94,6 +94,10 @@ args = parser.parse_args()
 
 if args.target_all and args.target_col_name is not None:
     parser.error("--target_all cannot be used with --target_col_name")
+elif not args.target_all and args.target_col_name is None:
+    parser.error(
+        "--target_col_name must be specified if --target_all is not used"
+    )
 
 # set run name with current timestamp and update output model directory
 run_name = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
