@@ -122,8 +122,8 @@ with open(args.train_parameters_json, "r") as f:
 
 # initialize Weights & Biases
 wandb.init(
-    entity="uor-msc",
-    project="uor-msc-dissertation-xai-african-storms",
+    entity=config.WANDB_ENTITY,
+    project=config.WANDB_PROJECT,
     name=run_name,
     config={
         "model_type": args.model_type,
