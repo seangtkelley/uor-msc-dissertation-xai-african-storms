@@ -210,8 +210,5 @@ for target_col in target_cols:
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
 
-    # log the model as an artifact
-    wandb.log_artifact(model_path, type="model", name=f"{target_col}_model")
-
     # finish the Weights & Biases run
     wandb.finish()
