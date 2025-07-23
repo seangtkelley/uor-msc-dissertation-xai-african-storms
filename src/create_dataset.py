@@ -164,14 +164,14 @@ if args.recalc_all or "dmin_bt_dt" not in processed_df.columns:
     print("Calculating the rate of change of minimum cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
-        processed_df, "min_bt", 24 * 60 * 60  # 24 hours in seconds
+        processed_df, "min_bt", pd.Timedelta(days=1)
     )
 
 if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
     print("Calculating the rate of change of mean cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
-        processed_df, "mean_bt", 24 * 60 * 60  # 24 hours in seconds
+        processed_df, "mean_bt", pd.Timedelta(days=1)
     )
 
 if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
