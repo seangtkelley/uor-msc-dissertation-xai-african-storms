@@ -19,6 +19,7 @@ from typing import List
 import pandas as pd
 import xgboost as xgb
 from dotenv import load_dotenv
+from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from wandb.integration.xgboost import WandbCallback
 
@@ -199,15 +200,13 @@ for target_col in target_cols:
     )
 
     # evaluate the model on the test set
-    dtest = xgb.DMatrix(X_test, label=y_test)
-    eval_str = model.eval(dtest, name="test")
-    print(eval_str)
+    dtest = xgb.DMatrix(X_test)
+    y_pred = model.predict(dtest)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    print(f"test-rmse: {rmse}")
 
     # log evaluation metric to Weights & Biases
-    eval_metric, eval_value = eval_str.split(":")
-    eval_metric = eval_metric.split("[0]\t")[-1]
-    eval_value = float(eval_value)
-    wandb.log({eval_metric: eval_value})
+    wandb.log({"test-rmse": rmse})
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
