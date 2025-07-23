@@ -18,9 +18,15 @@ from typing import List
 
 import pandas as pd
 import xgboost as xgb
+from dotenv import load_dotenv
+from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
+from wandb.integration.xgboost import WandbCallback
 
 import config
+import wandb
+
+load_dotenv()
 
 # parse cli arguments
 parser = argparse.ArgumentParser(
@@ -80,10 +86,21 @@ parser.add_argument(
     type=int,
     help="Random state for train/test split",
 )
+parser.add_argument(
+    "--wandb_mode",
+    type=str,
+    choices=["online", "offline", "disabled"],
+    default="disabled",
+    help="Mode for Weights & Biases logging",
+)
 args = parser.parse_args()
 
 if args.target_all and args.target_col_name is not None:
     parser.error("--target_all cannot be used with --target_col_name")
+elif not args.target_all and args.target_col_name is None:
+    parser.error(
+        "--target_col_name must be specified if --target_all is not used"
+    )
 
 # set run name with current timestamp and update output model directory
 run_name = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
@@ -103,6 +120,20 @@ with open(args.hyperparameter_json, "r") as f:
 # load training parameters from JSON file
 with open(args.train_parameters_json, "r") as f:
     train_params = json.load(f)
+
+# initialize Weights & Biases
+wandb.init(
+    entity=config.WANDB_ENTITY,
+    project=config.WANDB_PROJECT,
+    name=run_name,
+    config={
+        "model_type": args.model_type,
+        "train_script_params": vars(args),
+        "model_hyperparams": hyperparams,
+        "train_params": train_params,
+    },
+    mode=args.wandb_mode,
+)
 
 # load the processed dataset
 print("Loading processed dataset...")
@@ -156,14 +187,31 @@ for target_col in target_cols:
     # create DMatrix for training set
     dtrain = xgb.DMatrix(X_train, label=y_train)
 
+    # add callback to log metrics to Weights & Biases
+    callbacks = [WandbCallback(log_model=True)]
+
     # train the model
-    model = xgb.train(hyperparams, dtrain, evals=evals, **train_params)
+    model = xgb.train(
+        hyperparams,
+        dtrain,
+        evals=evals,
+        callbacks=callbacks,
+        **train_params,
+    )
 
     # evaluate the model on the test set
-    dtest = xgb.DMatrix(X_test, label=y_test)
-    print(model.eval(dtest, name="test"))
+    dtest = xgb.DMatrix(X_test)
+    y_pred = model.predict(dtest)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    print(f"test-rmse: {rmse}")
+
+    # log evaluation metric to Weights & Biases
+    wandb.log({"test-rmse": rmse})
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
+
+    # finish the Weights & Biases run
+    wandb.finish()

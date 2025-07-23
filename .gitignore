@@ -213,3 +213,6 @@ data
 
 # ignore model files
 models/run_*
+
+# ignore wandb files
+wandb/

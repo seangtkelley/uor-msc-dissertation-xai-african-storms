@@ -106,3 +106,7 @@ FEATURE_COL_NAMES = [
 TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
+
+# Weights & Biases configuration
+WANDB_ENTITY = "uor-msc"
+WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"
