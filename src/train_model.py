@@ -200,10 +200,14 @@ for target_col in target_cols:
 
     # evaluate the model on the test set
     dtest = xgb.DMatrix(X_test, label=y_test)
-    eval_res = model.eval(dtest, name="test").split(":")
-    print(eval_res)
-    eval_res[0] = eval_res[0].split("[0]\t")[-1]
-    wandb.log({eval_res[0]: float(eval_res[1])})
+    eval_str = model.eval(dtest, name="test")
+    print(eval_str)
+
+    # log evaluation metric to Weights & Biases
+    eval_metric, eval_value = eval_str.split(":")
+    eval_metric = eval_metric.split("[0]\t")[-1]
+    eval_value = float(eval_value)
+    wandb.log({eval_metric: eval_value})
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
