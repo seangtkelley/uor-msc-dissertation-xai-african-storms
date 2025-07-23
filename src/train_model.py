@@ -88,7 +88,7 @@ parser.add_argument(
     "--use_wandb",
     action="store_true",
     help="Use Weights & Biases for experiment tracking",
-    default=True,
+    default=False,
 )
 args = parser.parse_args()
 
@@ -122,9 +122,11 @@ if args.use_wandb:
     wandb.init(
         entity="uor-msc",
         project="uor-msc-dissertation-xai-african-storms",
+        name=run_name,
         config={
             "model_type": args.model_type,
-            "hyperparams": hyperparams,
+            "train_script_params": vars(args),
+            "model_hyperparams": hyperparams,
             "train_params": train_params,
         },
     )
