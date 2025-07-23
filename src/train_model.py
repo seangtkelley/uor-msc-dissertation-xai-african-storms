@@ -200,9 +200,17 @@ for target_col in target_cols:
 
     # evaluate the model on the test set
     dtest = xgb.DMatrix(X_test, label=y_test)
-    print(model.eval(dtest, name="test"))
+    eval_res = model.eval(dtest, name="test").split(":")
+    print(eval_res)
+    if args.use_wandb:
+        eval_res[0] = eval_res[0].split("[0]\t")[-1]
+        wandb.log({eval_res[0]: float(eval_res[1])})
 
     # save the model
     model_path = output_model_dir / f"{target_col}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
+
+    if args.use_wandb:
+        wandb.log_artifact(model_path, type="model", name=f"{target_col}_model")
+        wandb.finish()
