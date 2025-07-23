@@ -20,6 +20,7 @@ import pandas as pd
 import xgboost as xgb
 from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
+from wandb.integration.xgboost import WandbCallback
 
 import config
 import wandb
@@ -183,8 +184,19 @@ for target_col in target_cols:
     # create DMatrix for training set
     dtrain = xgb.DMatrix(X_train, label=y_train)
 
+    # if args.use_wandb, add callback to log metrics to Weights & Biases
+    callbacks = []
+    if args.use_wandb:
+        callbacks.append(WandbCallback(log_model=True))
+
     # train the model
-    model = xgb.train(hyperparams, dtrain, evals=evals, **train_params)
+    model = xgb.train(
+        hyperparams,
+        dtrain,
+        evals=evals,
+        callbacks=callbacks,
+        **train_params,
+    )
 
     # evaluate the model on the test set
     dtest = xgb.DMatrix(X_test, label=y_test)
