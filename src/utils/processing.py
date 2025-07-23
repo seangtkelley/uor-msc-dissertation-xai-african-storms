@@ -206,7 +206,7 @@ def calc_temporal_rate_of_change(
 
     :param processed_df: DataFrame containing storm data.
     :param col_name: Name of the column to calculate the rate of change for.
-    :param time_interval: Time interval over which to smooth the rate of change.
+    :param time_interval: Time interval over which to smooth the rate of change. If None, no smoothing is applied.
     :param new_col_name: Optional name for the new column to store the rate of change.
                          If None, defaults to "d{col_name}_dt".
     :return: A DataFrame with the calculated rate of change added as a new column.
