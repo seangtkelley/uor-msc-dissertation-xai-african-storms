@@ -26,8 +26,10 @@ RAW_STORM_DB_PATH = (
 )
 PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
 
-HYPERPARAMETER_JSON_PATH = SRC_DIR / "json_config" / "hyperparameters.json"
-TRAIN_PARAMETERS_JSON_PATH = SRC_DIR / "json_config" / "train_parameters.json"
+HYPERPARAMETER_JSON_PATH = SRC_DIR / "training_config" / "hyperparameters.json"
+TRAIN_PARAMETERS_JSON_PATH = (
+    SRC_DIR / "training_config" / "train_parameters.json"
+)
 
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
