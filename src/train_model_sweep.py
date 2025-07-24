@@ -189,3 +189,9 @@ for target_col in target_cols:
 
     # run the sweep
     wandb.agent(sweep_id=sweep_id, function=lambda: train_model(target_col))
+
+    # upload the best overall model for the sweep
+    wandb.save(str(output_model_dir / f"{target_col}_best_model.json"))
+
+    # finish the W&B run
+    wandb.finish()
