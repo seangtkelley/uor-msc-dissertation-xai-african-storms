@@ -112,3 +112,46 @@ DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 # Weights & Biases configuration
 WANDB_ENTITY = "uor-msc"
 WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"
+
+CV_PARAMS = {
+    "n_splits": 5,
+    "shuffle": True,
+}
+
+XGB_EARLY_STOPPING_PARAMS = {
+    "rounds": 10,
+    "metric_name": "rmse",
+    "data_name": "validation_0",  # first validation set passed to fit function
+    "maximize": False,
+    "save_best": True,
+}
+
+# matching param config from https://github.com/kieranmrhunt/lps-xgboost/blob/main/testing-and-file-preparation/xgboost-bayesian-tuning.py
+WANDB_SWEEP_CONFIG = {
+    "method": "bayes",
+    "metric": {
+        "name": "val-rmse",
+        "goal": "minimize",
+    },
+    "parameters": {
+        "gamma": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 5,
+        },
+        "alpha": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 20,
+        },
+        "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
+        "max_depth": {"values": [6]},
+        "n_estimators": {"values": [120]},
+    },
+    "early_terminate": {
+        "type": "hyperband",
+        "min_iter": 10,
+        "max_iter": 250,
+        "reduction_factor": 3,
+    },
+}
