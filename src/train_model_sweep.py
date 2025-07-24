@@ -95,8 +95,6 @@ def train_model(target_col: str):
     """
     # initialize Weights & Biases
     wandb.init(
-        entity=config.WANDB_ENTITY,
-        project=config.WANDB_PROJECT,
         name=run_name,
         config={
             "model_type": args.model_type,
