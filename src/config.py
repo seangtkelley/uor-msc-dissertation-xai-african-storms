@@ -150,8 +150,8 @@ WANDB_SWEEP_CONFIG = {
     },
     "early_terminate": {
         "type": "hyperband",
-        "min_iter": 10,
-        "max_iter": 250,
-        "reduction_factor": 3,
+        "max_iter": 20,
+        "eta": 3,
+        "s": 1,
     },
 }
