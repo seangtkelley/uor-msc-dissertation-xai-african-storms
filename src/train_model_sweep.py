@@ -171,6 +171,9 @@ def train_model(target_col: str):
         best_cv_model.save_model(str(model_path))
         print(f"Model saved to {model_path}")
 
+        # upload the best overall model to W&B
+        wandb.save(str(model_path))
+
 
 target_cols: List[str] = (
     config.TARGET_COL_NAMES if args.target_all else [args.target_col_name]
@@ -189,9 +192,3 @@ for target_col in target_cols:
 
     # run the sweep
     wandb.agent(sweep_id=sweep_id, function=lambda: train_model(target_col))
-
-    # upload the best overall model for the sweep
-    wandb.save(str(output_model_dir / f"{target_col}_best_model.json"))
-
-    # finish the W&B run
-    wandb.finish()
