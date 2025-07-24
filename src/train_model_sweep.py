@@ -6,7 +6,7 @@ __author__ = "Sean Kelley"
 __version__ = "0.1.0"
 
 import argparse
-import json
+import uuid
 from pathlib import Path
 from typing import List
 
@@ -73,10 +73,10 @@ elif not args.target_all and args.target_col_name is None:
     )
 
 # set run name with current timestamp and update output model directory
-run_name = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
-output_model_dir = Path("./models") / run_name
+run_name_base = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
+output_model_dir = Path("./models") / run_name_base
 if args.output_model_dir is not None:
-    output_model_dir = Path(args.output_model_dir) / run_name
+    output_model_dir = Path(args.output_model_dir) / run_name_base
 output_model_dir.mkdir(parents=True, exist_ok=True)
 
 # load the processed dataset
@@ -94,6 +94,8 @@ def train_model(target_col: str):
     Train an XGBoost model on the processed dataset for a specific target column.
     """
     # initialize Weights & Biases
+    short_guid = uuid.uuid4().hex[:8]
+    run_name = f"{run_name_base}_{target_col}_{short_guid}"
     wandb.init(
         name=run_name,
         config={
