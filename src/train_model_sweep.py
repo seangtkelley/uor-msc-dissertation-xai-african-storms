@@ -61,7 +61,13 @@ parser.add_argument(
     type=str,
     choices=["online", "offline", "disabled"],
     default="disabled",
-    help="Mode for Weights & Biases logging",
+    help="Mode for W&B logging",
+)
+parser.add_argument(
+    "--wandb_sweep_count",
+    type=int,
+    default=config.WANDB_DEFAULT_SWEEP_COUNT,
+    help="Number of runs for the W&B sweep",
 )
 args = parser.parse_args()
 
@@ -191,4 +197,8 @@ for target_col in target_cols:
     )
 
     # run the sweep
-    wandb.agent(sweep_id=sweep_id, function=lambda: train_model(target_col))
+    wandb.agent(
+        sweep_id=sweep_id,
+        function=lambda: train_model(target_col),
+        count=args.wandb_sweep_count,
+    )

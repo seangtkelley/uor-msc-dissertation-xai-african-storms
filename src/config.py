@@ -155,3 +155,5 @@ WANDB_SWEEP_CONFIG = {
         "s": 1,
     },
 }
+
+WANDB_DEFAULT_SWEEP_COUNT = 15
