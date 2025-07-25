@@ -91,9 +91,6 @@ processed_df = pd.read_csv(
     config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"]
 )
 
-# initialize best overall score
-best_overall_score = float("inf")
-
 
 def train_model(target_col: str):
     """
@@ -163,22 +160,14 @@ def train_model(target_col: str):
     # log the best score across all cv folds to W&B for the sweep
     wandb.log({"val-rmse": best_cv_score})
 
-    # save the model if beats the current best overall score
-    global best_overall_score
-    if best_cv_score < best_overall_score:
-        print(
-            f"New best model found for {target_col} with val-rmse: {best_cv_score}"
-        )
-        best_overall_score = best_cv_score
+    # save the model to the output directory
+    global output_model_dir
+    model_path = output_model_dir / f"{run_name}_model.json"
+    best_cv_model.save_model(str(model_path))
+    print(f"Model saved to {model_path}")
 
-        # save the model to the output directory
-        global output_model_dir
-        model_path = output_model_dir / f"{target_col}_best_model.json"
-        best_cv_model.save_model(str(model_path))
-        print(f"Model saved to {model_path}")
-
-        # upload the best overall model to W&B
-        wandb.save(str(model_path))
+    # upload the model to W&B
+    wandb.save(str(model_path))
 
 
 target_cols: List[str] = (
