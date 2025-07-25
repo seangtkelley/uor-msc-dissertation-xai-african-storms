@@ -109,6 +109,16 @@ TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
+XGB_HYPERPARAMS = {
+    "objective": "reg:squarederror",
+    "colsample_bytree": 0.3,
+    "learning_rate": 0.25,
+    "max_depth": 6,
+    "alpha": 10,
+    "gamma": 0,
+    "n_estimators": 120,
+}
+
 # Weights & Biases configuration
 WANDB_ENTITY = "uor-msc"
 WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"

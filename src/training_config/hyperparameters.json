@@ -1,8 +1,0 @@
-{
-    "objective": "reg:squarederror",
-    "colsample_bytree": 0.3,
-    "learning_rate": 0.25,
-    "max_depth": 6,
-    "alpha": 10,
-    "gamma": 0
-}
