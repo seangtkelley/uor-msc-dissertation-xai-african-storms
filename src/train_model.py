@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-import xgboost as xgb
 from dotenv import load_dotenv
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
