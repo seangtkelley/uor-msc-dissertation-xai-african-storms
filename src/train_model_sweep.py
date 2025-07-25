@@ -98,15 +98,8 @@ def train_model(target_col: str):
     """
     # initialize Weights & Biases
     short_guid = uuid.uuid4().hex[:8]
-    run_name = f"{run_name_base}_{target_col}_{short_guid}"
-    wandb.init(
-        name=run_name,
-        config={
-            "model_type": args.model_type,
-            "train_script_params": vars(args),
-        },
-        mode=args.wandb_mode,
-    )
+    run_name = f"{run_name_base}_{short_guid}_{target_col}"
+    wandb.init(name=run_name, mode=args.wandb_mode)
 
     # extract XGBoost hyperparameters
     hyperparams = {

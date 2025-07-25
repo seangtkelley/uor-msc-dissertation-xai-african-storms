@@ -113,12 +113,6 @@ wandb.init(
     entity=config.WANDB_ENTITY,
     project=config.WANDB_PROJECT,
     name=run_name,
-    config={
-        "model_type": args.model_type,
-        "train_script_params": vars(args),
-        "model_hyperparams": hyperparams,
-        "train_params": train_params,
-    },
     mode=args.wandb_mode,
 )
 
