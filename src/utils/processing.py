@@ -371,6 +371,7 @@ def calc_spatiotemporal_mean_at_point(
     return np.mean(var_over_grid)
 
 
+# TODO: create a param for mask where the variable is NaN (ex: land mask)
 def calc_spatiotemporal_mean(
     processed_df: pd.DataFrame,
     filename_prefix: str,
@@ -385,7 +386,17 @@ def calc_spatiotemporal_mean(
     Calculate the spatial mean of a specified variable from an xarray dataset
     for each storm in the DataFrame.
 
-
+    :param processed_df: DataFrame containing storm data. Must include 'timestamp', 'lon', and 'lat' columns.
+    :param filename_prefix: Prefix for the dataset filenames to load.
+    :param variable_name: Name of the variable in the dataset to calculate the spatial mean for
+    :param new_col_name: Name of the new column to store the spatial mean values.
+    :param radius_km: Radius in kilometers for the spatial mean calculation.
+    :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param unit_conv_func: Optional function to convert the units of the spatial mean values
+                          (e.g., from Kelvin to Celsius).
+    :return: DataFrame with the new column containing the spatial mean values.
+    :rtype: pd.DataFrame
     """
     # init the new column for the spatial mean
     processed_df[new_col_name] = np.nan
@@ -393,11 +404,11 @@ def calc_spatiotemporal_mean(
     # group storm data by year
     grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
 
-    # for each year, calculate the spatial mean precipitation
+    # for each year, calculate the spatial mean
     for year, group in grouped:
         print(f"Processing year: {year}")
 
-        # load the precipitation dataset for the year
+        # load the dataset for the year
         dataset = xr.open_dataset(
             config.DATA_DIR / "std" / f"{filename_prefix}{year}.nc"
         )
