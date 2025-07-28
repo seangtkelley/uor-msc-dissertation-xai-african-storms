@@ -113,6 +113,7 @@ XGB_HYPERPARAMS = {
     "alpha": 10,
     "gamma": 0,
     "n_estimators": 120,
+    "random_state": None,
 }
 
 # Weights & Biases configuration
@@ -153,6 +154,7 @@ WANDB_SWEEP_CONFIG = {
         "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
         "max_depth": {"values": [6]},
         "n_estimators": {"values": [120]},
+        "random_state": {"values": [None]},
     },
     "early_terminate": {
         "type": "hyperband",

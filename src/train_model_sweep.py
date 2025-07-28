@@ -52,11 +52,6 @@ parser.add_argument(
     default=False,
 )
 parser.add_argument(
-    "--random_state",
-    type=int,
-    help="Random state for train/test split",
-)
-parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
@@ -83,7 +78,17 @@ run_name_base = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
 output_model_dir = Path("./models") / run_name_base
 if args.output_model_dir is not None:
     output_model_dir = Path(args.output_model_dir) / run_name_base
+
+# ensure output model path exists
 output_model_dir.mkdir(parents=True, exist_ok=True)
+
+random_state = None
+if args.model_type == "xgboost":
+    # model specific code goes here
+    # hyperparams are controlled by W&B sweep in this script
+    pass
+else:
+    raise ValueError(f"Unsupported model type: {args.model_type}")
 
 # load the processed dataset
 print("Loading processed dataset...")
@@ -101,14 +106,8 @@ def train_model(target_col: str, output_model_dir: Path = output_model_dir):
     run_name = f"{run_name_base}_{short_guid}_{target_col}"
     wandb.init(name=run_name, mode=args.wandb_mode)
 
-    # extract XGBoost hyperparameters
-    hyperparams = {
-        "max_depth": wandb.config.get("max_depth", 6),
-        "learning_rate": wandb.config.get("learning_rate", 0.1),
-        "n_estimators": wandb.config.get("n_estimators", 100),
-        "subsample": wandb.config.get("subsample", 1.0),
-        "random_state": args.random_state,
-    }
+    # get random state from W&B config
+    random_state = wandb.config.get("random_state", None)
 
     # Separate features and target variable
     feature_cols = config.FEATURE_COL_NAMES.copy()
@@ -117,10 +116,7 @@ def train_model(target_col: str, output_model_dir: Path = output_model_dir):
     y = processed_df[target_col]
 
     # Cross-validation setup
-    kfold = KFold(
-        **config.CV_PARAMS,
-        random_state=args.random_state,
-    )
+    kfold = KFold(**config.CV_PARAMS, random_state=random_state)
     cv_scores = []
     cv_models = []
 
@@ -137,7 +133,7 @@ def train_model(target_col: str, output_model_dir: Path = output_model_dir):
         ]
 
         # init the model
-        model = XGBRegressor(**hyperparams, callbacks=callbacks)
+        model = XGBRegressor(**wandb.config.as_dict(), callbacks=callbacks)
 
         # train the model
         model.fit(X_train, y_train, eval_set=[(X_val, y_val)])

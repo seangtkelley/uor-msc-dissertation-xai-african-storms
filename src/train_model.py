@@ -70,11 +70,6 @@ parser.add_argument(
     help="Proportion of the training set to include in the validation split",
 )
 parser.add_argument(
-    "--random_state",
-    type=int,
-    help="Random state for train/test split",
-)
-parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
@@ -102,8 +97,11 @@ else:
 output_model_dir.mkdir(parents=True, exist_ok=True)
 
 # set hyperparameters for the model
+random_state = None
 if args.model_type == "xgboost":
+    # load hyperparameters from config
     hyperparams = config.XGB_HYPERPARAMS.copy()
+    random_state = hyperparams.get("random_state", None)
 else:
     raise ValueError(f"Unsupported model type: {args.model_type}")
 
@@ -137,7 +135,7 @@ for target_col in target_cols:
 
     # train/test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=args.test_size, random_state=args.random_state
+        X, y, test_size=args.test_size, random_state=random_state
     )
 
     # train/val split
@@ -150,7 +148,7 @@ for target_col in target_cols:
     # source: https://datascience.stackexchange.com/a/15136
     val_size = args.val_size / (1 - args.test_size)
     X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=val_size, random_state=args.random_state
+        X_train, y_train, test_size=val_size, random_state=random_state
     )
 
     # add callback to log metrics to Weights & Biases
