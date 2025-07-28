@@ -141,7 +141,7 @@ for target_col in target_cols:
     )
 
     # train/val split
-    if args.val_size is None or args.val_size <= 0 or args.val_size >= 1:
+    if args.val_size <= 0 or args.val_size >= 1:
         raise ValueError(
             "val_size must be between 0 and 1 (exclusive) for early stopping"
         )
