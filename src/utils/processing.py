@@ -88,7 +88,7 @@ def get_orography_features(
     """
     Calculate orography features for the dataset.
 
-    :param processed_df: DataFrame containing storm data with 'x' and 'y' columns for longitude and latitude.
+    :param processed_df: DataFrame containing storm data
     :param geop: Geopotential dataset containing 'geop' variable.
     :param height: Height calculated from geopotential data.
     :param anor: Dataset containing subgrid orography angle data.
@@ -115,6 +115,54 @@ def get_orography_features(
     # perform batch indexing for subgrid orography angle (anor)
     closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
     processed_df["anor"] = closest_anor["anor"].values.squeeze()
+
+    return processed_df
+
+
+def calc_over_land_features(
+    processed_df: pd.DataFrame,
+    lsm: xr.Dataset,
+) -> pd.DataFrame:
+    """
+    Calculate over land features for the dataset.
+    :param processed_df: DataFrame containing storm data with 'lon' and 'lat' columns.
+    :param lsm: Land-sea mask dataset containing 'lsm' variable.
+    :return: DataFrame with additional columns for over land status and accumulated land time.
+    :rtype: pd.DataFrame
+    """
+    # extract longitude and latitude arrays
+    # source: https://stackoverflow.com/questions/40544846/read-multiple-coordinates-with-xarray#62784295
+    lons = xr.DataArray(processed_df["lon"].to_numpy())
+    lats = xr.DataArray(processed_df["lat"].to_numpy())
+
+    # perform batch indexing for land-sea mask
+    closest_lsm = lsm.sel(longitude=lons, latitude=lats, method="nearest").isel(
+        valid_time=0
+    )
+    # add over land status to the DataFrame and convert to boolean (True for land, False for sea)
+    processed_df["over_land"] = (
+        closest_lsm["lsm"].values.squeeze().round().astype(bool)
+    )
+
+    # calculate accumulated land time
+    processed_df["acc_land_time"] = (
+        # find the difference in seconds between consecutive timestamps in a storm
+        processed_df.groupby("storm_id")["timestamp"]
+        .diff()
+        .dt.total_seconds()
+        .fillna(0)
+        # multiply by over_land to only count time when over land
+        * processed_df["over_land"]
+    )
+    # cumulative sum in hours
+    processed_df["acc_land_time"] = (
+        processed_df.groupby("storm_id")["acc_land_time"].cumsum() / 3600
+    )
+
+    # calculate storm total land time
+    processed_df["storm_total_land_time"] = processed_df.groupby("storm_id")[
+        "acc_land_time"
+    ].transform("max")
 
     return processed_df
 
