@@ -155,7 +155,7 @@ def train_model(target_col: str, output_model_dir: Path = output_model_dir):
     print(f"Model saved to {model_path}")
 
     # upload the model to W&B
-    wandb.save(str(model_path))
+    wandb.save(str(model_path), base_path=args.output_model_dir)
 
 
 target_cols: List[str] = (
