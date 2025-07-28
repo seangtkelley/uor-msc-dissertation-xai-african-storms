@@ -11,7 +11,7 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -287,7 +287,7 @@ def calc_temporal_rate_of_change(
     return processed_df
 
 
-def calc_spatiotemporal_mean(
+def calc_spatiotemporal_mean_at_point(
     timestamp: pd.Timestamp,
     lon: float,
     lat: float,
@@ -369,6 +369,67 @@ def calc_spatiotemporal_mean(
 
     # return the mean over all the grid cells
     return np.mean(var_over_grid)
+
+
+def calc_spatiotemporal_mean(
+    processed_df: pd.DataFrame,
+    filename_prefix: str,
+    variable_name: str,
+    new_col_name: str,
+    radius_km: float = 400,
+    time_hrs: int = 6,
+    invariant: bool = False,
+    unit_conv_func: Optional[Callable] = None,
+) -> pd.DataFrame:
+    """
+    Calculate the spatial mean of a specified variable from an xarray dataset
+    for each storm in the DataFrame.
+
+
+    """
+    # init the new column for the spatial mean
+    processed_df[new_col_name] = np.nan
+
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # for each year, calculate the spatial mean precipitation
+    for year, group in grouped:
+        print(f"Processing year: {year}")
+
+        # load the precipitation dataset for the year
+        dataset = xr.open_dataset(
+            config.DATA_DIR / "std" / f"{filename_prefix}{year}.nc"
+        )
+
+        # calculate the spatial mean at each point
+        processed_df.loc[group.index, new_col_name] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_mean_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                dataset,
+                variable_name,
+                radius_km=radius_km,
+                time_hrs=time_hrs,
+                invariant=invariant,
+            ),
+            axis=1,
+        )
+
+        # clear the dataset from memory
+        dataset.close()
+
+    # fill any remaining NaN values with 0
+    processed_df[new_col_name] = processed_df[new_col_name].fillna(0.0)
+
+    # apply the unit conversion function if provided
+    if unit_conv_func is not None:
+        processed_df[new_col_name] = processed_df[new_col_name].apply(
+            unit_conv_func
+        )
+
+    return processed_df
 
 
 def interpolate_storm_to_n_points(group, n_points=10):

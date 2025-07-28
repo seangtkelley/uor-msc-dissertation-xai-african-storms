@@ -136,7 +136,7 @@ if (
     # calculate the land fraction
     processed_df["mean_land_frac"] = np.nan
     processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
-        lambda row: processing.calc_spatiotemporal_mean(
+        lambda row: processing.calc_spatiotemporal_mean_at_point(
             row["timestamp"], row["lon"], row["lat"], lsm, "lsm", invariant=True
         ),
         axis=1,
@@ -204,36 +204,27 @@ if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
 if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
     print("Calculating mean precipitation...")
 
-    processed_df["mean_prcp_400"] = np.nan
+    processing.calc_spatiotemporal_mean(
+        processed_df,
+        "prcp_tot_",
+        "prcp",
+        "mean_prcp_400",
+        unit_conv_func=lambda x: x * 1000.0,
+    )
 
-    # group storm data by year
-    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+if args.recalc_all or "mean_skt" not in processed_df.columns:
+    print("Calculating mean surface temperature...")
 
-    # for each year, calculate the spatial mean precipitation
-    for year, group in grouped:
-        print(f"Processing year: {year}")
+    processing.calc_spatiotemporal_mean(
+        processed_df, "skt_sfc_", "skt", "mean_skt"
+    )
 
-        # load the precipitation dataset for the year
-        precip = xr.open_dataset(
-            config.DATA_DIR / "std" / f"prcp_tot_{year}.nc"
-        )
+if args.recalc_all or "mean_sst" not in processed_df.columns:
+    print("Calculating mean sea surface temperature...")
 
-        processed_df.loc[group.index, "mean_prcp_400"] = group.parallel_apply(  # type: ignore
-            lambda row: processing.calc_spatiotemporal_mean(
-                row["timestamp"], row["lon"], row["lat"], precip, "prcp"
-            ),
-            axis=1,
-        )
-
-        # clear the dataset from memory
-        precip.close()
-
-    # fill any remaining NaN values with 0
-    processed_df["mean_prcp_400"] = processed_df["mean_prcp_400"].fillna(0.0)
-
-    # multiply by 1000 to convert from m to mm
-    processed_df["mean_prcp_400"] *= 1000.0
-
+    processing.calc_spatiotemporal_mean(
+        processed_df, "sst_sfc_", "sst", "mean_sst"
+    )
 
 # select only the columns that are in the config
 processed_df = processed_df[
