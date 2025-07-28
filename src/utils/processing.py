@@ -125,7 +125,11 @@ def calc_over_land_features(
 ) -> pd.DataFrame:
     """
     Calculate over land features for the dataset.
-    :param processed_df: DataFrame containing storm data with 'lon' and 'lat' columns.
+    :param processed_df: DataFrame containing storm data. Must include the following columns:
+        - 'lon': Longitude values.
+        - 'lat': Latitude values.
+        - 'storm_id': Unique identifier for each storm, used for grouping operations.
+        - 'timestamp': Timestamps for each observation, used for time-based calculations.
     :param lsm: Land-sea mask dataset containing 'lsm' variable.
     :return: DataFrame with additional columns for over land status and accumulated land time.
     :rtype: pd.DataFrame
