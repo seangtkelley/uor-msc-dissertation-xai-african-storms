@@ -88,7 +88,7 @@ def get_orography_features(
     """
     Calculate orography features for the dataset.
 
-    :param processed_df: DataFrame containing storm data with 'x' and 'y' columns for longitude and latitude.
+    :param processed_df: DataFrame containing storm data. Must include 'lon' and 'lat' columns representing longitude and latitude, respectively.
     :param geop: Geopotential dataset containing 'geop' variable.
     :param height: Height calculated from geopotential data.
     :param anor: Dataset containing subgrid orography angle data.
@@ -115,6 +115,56 @@ def get_orography_features(
     # perform batch indexing for subgrid orography angle (anor)
     closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
     processed_df["anor"] = closest_anor["anor"].values.squeeze()
+
+    return processed_df
+
+
+def calc_over_land_features(
+    processed_df: pd.DataFrame,
+    lsm: xr.Dataset,
+) -> pd.DataFrame:
+    """
+    Calculate over land features for the dataset.
+    :param processed_df: DataFrame containing storm data. Must include the following columns:
+        - 'lon': Longitude values.
+        - 'lat': Latitude values.
+        - 'storm_id': Unique identifier for each storm, used for grouping operations.
+        - 'timestamp': Timestamps for each observation, used for time-based calculations.
+    :param lsm: Land-sea mask dataset containing 'lsm' variable.
+    :return: DataFrame with additional columns for over land status and accumulated land time.
+    :rtype: pd.DataFrame
+    """
+    # extract longitude and latitude arrays
+    # source: https://stackoverflow.com/questions/40544846/read-multiple-coordinates-with-xarray#62784295
+    lons = xr.DataArray(processed_df["lon"].to_numpy())
+    lats = xr.DataArray(processed_df["lat"].to_numpy())
+
+    # perform batch indexing for land-sea mask
+    closest_lsm = lsm.sel(longitude=lons, latitude=lats, method="nearest").isel(
+        valid_time=0
+    )
+    # add over land status to the DataFrame and convert to boolean (True for land, False for sea)
+    processed_df["over_land"] = closest_lsm["lsm"].values.squeeze().astype(bool)
+
+    # calculate accumulated land time
+    processed_df["acc_land_time"] = (
+        # find the difference in seconds between consecutive timestamps in a storm
+        processed_df.groupby("storm_id")["timestamp"]
+        .diff()
+        .dt.total_seconds()
+        .fillna(0)
+        # multiply by over_land to only count time when over land
+        * processed_df["over_land"]
+    )
+    # cumulative sum in hours
+    processed_df["acc_land_time"] = (
+        processed_df.groupby("storm_id")["acc_land_time"].cumsum() / 3600
+    )
+
+    # calculate storm total land time
+    processed_df["storm_total_land_time"] = processed_df.groupby("storm_id")[
+        "acc_land_time"
+    ].transform("max")
 
     return processed_df
 
@@ -245,6 +295,7 @@ def calc_spatiotemporal_mean(
     variable_name: str,
     radius_km: float = 400,
     time_hrs: int = 6,
+    invariant: bool = False,
 ) -> np.floating:
     """
     Calculate the spatial mean of a specified variable from an xarray dataset
@@ -257,6 +308,7 @@ def calc_spatiotemporal_mean(
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for.
     :param radius_km: Radius in kilometers for the spatial mean calculation.
     :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :param invariant: If True, the variable is invariant in time (e.g., static data).
     :return: Spatial mean of the specified variable within the radius.
     :rtype: float
     """
@@ -296,18 +348,24 @@ def calc_spatiotemporal_mean(
     lat_end = min(len(dataset_lats), lat_idx + area_height_cells + 1)
 
     # extract the relevant grid cells
-    var_over_grid = (
-        dataset.isel(
-            longitude=slice(lon_start, lon_end),
-            latitude=slice(lat_start, lat_end),
-        )
-        .sel(
+    var_over_grid = dataset.isel(
+        longitude=slice(lon_start, lon_end),
+        latitude=slice(lat_start, lat_end),
+    )
+
+    # if invariant, take the first time step
+    if invariant:
+        var_over_grid = var_over_grid.isel(valid_time=0)
+    else:
+        # otherwise, select the time range around the storm's timestamp
+        var_over_grid = var_over_grid.sel(
             valid_time=slice(
                 timestamp, timestamp + pd.Timedelta(hours=time_hrs)
             )
-        )[variable_name]
-        .values
-    )
+        )
+
+    # get variable values over the grid cells
+    var_over_grid = var_over_grid[variable_name].values
 
     # return the mean over all the grid cells
     return np.mean(var_over_grid)

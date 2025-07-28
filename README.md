@@ -85,43 +85,49 @@ Recommended for complete python environment isolation.
 | `uwnd_*_*.nc` | Zonal wind at 200, 500 and 850 hPa | - |
 | `vwnd_*_*.nc` | Meridional wind at 200, 500 and 850 hPa | - |
 
-## Predictors
+## Feature Description
 
-| Variable name | Description | Units |
-|--------------|-------------|-------------|
-| `eat_hours` | Time step hour of day | EAT (UTC +3) |
-| `lon` | Longitude of LPS centre | ° E |
-| `lat` | Latitude of LPS centre | ° N |
-| `orography_height` | Elevation of land surface under centre | m |
-| `anor` | Angle of sub-gridscale orography | radians |
-| `zonal_speed` | $x$-component of LPS propagation vector | km/hr |
-| `meridional_speed` | $y$-component of LPS propagation vector | km/hr |
-| `area` | Area of the storm | km² |
-| `distance_from_prev` | Distance traversed from previous point | km |
-| `distance_traversed` | Cumulative sum of `distance_from_prev` | km |
-| `bearing_from_prev` | Compass bearing from previous point | ° |
-| `min_bt` | Minimum cloudtop brightness within storm area | K |
-| `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr |
-| `mean_bt` | Mean cloudtop brightness within storm area | K |
-| `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr |
-| `storm_max_area` | Max value of `area` over storm | km² |
-| `storm_straight_line_distance` | Distance from first to last point of storm | km |
-| `storm_bearing` | Compass bearing from first to last point of storm | ° |
-| `storm_distance_traversed` | Total cumulative distance traversed by storm | km |
-| `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K |
-| `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean |
-| `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 |
-| `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - |
+Notes:
+- The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
+- All variables with the `storm_` prefix are valid over the entire storm lifetime, while the others are valid only for the current time step.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre.
+
+| Variable name | Description | Units | Predictor? | Predictand? |
+|--------------|-------------|-------------|-------------|-------------|
+| `storm_id` | Unique identifier for each storm | - | No | No |
+| `timestamp` | Time of the storm centre | UTC | No | No |
+| `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
+| `storm_total_duration` | Total duration of storm | hr | Yes | **Yes** |
+| `lon` | Longitude of LPS centre | ° E | Yes | No |
+| `lat` | Latitude of LPS centre | ° N | Yes | No |
+| `orography_height` | Elevation of land surface under centre | m | Yes | No |
+| `anor` | Angle of sub-gridscale orography | radians | Yes | No |
+| `over_land` | Flag for LPS centre (True if storm centre is over land, else False) | boolean | Yes | No |
+| `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
+| `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
+| `mean_land_frac` | Fraction of area within 400 km that is over land | ratio | Yes | No |
+| `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
+| `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
+| `area` | Area of the storm | km² | Yes | No |
+| `storm_max_area` | Max value of `area` over storm | km² | Yes | No |
+| `bearing_from_prev` | Compass bearing from previous point | ° | Yes | No |
+| `distance_from_prev` | Distance traversed from previous point | km | Yes | No |
+| `distance_traversed` | Cumulative sum of `distance_from_prev` | km | Yes | No |
+| `storm_bearing` | Compass bearing from first to last point of storm | ° | Yes | No |
+| `storm_distance_traversed` | Total cumulative distance traversed by storm | km | Yes | No |
+| `storm_straight_line_distance` | Distance from first to last point of storm | km | Yes | No |
+| `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr | Yes | **Yes** |
+| `min_bt` | Minimum cloudtop brightness within storm area | K | Yes | No |
+| `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr | Yes | No |
+| `mean_bt` | Mean cloudtop brightness within storm area | K | Yes | No |
+| `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr | Yes | No |
+| `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K | Yes | **Yes** |
+| `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean | Yes | No |
+| `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 | Yes | No |
+| `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - | Yes | No |
 <!--
 | mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
 | mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
 | ushear_850 | Meridional shear of 850 hPa zonal wind over India | m/s deg |
 -->
-
-## Predictands
-
-| Variable name | Description | Units |
-|--------------|-------------|-------------|
-| `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr |
-| `storm_total_duration` | Total duration of storm | hr |

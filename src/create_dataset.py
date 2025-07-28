@@ -117,6 +117,33 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
 
 if (
     args.recalc_all
+    or "over_land" not in processed_df.columns
+    or "acc_land_time" not in processed_df.columns
+    or "storm_total_land_time" not in processed_df.columns
+    or "mean_land_frac" not in processed_df.columns
+):
+    print("Calculating land mask features...")
+
+    # load the land mask dataset
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+
+    # round the variable values to 0 or 1
+    lsm["lsm"] = lsm["lsm"].round()
+
+    # calculate over land features
+    processed_df = processing.calc_over_land_features(processed_df, lsm)
+
+    # calculate the land fraction
+    processed_df["mean_land_frac"] = np.nan
+    processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
+        lambda row: processing.calc_spatiotemporal_mean(
+            row["timestamp"], row["lon"], row["lat"], lsm, "lsm", invariant=True
+        ),
+        axis=1,
+    )
+
+if (
+    args.recalc_all
     or "distance_from_prev" not in processed_df.columns
     or "bearing_from_prev" not in processed_df.columns
     or "storm_straight_line_distance" not in processed_df.columns
