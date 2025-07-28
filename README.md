@@ -115,6 +115,8 @@ Notes:
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
 | `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio | Yes | No |
+| `mean_skt` | Surface temperature | K | Yes | No |
+| `mean_sst` | Sea surface temperature (NaN over land) | K | Yes | No |
 | `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
 | `area` | Area of the storm | km² | Yes | No |
@@ -125,7 +127,7 @@ Notes:
 | `storm_bearing` | Compass bearing from first to last point of storm | ° | Yes | No |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km | Yes | No |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km | Yes | No |
-| `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr | Yes | **Yes** |
+| `mean_prcp_400` | Mean precipitation over the next 6 hr | mm/hr | Yes | **Yes** |
 | `min_bt` | Minimum cloudtop brightness within storm area | K | Yes | No |
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr | Yes | No |
 | `mean_bt` | Mean cloudtop brightness within storm area | K | Yes | No |
