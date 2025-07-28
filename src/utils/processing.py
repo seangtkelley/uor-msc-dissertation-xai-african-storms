@@ -88,7 +88,7 @@ def get_orography_features(
     """
     Calculate orography features for the dataset.
 
-    :param processed_df: DataFrame containing storm data
+    :param processed_df: DataFrame containing storm data. Must include 'lon' and 'lat' columns representing longitude and latitude, respectively.
     :param geop: Geopotential dataset containing 'geop' variable.
     :param height: Height calculated from geopotential data.
     :param anor: Dataset containing subgrid orography angle data.
