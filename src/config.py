@@ -26,8 +26,6 @@ RAW_STORM_DB_PATH = (
 )
 PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
 
-HYPERPARAMETER_JSON_PATH = SRC_DIR / "json_config" / "hyperparameters.json"
-TRAIN_PARAMETERS_JSON_PATH = SRC_DIR / "json_config" / "train_parameters.json"
 
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
@@ -107,6 +105,63 @@ TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
+XGB_HYPERPARAMS = {
+    "objective": "reg:squarederror",
+    "colsample_bytree": 0.3,
+    "learning_rate": 0.25,
+    "max_depth": 6,
+    "alpha": 10,
+    "gamma": 0,
+    "n_estimators": 120,
+    "random_state": None,
+}
+
 # Weights & Biases configuration
 WANDB_ENTITY = "uor-msc"
 WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"
+
+CV_PARAMS = {
+    "n_splits": 5,
+    "shuffle": True,
+}
+
+XGB_EARLY_STOPPING_PARAMS = {
+    "rounds": 10,
+    "metric_name": "rmse",
+    "data_name": "validation_0",  # first validation set passed to fit function
+    "maximize": False,
+    "save_best": True,
+}
+
+# matching param config from https://github.com/kieranmrhunt/lps-xgboost/blob/main/testing-and-file-preparation/xgboost-bayesian-tuning.py
+WANDB_SWEEP_CONFIG = {
+    "method": "bayes",
+    "metric": {
+        "name": "val-rmse",
+        "goal": "minimize",
+    },
+    "parameters": {
+        "gamma": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 5,
+        },
+        "alpha": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 20,
+        },
+        "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
+        "max_depth": {"values": [6]},
+        "n_estimators": {"values": [120]},
+        "random_state": {"values": [None]},
+    },
+    "early_terminate": {
+        "type": "hyperband",
+        "max_iter": 20,
+        "eta": 3,
+        "s": 1,
+    },
+}
+
+WANDB_DEFAULT_SWEEP_COUNT = 15

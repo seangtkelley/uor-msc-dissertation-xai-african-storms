@@ -12,16 +12,16 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 import argparse
-import json
 from pathlib import Path
 from typing import List
 
 import pandas as pd
-import xgboost as xgb
 from dotenv import load_dotenv
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from wandb.integration.xgboost import WandbCallback
+from xgboost import XGBRegressor
+from xgboost.callback import EarlyStopping
 
 import config
 import wandb
@@ -38,18 +38,6 @@ parser.add_argument(
     choices=["xgboost"],
     default="xgboost",
     help="Type of model to train",
-)
-parser.add_argument(
-    "--hyperparameter_json",
-    type=str,
-    default=str(config.HYPERPARAMETER_JSON_PATH),
-    help="Path to JSON file containing hyperparameters for model training",
-)
-parser.add_argument(
-    "--train_parameters_json",
-    type=str,
-    default=str(config.TRAIN_PARAMETERS_JSON_PATH),
-    help="Path to JSON file containing training parameters for model training",
 )
 parser.add_argument(
     "--output_model_dir",
@@ -82,11 +70,6 @@ parser.add_argument(
     help="Proportion of the training set to include in the validation split",
 )
 parser.add_argument(
-    "--random_state",
-    type=int,
-    help="Random state for train/test split",
-)
-parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
@@ -113,25 +96,20 @@ else:
 # ensure output model path exists
 output_model_dir.mkdir(parents=True, exist_ok=True)
 
-# load hyperparameters from JSON file
-with open(args.hyperparameter_json, "r") as f:
-    hyperparams = json.load(f)
-
-# load training parameters from JSON file
-with open(args.train_parameters_json, "r") as f:
-    train_params = json.load(f)
+# set hyperparameters for the model
+random_state = None
+if args.model_type == "xgboost":
+    # load hyperparameters from config
+    hyperparams = config.XGB_HYPERPARAMS.copy()
+    random_state = hyperparams.get("random_state", None)
+else:
+    raise ValueError(f"Unsupported model type: {args.model_type}")
 
 # initialize Weights & Biases
 wandb.init(
     entity=config.WANDB_ENTITY,
     project=config.WANDB_PROJECT,
     name=run_name,
-    config={
-        "model_type": args.model_type,
-        "train_script_params": vars(args),
-        "model_hyperparams": hyperparams,
-        "train_params": train_params,
-    },
     mode=args.wandb_mode,
 )
 
@@ -157,51 +135,36 @@ for target_col in target_cols:
 
     # train/test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=args.test_size, random_state=args.random_state
+        X, y, test_size=args.test_size, random_state=random_state
     )
 
     # train/val split
-    evals = None
-    if args.val_size is not None:
-        # adjust val size for train size
-        # source: https://datascience.stackexchange.com/a/15136
-        val_size = args.val_size / (1 - args.test_size)
-        X_train, X_val, y_train, y_val = train_test_split(
-            X_train, y_train, test_size=val_size, random_state=args.random_state
-        )
-
-        # create DMatrix for validation set
-        dval = xgb.DMatrix(X_val, label=y_val)
-
-        # add to evals for validation
-        evals = [(dval, "val")]
-
-    if (
-        train_params.get("early_stopping_rounds", None) is not None
-        and evals is None
-    ):
+    if args.val_size <= 0 or args.val_size >= 1:
         raise ValueError(
-            "Early stopping requires a validation set. Please provide a validation set."
+            "val_size must be between 0 and 1 (exclusive) for early stopping"
         )
 
-    # create DMatrix for training set
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-
-    # add callback to log metrics to Weights & Biases
-    callbacks = [WandbCallback(log_model=True)]
-
-    # train the model
-    model = xgb.train(
-        hyperparams,
-        dtrain,
-        evals=evals,
-        callbacks=callbacks,
-        **train_params,
+    # adjust val size for train size
+    # source: https://datascience.stackexchange.com/a/15136
+    val_size = args.val_size / (1 - args.test_size)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train, y_train, test_size=val_size, random_state=random_state
     )
 
+    # add callback to log metrics to Weights & Biases
+    callbacks = [
+        EarlyStopping(**config.XGB_EARLY_STOPPING_PARAMS),
+        WandbCallback(log_model=True),
+    ]
+
+    # init the model
+    model = XGBRegressor(**hyperparams, callbacks=callbacks)
+
+    # train the model
+    model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+
     # evaluate the model on the test set
-    dtest = xgb.DMatrix(X_test)
-    y_pred = model.predict(dtest)
+    y_pred = model.predict(X_test)
     rmse = root_mean_squared_error(y_test, y_pred)
     print(f"test-rmse: {rmse}")
 
