@@ -40,9 +40,18 @@ Recommended for complete python environment isolation.
 
 ## Basic Usage Instructions
 
-1. Adjust configuration in `src/config.py`, `src/json_config/train_parameters.json`, and `src/json_config/hyperparameters.json` as needed.
+1. Adjust configuration in `src/config.py` as needed.
 2. Create the dataset: `python src/create_dataset.py`
-3. Train the model: `python src/train_model.py`
+3. Train the model: 
+  - Static hyperparameters: `python src/train_model.py`
+  - Hyperparameter Sweep (requires `wandb`): `python src/train_model_sweep.py`
+
+### Weights & Biases (W&B) setup
+- Sign up for a free account at [wandb.ai](https://wandb.ai/site).
+- Add your W&B API key to the environment:
+  - dotenv file: Create a `.env` file in the root directory with the line `WANDB_API_KEY=your_api_key`
+  - Command line: `export WANDB_API_KEY=your_api_key`
+- Run either training scripts with W&B enabled using the `--wandb_mode online` flag
 
 ## Data Description
 
