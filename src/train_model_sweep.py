@@ -157,6 +157,9 @@ def train_model(target_col: str, output_model_dir: Path = output_model_dir):
     # upload the model to W&B
     wandb.save(str(model_path), base_path=args.output_model_dir)
 
+    # finish the W&B run
+    wandb.finish()
+
 
 target_cols: List[str] = (
     config.TARGET_COL_NAMES if args.target_all else [args.target_col_name]
@@ -179,3 +182,6 @@ for target_col in target_cols:
         function=lambda col=target_col,: train_model(col),
         count=args.wandb_sweep_count,
     )
+
+    # clean up W&B sweep
+    wandb.teardown()
