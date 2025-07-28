@@ -92,7 +92,7 @@ processed_df = pd.read_csv(
 )
 
 
-def train_model(target_col: str):
+def train_model(target_col: str, output_model_dir: Path = output_model_dir):
     """
     Train an XGBoost model on the processed dataset for a specific target column.
     """
@@ -154,7 +154,6 @@ def train_model(target_col: str):
     wandb.log({"val-rmse": best_cv_score})
 
     # save the model to the output directory
-    global output_model_dir
     model_path = output_model_dir / f"{run_name}_model.json"
     best_cv_model.save_model(str(model_path))
     print(f"Model saved to {model_path}")
@@ -181,6 +180,6 @@ for target_col in target_cols:
     # run the sweep
     wandb.agent(
         sweep_id=sweep_id,
-        function=lambda: train_model(target_col),
+        function=lambda col=target_col,: train_model(col),
         count=args.wandb_sweep_count,
     )
