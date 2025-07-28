@@ -94,6 +94,9 @@ Recommended for complete python environment isolation.
 | `lat` | Latitude of LPS centre | ° N |
 | `orography_height` | Elevation of land surface under centre | m |
 | `anor` | Angle of sub-gridscale orography | radians |
+| `over_land` | Flag for LPS centre (True if storm centre is over land, else False) | boolean |
+| `acc_land_time` | Accumulated time where `over_land=True` | hr |
+| `mean_land_frac` | Fraction of area within 400 km that is over land | ratio |
 | `zonal_speed` | $x$-component of LPS propagation vector | km/hr |
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr |
 | `area` | Area of the storm | km² |
@@ -104,6 +107,7 @@ Recommended for complete python environment isolation.
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr |
 | `mean_bt` | Mean cloudtop brightness within storm area | K |
 | `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr |
+| `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr |
 | `storm_max_area` | Max value of `area` over storm | km² |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km |
 | `storm_bearing` | Compass bearing from first to last point of storm | ° |
@@ -125,3 +129,4 @@ Recommended for complete python environment isolation.
 |--------------|-------------|-------------|
 | `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr |
 | `storm_total_duration` | Total duration of storm | hr |
+| `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K |
