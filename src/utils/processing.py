@@ -296,9 +296,9 @@ def calc_spatiotemporal_mean_at_point(
     dataset: xr.Dataset,
     variable_name: str,
     radius_km: float = 400,
-    time_hrs: int = 6,
-    variable_bounds: Optional[tuple[float, float]] = None,
+    timedelta: pd.Timedelta = pd.Timedelta(hours=6),
     invariant: bool = False,
+    variable_bounds: Optional[tuple[float, float]] = None,
 ) -> np.floating:
     """
     Calculate the spatial mean of a specified variable from an xarray dataset
@@ -310,10 +310,11 @@ def calc_spatiotemporal_mean_at_point(
     :param dataset: xarray Dataset containing the variable to calculate the spatial mean for.
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for.
     :param radius_km: Radius in kilometers for the spatial mean calculation.
-    :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
     :return: Spatial mean of the specified variable within the radius.
-    :rtype: float
+    :rtype: np.floating
     """
     # convert radius to meters
     radius_m = radius_km * 1000
@@ -362,9 +363,7 @@ def calc_spatiotemporal_mean_at_point(
     else:
         # otherwise, select the time range around the storm's timestamp
         var_over_grid = var_over_grid.sel(
-            valid_time=slice(
-                timestamp, timestamp + pd.Timedelta(hours=time_hrs)
-            )
+            valid_time=slice(timestamp, timestamp + timedelta)
         )
 
     # get variable values over the grid cells
@@ -387,7 +386,7 @@ def calc_spatiotemporal_mean(
     variable_name: str,
     new_col_name: str,
     radius_km: float = 400,
-    time_hrs: int = 6,
+    timedelta: pd.Timedelta = pd.Timedelta(hours=6),
     invariant: bool = False,
     variable_bounds: Optional[tuple[float, float]] = None,
     fillna_val: Optional[float] = None,
@@ -402,8 +401,10 @@ def calc_spatiotemporal_mean(
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for
     :param new_col_name: Name of the new column to store the spatial mean values.
     :param radius_km: Radius in kilometers for the spatial mean calculation.
-    :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
+    :param fillna_val: Optional value to fill NaN values in the new column.
     :param unit_conv_func: Optional function to convert the units of the spatial mean values
                           (e.g., from Kelvin to Celsius).
     :return: DataFrame with the new column containing the spatial mean values.
@@ -433,7 +434,7 @@ def calc_spatiotemporal_mean(
                 dataset,
                 variable_name,
                 radius_km=radius_km,
-                time_hrs=time_hrs,
+                timedelta=timedelta,
                 invariant=invariant,
                 variable_bounds=variable_bounds,
             ),

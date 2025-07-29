@@ -214,14 +214,23 @@ if args.recalc_all or "mean_skt" not in processed_df.columns:
     print("Calculating mean surface temperature...")
 
     processed_df = processing.calc_spatiotemporal_mean(
-        processed_df, "skt_sfc_", "skt", "mean_skt"
+        processed_df,
+        "skt_sfc_",
+        "skt",
+        "mean_skt",
+        timedelta=pd.Timedelta(minutes=55),  # just capture the nearest hour
     )
 
 if args.recalc_all or "mean_sst" not in processed_df.columns:
     print("Calculating mean sea surface temperature...")
 
     processed_df = processing.calc_spatiotemporal_mean(
-        processed_df, "sst_sfc_", "sst", "mean_sst", variable_bounds=(250, 330)
+        processed_df,
+        "sst_sfc_",
+        "sst",
+        "mean_sst",
+        timedelta=pd.Timedelta(minutes=55),  # just capture the nearest hour
+        variable_bounds=(250, 330),
     )
 
 # select only the columns that are in the config
