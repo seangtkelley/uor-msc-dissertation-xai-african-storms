@@ -390,6 +390,7 @@ def calc_spatiotemporal_mean(
     time_hrs: int = 6,
     invariant: bool = False,
     variable_bounds: Optional[tuple[float, float]] = None,
+    fillna_val: Optional[float] = None,
     unit_conv_func: Optional[Callable] = None,
 ) -> pd.DataFrame:
     """
@@ -442,8 +443,11 @@ def calc_spatiotemporal_mean(
         # clear the dataset from memory
         dataset.close()
 
-    # fill any remaining NaN values with 0
-    processed_df[new_col_name] = processed_df[new_col_name].fillna(0.0)
+    # fill any remaining NaN values with fillna_val if provided
+    if fillna_val is not None:
+        processed_df[new_col_name] = processed_df[new_col_name].fillna(
+            fillna_val
+        )
 
     # apply the unit conversion function if provided
     if unit_conv_func is not None:
