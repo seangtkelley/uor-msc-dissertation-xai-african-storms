@@ -201,7 +201,7 @@ if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
 if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
     print("Calculating mean precipitation...")
 
-    processing.calc_spatiotemporal_mean(
+    processed_df = processing.calc_spatiotemporal_mean(
         processed_df,
         "prcp_tot_",
         "prcp",
@@ -212,15 +212,15 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
 if args.recalc_all or "mean_skt" not in processed_df.columns:
     print("Calculating mean surface temperature...")
 
-    processing.calc_spatiotemporal_mean(
+    processed_df = processing.calc_spatiotemporal_mean(
         processed_df, "skt_sfc_", "skt", "mean_skt"
     )
 
 if args.recalc_all or "mean_sst" not in processed_df.columns:
     print("Calculating mean sea surface temperature...")
 
-    processing.calc_spatiotemporal_mean(
-        processed_df, "sst_sfc_", "sst", "mean_sst"
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df, "sst_sfc_", "sst", "mean_sst", variable_bounds=(250, 330)
     )
 
 # select only the columns that are in the config

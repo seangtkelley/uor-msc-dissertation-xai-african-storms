@@ -297,6 +297,7 @@ def calc_spatiotemporal_mean_at_point(
     variable_name: str,
     radius_km: float = 400,
     time_hrs: int = 6,
+    variable_bounds: Optional[tuple[float, float]] = None,
     invariant: bool = False,
 ) -> np.floating:
     """
@@ -369,11 +370,17 @@ def calc_spatiotemporal_mean_at_point(
     # get variable values over the grid cells
     var_over_grid = var_over_grid[variable_name].values
 
+    # filter values using variable_bounds if provided
+    if variable_bounds is not None:
+        lower, upper = variable_bounds
+        var_over_grid = var_over_grid[
+            (var_over_grid >= lower) & (var_over_grid <= upper)
+        ]
+
     # return the mean over all the grid cells
     return np.mean(var_over_grid)
 
 
-# TODO: create a param for mask where the variable is NaN (ex: land mask)
 def calc_spatiotemporal_mean(
     processed_df: pd.DataFrame,
     filename_prefix: str,
@@ -382,6 +389,7 @@ def calc_spatiotemporal_mean(
     radius_km: float = 400,
     time_hrs: int = 6,
     invariant: bool = False,
+    variable_bounds: Optional[tuple[float, float]] = None,
     unit_conv_func: Optional[Callable] = None,
 ) -> pd.DataFrame:
     """
@@ -426,6 +434,7 @@ def calc_spatiotemporal_mean(
                 radius_km=radius_km,
                 time_hrs=time_hrs,
                 invariant=invariant,
+                variable_bounds=variable_bounds,
             ),
             axis=1,
         )
