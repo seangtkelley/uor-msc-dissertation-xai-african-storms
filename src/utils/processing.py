@@ -144,7 +144,9 @@ def calc_over_land_features(
         valid_time=0
     )
     # add over land status to the DataFrame and convert to boolean (True for land, False for sea)
-    processed_df["over_land"] = closest_lsm["lsm"].values.squeeze().astype(bool)
+    processed_df["over_land"] = (
+        closest_lsm["lsm"].values.squeeze().round().astype(bool)
+    )
 
     # calculate accumulated land time
     processed_df["acc_land_time"] = (

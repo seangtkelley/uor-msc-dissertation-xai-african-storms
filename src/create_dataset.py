@@ -127,9 +127,6 @@ if (
     # load the land mask dataset
     lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
 
-    # round the variable values to 0 or 1
-    lsm["lsm"] = lsm["lsm"].round()
-
     # calculate over land features
     processed_df = processing.calc_over_land_features(processed_df, lsm)
 
