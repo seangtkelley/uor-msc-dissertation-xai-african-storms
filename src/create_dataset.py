@@ -100,6 +100,10 @@ if args.recalc_all or (
         processed_df, geop, height, anor
     )
 
+    # close datasets
+    geop.close()
+    anor.close()
+
 if args.recalc_all or "area" not in processed_df.columns:
     print("Calculating storm area...")
 
@@ -127,20 +131,20 @@ if (
     # load the land mask dataset
     lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
 
-    # round the variable values to 0 or 1
-    lsm["lsm"] = lsm["lsm"].round()
-
     # calculate over land features
     processed_df = processing.calc_over_land_features(processed_df, lsm)
 
     # calculate the land fraction
     processed_df["mean_land_frac"] = np.nan
     processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
-        lambda row: processing.calc_spatiotemporal_mean(
+        lambda row: processing.calc_spatiotemporal_mean_at_point(
             row["timestamp"], row["lon"], row["lat"], lsm, "lsm", invariant=True
         ),
         axis=1,
     )
+
+    # close dataset
+    lsm.close()
 
 if (
     args.recalc_all
@@ -204,36 +208,81 @@ if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
 if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
     print("Calculating mean precipitation...")
 
-    processed_df["mean_prcp_400"] = np.nan
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "prcp_tot_",
+        "prcp",
+        "mean_prcp_400",
+        timedelta=pd.Timedelta(hours=6),
+        fillna_val=0.0,
+        unit_conv_func=lambda x: x * 1000.0,
+    )
 
-    # group storm data by year
-    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+if args.recalc_all or "mean_land_skt" not in processed_df.columns:
+    print("Calculating mean land skin temperature...")
 
-    # for each year, calculate the spatial mean precipitation
-    for year, group in grouped:
-        print(f"Processing year: {year}")
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
 
-        # load the precipitation dataset for the year
-        precip = xr.open_dataset(
-            config.DATA_DIR / "std" / f"prcp_tot_{year}.nc"
-        )
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "skt_sfc_",
+        "skt",
+        "mean_land_skt",
+        mask=land_mask,
+        variable_bounds=config.EARTH_TEMP_BOUNDS,
+    )
 
-        processed_df.loc[group.index, "mean_prcp_400"] = group.parallel_apply(  # type: ignore
-            lambda row: processing.calc_spatiotemporal_mean(
-                row["timestamp"], row["lon"], row["lat"], precip, "prcp"
-            ),
-            axis=1,
-        )
+    # close dataset
+    lsm.close()
 
-        # clear the dataset from memory
-        precip.close()
+if args.recalc_all or "mean_sst" not in processed_df.columns:
+    print("Calculating mean sea surface temperature...")
 
-    # fill any remaining NaN values with 0
-    processed_df["mean_prcp_400"] = processed_df["mean_prcp_400"].fillna(0.0)
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
 
-    # multiply by 1000 to convert from m to mm
-    processed_df["mean_prcp_400"] *= 1000.0
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "sst_sfc_",
+        "sst",
+        "mean_sst",
+        mask=~land_mask,  # invert mask for sea surface temperature
+        variable_bounds=config.EARTH_TEMP_BOUNDS,
+    )
 
+    # close dataset
+    lsm.close()
+
+if args.recalc_all or "mean_skt" not in processed_df.columns:
+    print("Calculating mean skin temperature...")
+
+    # if mean_land_skt or mean_sst is nan, use the other, otherwise calculate the mean of the two
+    processed_df["mean_skt"] = np.where(
+        processed_df["mean_land_skt"].isna(),
+        processed_df["mean_sst"],
+        np.where(
+            processed_df["mean_sst"].isna(),
+            processed_df["mean_land_skt"],
+            (processed_df["mean_land_skt"] + processed_df["mean_sst"]) / 2,
+        ),
+    )
 
 # select only the columns that are in the config
 processed_df = processed_df[

@@ -13,7 +13,9 @@ __status__ = "Development"
 
 from pathlib import Path
 
-# file paths
+# ==============================================================================
+#                           PATH CONFIGURATION
+# ==============================================================================
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
@@ -27,6 +29,9 @@ RAW_STORM_DB_PATH = (
 PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
 
 
+# ==============================================================================
+#                           PLOTTING CONFIGURATION
+# ==============================================================================
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
     34.0,  # lon min
@@ -49,6 +54,10 @@ ERA5_DATA_EXTENT = (
     16.0,  # lat max
 )
 
+
+# ==============================================================================
+#                           DATASET CONFIGURATION
+# ==============================================================================
 # date range for data
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
@@ -77,6 +86,9 @@ FEATURE_COL_NAMES = [
     "acc_land_time",
     "storm_total_land_time",
     "mean_land_frac",
+    "mean_skt",
+    "mean_land_skt",
+    "mean_sst",
     "zonal_speed",
     "meridional_speed",
     "area",
@@ -94,7 +106,6 @@ FEATURE_COL_NAMES = [
     "dmean_bt_dt",
     "storm_min_bt",
     "storm_min_bt_reached",
-    # "mean_land_skt",
     # "mean_dthetae_dp_900_750",
     # "mean_dthetae_dp_750_500",
     # "ushear_850",
@@ -106,6 +117,13 @@ TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
+# Kelvin bounds for Earthly temperatures
+EARTH_TEMP_BOUNDS = (180, 330)
+
+
+# ==============================================================================
+#                       MODEL AND TRAINING CONFIGURATION
+# ==============================================================================
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,

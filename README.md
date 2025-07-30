@@ -40,9 +40,18 @@ Recommended for complete python environment isolation.
 
 ## Basic Usage Instructions
 
-1. Adjust configuration in `src/config.py`, `src/json_config/train_parameters.json`, and `src/json_config/hyperparameters.json` as needed.
+1. Adjust configuration in `src/config.py` as needed.
 2. Create the dataset: `python src/create_dataset.py`
-3. Train the model: `python src/train_model.py`
+3. Train the model: 
+  - Static hyperparameters: `python src/train_model.py`
+  - Hyperparameter Sweep (requires `wandb`): `python src/train_model_sweep.py`
+
+### Weights & Biases (W&B) setup
+- Sign up for a free account at [wandb.ai](https://wandb.ai/site).
+- Add your W&B API key to the environment:
+  - dotenv file: Create a `.env` file in the root directory with the line `WANDB_API_KEY=your_api_key`
+  - Command line: `export WANDB_API_KEY=your_api_key`
+- Run either training scripts with W&B enabled using the `--wandb_mode online` flag
 
 ## Data Description
 
@@ -90,7 +99,7 @@ Recommended for complete python environment isolation.
 Notes:
 - The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
 - All variables with the `storm_` prefix are valid over the entire storm lifetime, while the others are valid only for the current time step.
-- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre, **not** the storm area.
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
@@ -106,6 +115,9 @@ Notes:
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
 | `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio | Yes | No |
+| `mean_skt` | Surface temperature | K | Yes | No |
+| `mean_land_skt` | Land surface temperature (NaN if entire area is ocean) | K | Yes | No |
+| `mean_sst` | Sea surface temperature (NaN if entire area is land) | K | Yes | No |
 | `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
 | `area` | Area of the storm | km² | Yes | No |
@@ -116,7 +128,7 @@ Notes:
 | `storm_bearing` | Compass bearing from first to last point of storm | ° | Yes | No |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km | Yes | No |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km | Yes | No |
-| `mean_prcp_400` | Mean precipitation within 400 km over the next 6 hr | mm/hr | Yes | **Yes** |
+| `mean_prcp_400` | Mean precipitation over the next 6 hr | mm/hr | Yes | **Yes** |
 | `min_bt` | Minimum cloudtop brightness within storm area | K | Yes | No |
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr | Yes | No |
 | `mean_bt` | Mean cloudtop brightness within storm area | K | Yes | No |

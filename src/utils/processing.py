@@ -11,10 +11,11 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
+import psutil
 import pyproj
 import xarray as xr
 from metpy.calc import geopotential_to_height
@@ -24,8 +25,12 @@ from scipy.stats import gaussian_kde
 
 import config
 
-# initialize pandarallel for parallel processing with progress bar
-pandarallel.initialize(progress_bar=True)
+# fallback to 6 workers if cpu_count is None
+nb_workers = psutil.cpu_count(logical=False) or 12
+# use half the physical cores for parallel processing
+nb_workers //= 2
+# initialize pandarallel for parallel processing
+pandarallel.initialize(progress_bar=True, nb_workers=nb_workers)
 
 # initialize the geodesic calculator with WGS84 ellipsoid
 # TODO: is there a better projection for East Africa?
@@ -144,7 +149,9 @@ def calc_over_land_features(
         valid_time=0
     )
     # add over land status to the DataFrame and convert to boolean (True for land, False for sea)
-    processed_df["over_land"] = closest_lsm["lsm"].values.squeeze().astype(bool)
+    processed_df["over_land"] = (
+        closest_lsm["lsm"].values.squeeze().round().astype(bool)
+    )
 
     # calculate accumulated land time
     processed_df["acc_land_time"] = (
@@ -287,15 +294,16 @@ def calc_temporal_rate_of_change(
     return processed_df
 
 
-def calc_spatiotemporal_mean(
+def calc_spatiotemporal_mean_at_point(
     timestamp: pd.Timestamp,
     lon: float,
     lat: float,
     dataset: xr.Dataset,
     variable_name: str,
     radius_km: float = 400,
-    time_hrs: int = 6,
+    timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
+    variable_bounds: Optional[tuple[float, float]] = None,
 ) -> np.floating:
     """
     Calculate the spatial mean of a specified variable from an xarray dataset
@@ -306,11 +314,12 @@ def calc_spatiotemporal_mean(
     :param lat: Latitude of the storm's location.
     :param dataset: xarray Dataset containing the variable to calculate the spatial mean for.
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for.
-    :param radius_km: Radius in kilometers for the spatial mean calculation.
-    :param time_hrs: Number of hours to consider for the spatial mean calculation.
+    :param radius_km: Radius in kilometres for the spatial mean calculation.
+    :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
     :return: Spatial mean of the specified variable within the radius.
-    :rtype: float
+    :rtype: np.floating
     """
     # convert radius to meters
     radius_m = radius_km * 1000
@@ -351,6 +360,7 @@ def calc_spatiotemporal_mean(
     var_over_grid = dataset.isel(
         longitude=slice(lon_start, lon_end),
         latitude=slice(lat_start, lat_end),
+        missing_dims="warn",
     )
 
     # if invariant, take the first time step
@@ -358,17 +368,112 @@ def calc_spatiotemporal_mean(
         var_over_grid = var_over_grid.isel(valid_time=0)
     else:
         # otherwise, select the time range around the storm's timestamp
-        var_over_grid = var_over_grid.sel(
-            valid_time=slice(
-                timestamp, timestamp + pd.Timedelta(hours=time_hrs)
+        if timedelta is None:
+            var_over_grid = var_over_grid.sel(
+                valid_time=timestamp, method="nearest"
             )
-        )
+        else:
+            var_over_grid = var_over_grid.sel(
+                valid_time=slice(timestamp, timestamp + timedelta)
+            )
 
     # get variable values over the grid cells
     var_over_grid = var_over_grid[variable_name].values
 
-    # return the mean over all the grid cells
-    return np.mean(var_over_grid)
+    # filter values using variable_bounds if provided
+    if variable_bounds is not None:
+        lower, upper = variable_bounds
+        var_over_grid = var_over_grid[
+            (var_over_grid >= lower) & (var_over_grid <= upper)
+        ]
+
+    # return the mean over all the grid cells, ignoring NaNs unless all are NaN
+    return np.nanmean(var_over_grid)
+
+
+def calc_spatiotemporal_mean(
+    processed_df: pd.DataFrame,
+    filename_prefix: str,
+    variable_name: str,
+    new_col_name: str,
+    radius_km: float = 400,
+    timedelta: Optional[pd.Timedelta] = None,
+    invariant: bool = False,
+    mask: Optional[xr.DataArray] = None,
+    variable_bounds: Optional[tuple[float, float]] = None,
+    fillna_val: Optional[float] = None,
+    unit_conv_func: Optional[Callable] = None,
+) -> pd.DataFrame:
+    """
+    Calculate the spatial mean of a specified variable from an xarray dataset
+    for each storm in the DataFrame.
+
+    :param processed_df: DataFrame containing storm data. Must include 'timestamp', 'lon', and 'lat' columns.
+    :param filename_prefix: Prefix for the dataset filenames to load.
+    :param variable_name: Name of the variable in the dataset to calculate the spatial mean for
+    :param new_col_name: Name of the new column to store the spatial mean values.
+    :param radius_km: Radius in kilometres for the spatial mean calculation.
+    :param timedelta: Time delta to consider for the spatial mean calculation.
+    :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
+    :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
+    :param fillna_val: Optional value to fill NaN values in the new column.
+    :param unit_conv_func: Optional function to convert the units of the spatial mean values
+                          (e.g., from Kelvin to Celsius).
+    :return: DataFrame with the new column containing the spatial mean values.
+    :rtype: pd.DataFrame
+    """
+    # init the new column for the spatial mean
+    processed_df[new_col_name] = np.nan
+
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # for each year, calculate the spatial mean
+    for year, group in grouped:
+        print(f"Processing year: {year}")
+
+        # load the dataset for the year
+        dataset = xr.open_dataset(
+            config.DATA_DIR / "std" / f"{filename_prefix}{year}.nc"
+        )
+
+        # if mask is provided, apply it to the dataset over the entire grid
+        if mask is not None:
+            dataset = dataset.where(mask)
+
+        # calculate the spatial mean at each point
+        processed_df.loc[group.index, new_col_name] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_mean_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                dataset,
+                variable_name,
+                radius_km=radius_km,
+                timedelta=timedelta,
+                invariant=invariant,
+                variable_bounds=variable_bounds,
+            ),
+            axis=1,
+        )
+
+        # clear the dataset from memory
+        dataset.close()
+
+    # fill any remaining NaN values with fillna_val if provided
+    if fillna_val is not None:
+        processed_df[new_col_name] = processed_df[new_col_name].fillna(
+            fillna_val
+        )
+
+    # apply the unit conversion function if provided
+    if unit_conv_func is not None:
+        processed_df[new_col_name] = processed_df[new_col_name].apply(
+            unit_conv_func
+        )
+
+    return processed_df
 
 
 def interpolate_storm_to_n_points(group, n_points=10):
