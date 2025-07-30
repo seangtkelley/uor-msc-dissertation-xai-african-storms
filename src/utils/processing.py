@@ -387,8 +387,8 @@ def calc_spatiotemporal_mean_at_point(
             (var_over_grid >= lower) & (var_over_grid <= upper)
         ]
 
-    # return the mean over all the grid cells
-    return np.mean(var_over_grid)
+    # return the mean over all the grid cells, ignoring NaNs unless all are NaN
+    return np.nanmean(var_over_grid)
 
 
 def calc_spatiotemporal_mean(
