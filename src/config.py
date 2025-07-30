@@ -87,7 +87,7 @@ FEATURE_COL_NAMES = [
     "storm_total_land_time",
     "mean_land_frac",
     "mean_skt",
-    # "mean_land_skt",
+    "mean_land_skt",
     "mean_sst",
     "zonal_speed",
     "meridional_speed",
