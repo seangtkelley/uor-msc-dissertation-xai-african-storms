@@ -211,14 +211,14 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
         unit_conv_func=lambda x: x * 1000.0,
     )
 
-if args.recalc_all or "mean_skt" not in processed_df.columns:
-    print("Calculating mean surface temperature...")
+if args.recalc_all or "mean_land_skt" not in processed_df.columns:
+    print("Calculating mean land skin temperature...")
 
     processed_df = processing.calc_spatiotemporal_mean(
         processed_df,
         "skt_sfc_",
         "skt",
-        "mean_skt",
+        "mean_land_skt",
     )
 
 if args.recalc_all or "mean_sst" not in processed_df.columns:
@@ -230,6 +230,23 @@ if args.recalc_all or "mean_sst" not in processed_df.columns:
         "sst",
         "mean_sst",
         variable_bounds=config.SST_BOUNDS,
+    )
+
+if args.recalc_all or "mean_skt" not in processed_df.columns:
+    print("Calculating mean skin temperature...")
+
+    # if mean_land_skt or mean_sst is nan, use the other, otherwise calculate the mean of the two
+    processed_df["mean_skt"] = np.where(
+        processed_df["mean_land_skt"].isna(),
+        processed_df["mean_sst"],
+        np.where(
+            processed_df["mean_sst"].isna(),
+            processed_df["mean_land_skt"],
+            np.mean(
+                [processed_df["mean_land_skt"], processed_df["mean_sst"]],
+                axis=0,
+            ),
+        ),
     )
 
 # select only the columns that are in the config
