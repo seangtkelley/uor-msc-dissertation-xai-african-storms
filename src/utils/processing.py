@@ -298,6 +298,7 @@ def calc_spatiotemporal_mean_at_point(
     radius_km: float = 400,
     timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
+    mask: Optional[xr.DataArray] = None,
     variable_bounds: Optional[tuple[float, float]] = None,
 ) -> np.floating:
     """
@@ -312,12 +313,17 @@ def calc_spatiotemporal_mean_at_point(
     :param radius_km: Radius in kilometers for the spatial mean calculation.
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
     :return: Spatial mean of the specified variable within the radius.
     :rtype: np.floating
     """
     # convert radius to meters
     radius_m = radius_km * 1000
+
+    # if mask is provided, apply it to the dataset over the entire grid
+    if mask is not None:
+        dataset = dataset.where(mask, drop=True)
 
     # vars for dataset longitude and latitude arrays
     dataset_lons = dataset["longitude"].values
@@ -391,8 +397,9 @@ def calc_spatiotemporal_mean(
     variable_name: str,
     new_col_name: str,
     radius_km: float = 400,
-    timedelta: pd.Timedelta = pd.Timedelta(hours=6),
+    timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
+    mask: Optional[xr.DataArray] = None,
     variable_bounds: Optional[tuple[float, float]] = None,
     fillna_val: Optional[float] = None,
     unit_conv_func: Optional[Callable] = None,
@@ -408,6 +415,7 @@ def calc_spatiotemporal_mean(
     :param radius_km: Radius in kilometers for the spatial mean calculation.
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
+    :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
     :param fillna_val: Optional value to fill NaN values in the new column.
     :param unit_conv_func: Optional function to convert the units of the spatial mean values
@@ -435,6 +443,7 @@ def calc_spatiotemporal_mean(
             radius_km=radius_km,
             timedelta=timedelta,
             invariant=invariant,
+            mask=mask,
             variable_bounds=variable_bounds,
         )
 

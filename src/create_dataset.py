@@ -100,6 +100,10 @@ if args.recalc_all or (
         processed_df, geop, height, anor
     )
 
+    # close datasets
+    geop.close()
+    anor.close()
+
 if args.recalc_all or "area" not in processed_df.columns:
     print("Calculating storm area...")
 
@@ -138,6 +142,9 @@ if (
         ),
         axis=1,
     )
+
+    # close dataset
+    lsm.close()
 
 if (
     args.recalc_all
@@ -214,23 +221,52 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
 if args.recalc_all or "mean_land_skt" not in processed_df.columns:
     print("Calculating mean land skin temperature...")
 
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
+
     processed_df = processing.calc_spatiotemporal_mean(
         processed_df,
         "skt_sfc_",
         "skt",
         "mean_land_skt",
+        mask=land_mask,
     )
+
+    # close dataset
+    lsm.close()
 
 if args.recalc_all or "mean_sst" not in processed_df.columns:
     print("Calculating mean sea surface temperature...")
+
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
 
     processed_df = processing.calc_spatiotemporal_mean(
         processed_df,
         "sst_sfc_",
         "sst",
         "mean_sst",
-        variable_bounds=config.SST_BOUNDS,
+        mask=~land_mask,  # invert mask for sea surface temperature
     )
+
+    # close dataset
+    lsm.close()
 
 if args.recalc_all or "mean_skt" not in processed_df.columns:
     print("Calculating mean skin temperature...")
