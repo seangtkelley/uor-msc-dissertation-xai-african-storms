@@ -229,7 +229,7 @@ if args.recalc_all or "mean_sst" not in processed_df.columns:
         "sst_sfc_",
         "sst",
         "mean_sst",
-        variable_bounds=(250, 330),
+        variable_bounds=config.SST_BOUNDS,
     )
 
 # select only the columns that are in the config

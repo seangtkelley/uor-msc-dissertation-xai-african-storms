@@ -108,6 +108,10 @@ TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
+# Kelvin bounds for sea surface temperature
+SST_BOUNDS = (250, 330)
+SST_LOWER_BOUND, SST_UPPER_BOUND = SST_BOUNDS
+
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,
