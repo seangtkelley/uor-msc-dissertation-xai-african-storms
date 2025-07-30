@@ -99,7 +99,7 @@ Recommended for complete python environment isolation.
 Notes:
 - The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
 - All variables with the `storm_` prefix are valid over the entire storm lifetime, while the others are valid only for the current time step.
-- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre, **not** the storm area.
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
