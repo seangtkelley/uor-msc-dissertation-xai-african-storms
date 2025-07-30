@@ -238,6 +238,7 @@ if args.recalc_all or "mean_land_skt" not in processed_df.columns:
         "skt",
         "mean_land_skt",
         mask=land_mask,
+        variable_bounds=config.EARTH_TEMP_BOUNDS,
     )
 
     # close dataset
@@ -263,6 +264,7 @@ if args.recalc_all or "mean_sst" not in processed_df.columns:
         "sst",
         "mean_sst",
         mask=~land_mask,  # invert mask for sea surface temperature
+        variable_bounds=config.EARTH_TEMP_BOUNDS,
     )
 
     # close dataset
