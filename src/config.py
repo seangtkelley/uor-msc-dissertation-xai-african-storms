@@ -13,7 +13,9 @@ __status__ = "Development"
 
 from pathlib import Path
 
-# file paths
+# ==============================================================================
+#                           PATH CONFIGURATION
+# ==============================================================================
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
@@ -27,6 +29,9 @@ RAW_STORM_DB_PATH = (
 PROCESSED_DATASET_PATH = PROCESSED_DATA_DIR / "processed_dataset.csv"
 
 
+# ==============================================================================
+#                           PLOTTING CONFIGURATION
+# ==============================================================================
 # extent of filtered storms region
 STORM_DATA_EXTENT = (
     34.0,  # lon min
@@ -49,6 +54,10 @@ ERA5_DATA_EXTENT = (
     16.0,  # lat max
 )
 
+
+# ==============================================================================
+#                           DATASET CONFIGURATION
+# ==============================================================================
 # date range for data
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
@@ -112,6 +121,10 @@ DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 SST_BOUNDS = (250, 330)
 SST_LOWER_BOUND, SST_UPPER_BOUND = SST_BOUNDS
 
+
+# ==============================================================================
+#                       MODEL AND TRAINING CONFIGURATION
+# ==============================================================================
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,
