@@ -116,8 +116,8 @@ Notes:
 | `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio | Yes | No |
 | `mean_skt` | Surface temperature | K | Yes | No |
-| `mean_land_skt` | Land surface temperature (NaN over ocean) | K | Yes | No |
-| `mean_sst` | Sea surface temperature (NaN over land) | K | Yes | No |
+| `mean_land_skt` | Land surface temperature (NaN if entire area is ocean) | K | Yes | No |
+| `mean_sst` | Sea surface temperature (NaN if entire area is land) | K | Yes | No |
 | `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
 | `area` | Area of the storm | km² | Yes | No |
