@@ -421,39 +421,41 @@ def calc_spatiotemporal_mean(
     :param unit_conv_func: Optional function to convert the units of the spatial mean values
                           (e.g., from Kelvin to Celsius).
     :return: DataFrame with the new column containing the spatial mean values.
+    :rtype: pd.DataFrame
     """
-    # preload datasets for all years
-    datasets = {
-        year: xr.open_dataset(
+    # init the new column for the spatial mean
+    processed_df[new_col_name] = np.nan
+
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # for each year, calculate the spatial mean
+    for year, group in grouped:
+        print(f"Processing year: {year}")
+
+        # load the dataset for the year
+        dataset = xr.open_dataset(
             config.DATA_DIR / "std" / f"{filename_prefix}{year}.nc"
         )
-        for year in processed_df["timestamp"].dt.year.unique()
-    }
 
-    # define a helper function for calculating the spatial mean
-    def calculate_spatial_mean(row):
-        year = row["timestamp"].year
-        dataset = datasets[year]
-        return calc_spatiotemporal_mean_at_point(
-            row["timestamp"],
-            row["lon"],
-            row["lat"],
-            dataset,
-            variable_name,
-            radius_km=radius_km,
-            timedelta=timedelta,
-            invariant=invariant,
-            mask=mask,
-            variable_bounds=variable_bounds,
+        # calculate the spatial mean at each point
+        processed_df.loc[group.index, new_col_name] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_mean_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                dataset,
+                variable_name,
+                radius_km=radius_km,
+                timedelta=timedelta,
+                invariant=invariant,
+                mask=mask,
+                variable_bounds=variable_bounds,
+            ),
+            axis=1,
         )
 
-    # apply the helper function in parallel across all rows
-    processed_df[new_col_name] = processed_df.parallel_apply(  # type: ignore
-        calculate_spatial_mean, axis=1
-    )
-
-    # close all datasets to free memory
-    for dataset in datasets.values():
+        # clear the dataset from memory
         dataset.close()
 
     # fill any remaining NaN values with fillna_val if provided
