@@ -314,7 +314,7 @@ def calc_spatiotemporal_mean_at_point(
     :param lat: Latitude of the storm's location.
     :param dataset: xarray Dataset containing the variable to calculate the spatial mean for.
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for.
-    :param radius_km: Radius in kilometers for the spatial mean calculation.
+    :param radius_km: Radius in kilometres for the spatial mean calculation.
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
@@ -412,7 +412,7 @@ def calc_spatiotemporal_mean(
     :param filename_prefix: Prefix for the dataset filenames to load.
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for
     :param new_col_name: Name of the new column to store the spatial mean values.
-    :param radius_km: Radius in kilometers for the spatial mean calculation.
+    :param radius_km: Radius in kilometres for the spatial mean calculation.
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
     :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
