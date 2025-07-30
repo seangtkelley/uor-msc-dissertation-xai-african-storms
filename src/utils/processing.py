@@ -15,6 +15,7 @@ from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
+import psutil
 import pyproj
 import xarray as xr
 from metpy.calc import geopotential_to_height
@@ -24,8 +25,12 @@ from scipy.stats import gaussian_kde
 
 import config
 
-# initialize pandarallel for parallel processing with progress bar
-pandarallel.initialize(progress_bar=True)
+# fallback to 6 workers if cpu_count is None
+nb_workers = psutil.cpu_count(logical=False) or 12
+# use half the physical cores for parallel processing
+nb_workers //= 2
+# initialize pandarallel for parallel processing
+pandarallel.initialize(progress_bar=True, nb_workers=nb_workers)
 
 # initialize the geodesic calculator with WGS84 ellipsoid
 # TODO: is there a better projection for East Africa?
