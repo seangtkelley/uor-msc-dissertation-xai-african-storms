@@ -280,10 +280,7 @@ if args.recalc_all or "mean_skt" not in processed_df.columns:
         np.where(
             processed_df["mean_sst"].isna(),
             processed_df["mean_land_skt"],
-            np.mean(
-                [processed_df["mean_land_skt"], processed_df["mean_sst"]],
-                axis=0,
-            ),
+            (processed_df["mean_land_skt"] + processed_df["mean_sst"]) / 2,
         ),
     )
 
