@@ -206,6 +206,7 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
         "prcp_tot_",
         "prcp",
         "mean_prcp_400",
+        timedelta=pd.Timedelta(hours=6),
         fillna_val=0.0,
         unit_conv_func=lambda x: x * 1000.0,
     )
@@ -218,7 +219,6 @@ if args.recalc_all or "mean_skt" not in processed_df.columns:
         "skt_sfc_",
         "skt",
         "mean_skt",
-        timedelta=pd.Timedelta(minutes=55),  # just capture the nearest hour
     )
 
 if args.recalc_all or "mean_sst" not in processed_df.columns:
@@ -229,7 +229,6 @@ if args.recalc_all or "mean_sst" not in processed_df.columns:
         "sst_sfc_",
         "sst",
         "mean_sst",
-        timedelta=pd.Timedelta(minutes=55),  # just capture the nearest hour
         variable_bounds=(250, 330),
     )
 

@@ -296,7 +296,7 @@ def calc_spatiotemporal_mean_at_point(
     dataset: xr.Dataset,
     variable_name: str,
     radius_km: float = 400,
-    timedelta: pd.Timedelta = pd.Timedelta(hours=6),
+    timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
     variable_bounds: Optional[tuple[float, float]] = None,
 ) -> np.floating:
@@ -362,9 +362,14 @@ def calc_spatiotemporal_mean_at_point(
         var_over_grid = var_over_grid.isel(valid_time=0)
     else:
         # otherwise, select the time range around the storm's timestamp
-        var_over_grid = var_over_grid.sel(
-            valid_time=slice(timestamp, timestamp + timedelta)
-        )
+        if timedelta is None:
+            var_over_grid = var_over_grid.sel(
+                valid_time=timestamp, method="nearest"
+            )
+        else:
+            var_over_grid = var_over_grid.sel(
+                valid_time=slice(timestamp, timestamp + timedelta)
+            )
 
     # get variable values over the grid cells
     var_over_grid = var_over_grid[variable_name].values
