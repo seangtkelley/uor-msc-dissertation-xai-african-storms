@@ -284,6 +284,23 @@ if args.recalc_all or "mean_skt" not in processed_df.columns:
         ),
     )
 
+wind_pres_levels = [200, 500, 850]
+if args.recalc_all or [
+    f"mean_u{level}" not in processed_df.columns for level in wind_pres_levels
+]:
+    print(
+        f"Calculating mean zonal wind speed at pressure levels {wind_pres_levels}..."
+    )
+    for level in wind_pres_levels:
+        processed_df = processing.calc_spatiotemporal_mean(
+            processed_df,
+            f"uwnd_{level}_",
+            "uwnd",
+            f"mean_u{level}",
+            squeeze_dims=["pressure_level"],
+            fillna_val=0.0,
+        )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
