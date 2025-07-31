@@ -322,6 +322,23 @@ if RECALC_ALL or any(
             fillna_val=0.0,
         )
 
+if RECALC_ALL or any(
+    should_recalc(f"mean_v{level}", processed_df.columns)
+    for level in wind_pres_levels
+):
+    print(
+        f"Calculating mean meridional wind speed at pressure levels {wind_pres_levels}..."
+    )
+    for level in wind_pres_levels:
+        processed_df = processing.calc_spatiotemporal_mean(
+            processed_df,
+            f"vwnd_{level}_",
+            "vwnd",
+            f"mean_v{level}",
+            squeeze_dims=["pressure_level"],
+            fillna_val=0.0,
+        )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
