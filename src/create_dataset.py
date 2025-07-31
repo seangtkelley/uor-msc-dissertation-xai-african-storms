@@ -33,7 +33,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-RECALC_FEATURES = args.recalc.split(",") if args.recalc else []
+RECALC_FEATURES = args.recalc.split(",") if args.recalc is not None else []
 RECALC_ALL = args.recalc == "all"
 
 if RECALC_ALL:
