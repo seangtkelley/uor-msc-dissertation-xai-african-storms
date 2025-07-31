@@ -13,6 +13,7 @@ __status__ = "Development"
 
 import argparse
 import os
+from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -26,19 +27,38 @@ parser = argparse.ArgumentParser(
     description="Create processed dataset from raw storm database and era5 data"
 )
 parser.add_argument(
-    "--recalc_all",
-    action="store_true",
-    help="Recalculate all features",
-    default=False,
+    "--recalc",
+    type=str,
+    help="Features to recalculate, separated by commas. If not specified, only features that are not already present in the dataset will be recalculated.",
 )
 args = parser.parse_args()
 
-if args.recalc_all:
+RECALC_FEATURES = args.recalc.split(",") if args.recalc else []
+RECALC_ALL = args.recalc == "all"
+
+if RECALC_ALL:
     print("Recalculating all features...")
+elif len(RECALC_FEATURES) > 0:
+    print("Recalculating features:", RECALC_FEATURES, "...")
 else:
     print(
         "Only recalculating features that are not already present in the dataset..."
     )
+
+
+def should_recalc(column_name: str, df_cols: Iterable[str]) -> bool:
+    """
+    Check if a column should be recalculated based on the command line argument.
+    :param column_name: Name of the column to check.
+    :param df_cols: List of columns in the processed dataframe.
+    :return: True if the column should be recalculated, False otherwise.
+    """
+    return (
+        RECALC_ALL
+        or column_name in RECALC_FEATURES
+        or column_name not in df_cols
+    )
+
 
 # load the raw storm database and rename the columns
 raw_df = pd.read_csv(config.RAW_STORM_DB_PATH, parse_dates=["timestamp"])
@@ -46,7 +66,7 @@ raw_df = processing.rename_columns(raw_df, column_map=config.COL_RENAME_MAP)
 
 # check if the processed dataset already exists
 processed_df = None
-if not args.recalc_all and os.path.exists(config.PROCESSED_DATASET_PATH):
+if not RECALC_ALL and os.path.exists(config.PROCESSED_DATASET_PATH):
     print("Loading existing processed dataset...")
 
     # load the existing processed dataset
@@ -83,9 +103,9 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
-if args.recalc_all or (
-    "orography_height" not in processed_df.columns
-    or "anor" not in processed_df.columns
+if RECALC_ALL or (
+    should_recalc("orography_height", processed_df.columns)
+    or should_recalc("anor", processed_df.columns)
 ):
     print("Calculating orography features...")
 
@@ -104,14 +124,14 @@ if args.recalc_all or (
     geop.close()
     anor.close()
 
-if args.recalc_all or "area" not in processed_df.columns:
+if RECALC_ALL or should_recalc("area", processed_df.columns):
     print("Calculating storm area...")
 
     # convert storm area from number of pixels to km^2
     # area is given in pixels. 18 pixels is roughly 350 km^2 (18.7 km x 18.7 km)
     processed_df["area"] = (raw_df["area"] / 18) * (18.7**2)
 
-if args.recalc_all or "storm_max_area" not in processed_df.columns:
+if RECALC_ALL or should_recalc("storm_max_area", processed_df.columns):
     print("Calculating storm maximum area...")
 
     # calculate the maximum storm area for each storm
@@ -120,11 +140,11 @@ if args.recalc_all or "storm_max_area" not in processed_df.columns:
     ].transform("max")
 
 if (
-    args.recalc_all
-    or "over_land" not in processed_df.columns
-    or "acc_land_time" not in processed_df.columns
-    or "storm_total_land_time" not in processed_df.columns
-    or "mean_land_frac" not in processed_df.columns
+    RECALC_ALL
+    or should_recalc("over_land", processed_df.columns)
+    or should_recalc("acc_land_time", processed_df.columns)
+    or should_recalc("storm_total_land_time", processed_df.columns)
+    or should_recalc("mean_land_frac", processed_df.columns)
 ):
     print("Calculating land mask features...")
 
@@ -147,12 +167,12 @@ if (
     lsm.close()
 
 if (
-    args.recalc_all
-    or "distance_from_prev" not in processed_df.columns
-    or "bearing_from_prev" not in processed_df.columns
-    or "storm_straight_line_distance" not in processed_df.columns
-    or "storm_bearing" not in processed_df.columns
-    or "storm_distance_traversed" not in processed_df.columns
+    RECALC_ALL
+    or should_recalc("distance_from_prev", processed_df.columns)
+    or should_recalc("bearing_from_prev", processed_df.columns)
+    or should_recalc("storm_straight_line_distance", processed_df.columns)
+    or should_recalc("storm_bearing", processed_df.columns)
+    or should_recalc("storm_distance_traversed", processed_df.columns)
 ):
     print("Calculating storm distances and bearings...")
 
@@ -160,9 +180,9 @@ if (
     processed_df = processing.calc_storm_distances_and_bearings(processed_df)
 
 if (
-    args.recalc_all
-    or "storm_min_bt" not in processed_df.columns
-    or "storm_min_bt_reached" not in processed_df.columns
+    RECALC_ALL
+    or should_recalc("storm_min_bt", processed_df.columns)
+    or should_recalc("storm_min_bt_reached", processed_df.columns)
 ):
     print("Calculating storm minimum cloudtop brightness...")
 
@@ -191,21 +211,21 @@ if (
         processed_df["storm_min_bt_reached"].astype(bool).ffill()
     )
 
-if args.recalc_all or "dmin_bt_dt" not in processed_df.columns:
+if RECALC_ALL or should_recalc("dmin_bt_dt", processed_df.columns):
     print("Calculating the rate of change of minimum cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
         processed_df, "min_bt", pd.Timedelta(days=1)
     )
 
-if args.recalc_all or "dmean_bt_dt" not in processed_df.columns:
+if RECALC_ALL or should_recalc("dmean_bt_dt", processed_df.columns):
     print("Calculating the rate of change of mean cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
         processed_df, "mean_bt", pd.Timedelta(days=1)
     )
 
-if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
+if RECALC_ALL or should_recalc("mean_prcp_400", processed_df.columns):
     print("Calculating mean precipitation...")
 
     processed_df = processing.calc_spatiotemporal_mean(
@@ -218,7 +238,7 @@ if args.recalc_all or "mean_prcp_400" not in processed_df.columns:
         unit_conv_func=lambda x: x * 1000.0,
     )
 
-if args.recalc_all or "mean_land_skt" not in processed_df.columns:
+if RECALC_ALL or should_recalc("mean_land_skt", processed_df.columns):
     print("Calculating mean land skin temperature...")
 
     # load the land sea mask
@@ -244,7 +264,7 @@ if args.recalc_all or "mean_land_skt" not in processed_df.columns:
     # close dataset
     lsm.close()
 
-if args.recalc_all or "mean_sst" not in processed_df.columns:
+if RECALC_ALL or should_recalc("mean_sst", processed_df.columns):
     print("Calculating mean sea surface temperature...")
 
     # load the land sea mask
@@ -270,7 +290,7 @@ if args.recalc_all or "mean_sst" not in processed_df.columns:
     # close dataset
     lsm.close()
 
-if args.recalc_all or "mean_skt" not in processed_df.columns:
+if RECALC_ALL or should_recalc("mean_skt", processed_df.columns):
     print("Calculating mean skin temperature...")
 
     # if mean_land_skt or mean_sst is nan, use the other, otherwise calculate the mean of the two
@@ -285,9 +305,10 @@ if args.recalc_all or "mean_skt" not in processed_df.columns:
     )
 
 wind_pres_levels = [200, 500, 850]
-if args.recalc_all or [
-    f"mean_u{level}" not in processed_df.columns for level in wind_pres_levels
-]:
+if RECALC_ALL or any(
+    should_recalc(f"mean_u{level}", processed_df.columns)
+    for level in wind_pres_levels
+):
     print(
         f"Calculating mean zonal wind speed at pressure levels {wind_pres_levels}..."
     )
