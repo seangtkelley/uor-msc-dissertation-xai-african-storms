@@ -89,10 +89,10 @@ Recommended for complete python environment isolation.
 | `swvl1_d1_*.nc` | Volumetric soil water layer 1 | m³/m³ |
 | `swvl2_d2_*.nc` | Volumetric soil water layer 2 | m³/m³ |
 | `ta_*_*.nc` | Air temperature at 500, 750 and 900 hPa | K [was used for theta e calculations] |
-| `tcwv_tot_*.nc` | Thickness of atmosphere mass content of water vapor | kg/m² [total column water vapor] |
-| `thetae_*_*.nc` | Equivalent potential temperature at 500, 750 and 900 hPa | K [first calculated dewpoint, then LCL temperature and finally theta e using metpy library] |
-| `uwnd_*_*.nc` | Zonal wind at 200, 500 and 850 hPa | - |
-| `vwnd_*_*.nc` | Meridional wind at 200, 500 and 850 hPa | - |
+| `tcwv_tot_*.nc` | Thickness of atmosphere mass content of water vapour | kg/m² [total column water vapour] |
+| `thetae_*_*.nc` | Equivalent potential temperature at 500, 750 and 900 hPa | K [first calculated dew point, then LCL temperature and finally theta e using metpy library] |
+| `uwnd_*_*.nc` | Zonal wind at 200, 500 and 850 hPa | m/s |
+| `vwnd_*_*.nc` | Meridional wind at 200, 500 and 850 hPa | m/s |
 
 ## Feature Description
 
@@ -128,13 +128,22 @@ Notes:
 | `mean_skt` | Surface temperature | K | Yes | No |
 | `mean_land_skt` | Land surface temperature (NaN if entire area is ocean) | K | Yes | No |
 | `mean_sst` | Sea surface temperature (NaN if entire area is land) | K | Yes | No |
+| `mean_swvl1` | Volumetric soil moisture in the top layer (<7 cm; NaN over ocean) | m³/m³ | Yes | No |
+| `mean_swvl2` | Volumetric soil moisture in the second layer (7–28 cm; NaN over ocean) | m³/m³ | Yes | No |
 | `mean_u850` | 850 hPa zonal wind | m/s | Yes | No |
 | `mean_u500` | 500 hPa zonal wind | m/s | Yes | No |
 | `mean_u200` | 200 hPa zonal wind | m/s | Yes | No |
 | `mean_v850` | 850 hPa meridional wind | m/s | Yes | No |
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
-| `mean_prcp_400` | Mean precipitation over the next 6 hr | mm/hr | Yes | **Yes** |
+| `mean_q_850` | 850 hPa specific humidity | kg/kg  | Yes | No |
+| `mean_q_500` | 500 hPa specific humidity | kg/kg  | Yes | No |
+| `mean_q_200` | 200 hPa specific humidity | kg/kg  | Yes | No |
+| `mean_cape` | Convective available potential energy (CAPE) | J/kg | Yes | No |
+| `olr_90` | 90th percentile of negative outgoing longwave radiation (OLR) within 400 km | W/m² | Yes | No |
+| `olr_75` | 75th percentile of negative OLR within 400 km | W/m² | Yes | No |
+| `olr_50` | 50th percentile of negative OLR within 400 km | W/m² | Yes | No |
+| `mean_prcp_400` | Precipitation over the next 6 hr | mm/hr | Yes | **Yes** |
 | `min_bt` | Minimum cloudtop brightness within storm area | K | Yes | No |
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr | Yes | No |
 | `mean_bt` | Mean cloudtop brightness within storm area | K | Yes | No |
@@ -144,7 +153,6 @@ Notes:
 | `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 | Yes | No |
 | `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - | Yes | No |
 <!--
-| mean_land_skt | Land surface temperature (NaN over ocean) | K |
 | mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
 | mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
 | ushear_850 | Meridional shear of 850 hPa zonal wind over India | m/s deg |
