@@ -396,10 +396,11 @@ def calc_spatiotemporal_mean(
     filename_prefix: str,
     variable_name: str,
     new_col_name: str,
+    mask: Optional[xr.DataArray] = None,
+    squeeze_dims: list[str] = [],
     radius_km: float = 400,
     timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
-    mask: Optional[xr.DataArray] = None,
     variable_bounds: Optional[tuple[float, float]] = None,
     fillna_val: Optional[float] = None,
     unit_conv_func: Optional[Callable] = None,
@@ -412,10 +413,11 @@ def calc_spatiotemporal_mean(
     :param filename_prefix: Prefix for the dataset filenames to load.
     :param variable_name: Name of the variable in the dataset to calculate the spatial mean for
     :param new_col_name: Name of the new column to store the spatial mean values.
+    :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
+    :param squeeze_dims: List of dimensions to squeeze from the dataset before processing.
     :param radius_km: Radius in kilometres for the spatial mean calculation.
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
-    :param mask: Optional mask to apply to the variable values (e.g., land-sea mask).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
     :param fillna_val: Optional value to fill NaN values in the new column.
     :param unit_conv_func: Optional function to convert the units of the spatial mean values
@@ -441,6 +443,10 @@ def calc_spatiotemporal_mean(
         # if mask is provided, apply it to the dataset over the entire grid
         if mask is not None:
             dataset = dataset.where(mask)
+
+        # squeeze dimensions if specified
+        if len(squeeze_dims) > 0:
+            dataset = dataset.squeeze(dim=squeeze_dims)
 
         # calculate the spatial mean at each point
         processed_df.loc[group.index, new_col_name] = group.parallel_apply(  # type: ignore
