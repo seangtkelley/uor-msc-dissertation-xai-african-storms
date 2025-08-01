@@ -155,7 +155,7 @@ if (
     # calculate the land fraction
     processed_df["mean_land_frac"] = np.nan
     processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
-        lambda row: processing.calc_spatiotemporal_mean_at_point(
+        lambda row: processing.calc_spatiotemporal_agg_at_point(
             row["timestamp"], row["lon"], row["lat"], lsm, "lsm", invariant=True
         ),
         axis=1,
@@ -223,7 +223,7 @@ if should_recalc("dmean_bt_dt", processed_df.columns):
 if should_recalc("mean_prcp_400", processed_df.columns):
     print("Calculating mean precipitation...")
 
-    processed_df = processing.calc_spatiotemporal_mean(
+    processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
         "prcp_tot_",
         "prcp",
@@ -247,7 +247,7 @@ if should_recalc("mean_land_skt", processed_df.columns):
         .astype(bool)
     )
 
-    processed_df = processing.calc_spatiotemporal_mean(
+    processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
         "skt_sfc_",
         "skt",
@@ -273,7 +273,7 @@ if should_recalc("mean_sst", processed_df.columns):
         .astype(bool)
     )
 
-    processed_df = processing.calc_spatiotemporal_mean(
+    processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
         "sst_sfc_",
         "sst",
@@ -299,16 +299,16 @@ if should_recalc("mean_skt", processed_df.columns):
         ),
     )
 
-wind_pres_levels = [200, 500, 850]
+pressure_levels = [200, 500, 850]
 if any(
     should_recalc(f"mean_u{level}", processed_df.columns)
-    for level in wind_pres_levels
+    for level in pressure_levels
 ):
     print(
-        f"Calculating mean zonal wind speed at pressure levels {wind_pres_levels}..."
+        f"Calculating mean zonal wind speed at pressure levels {pressure_levels}..."
     )
-    for level in wind_pres_levels:
-        processed_df = processing.calc_spatiotemporal_mean(
+    for level in pressure_levels:
+        processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"uwnd_{level}_",
             "uwnd",
@@ -319,19 +319,78 @@ if any(
 
 if any(
     should_recalc(f"mean_v{level}", processed_df.columns)
-    for level in wind_pres_levels
+    for level in pressure_levels
 ):
     print(
-        f"Calculating mean meridional wind speed at pressure levels {wind_pres_levels}..."
+        f"Calculating mean meridional wind speed at pressure levels {pressure_levels}..."
     )
-    for level in wind_pres_levels:
-        processed_df = processing.calc_spatiotemporal_mean(
+    for level in pressure_levels:
+        processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"vwnd_{level}_",
             "vwnd",
             f"mean_v{level}",
             squeeze_dims=["pressure_level"],
             fillna_val=0.0,
+        )
+
+if should_recalc("mean_swvl1", processed_df.columns):
+    print("Calculating mean volumetric soil moisture layer 1...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        "swvl1_d1_",
+        "swvl1",
+        "mean_swvl1",
+    )
+
+if should_recalc("mean_swvl2", processed_df.columns):
+    print("Calculating mean volumetric soil moisture layer 2...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        "swvl2_d2_",
+        "swvl2",
+        "mean_swvl2",
+    )
+
+if any(
+    should_recalc(f"mean_q_{level}", processed_df.columns)
+    for level in pressure_levels
+):
+    print(
+        f"Calculating mean specific humidity at pressure levels {pressure_levels}..."
+    )
+    for level in pressure_levels:
+        processed_df = processing.calc_spatiotemporal_agg(
+            processed_df,
+            f"shum_{level}_",
+            "shum",
+            f"mean_q_{level}",
+            squeeze_dims=["pressure_level"],
+        )
+
+if should_recalc("mean_cape", processed_df.columns):
+    print("Calculating mean convective available potential energy (CAPE)...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        "cape_0_",
+        "cape",
+        "mean_cape",
+    )
+
+olr_percents = [90, 75, 50]
+for percent in olr_percents:
+    if should_recalc(f"olr_{percent}", processed_df.columns):
+        print(f"Calculating {percent}th percentile of negative OLR...")
+
+        processed_df = processing.calc_spatiotemporal_agg(
+            processed_df,
+            f"olr_toa_",
+            "olr",
+            f"olr_{percent}",
+            agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
 # select only the columns that are in the config
