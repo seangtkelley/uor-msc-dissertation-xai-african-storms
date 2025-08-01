@@ -299,15 +299,15 @@ if should_recalc("mean_skt", processed_df.columns):
         ),
     )
 
-wind_pres_levels = [200, 500, 850]
+pressure_levels = [200, 500, 850]
 if any(
     should_recalc(f"mean_u{level}", processed_df.columns)
-    for level in wind_pres_levels
+    for level in pressure_levels
 ):
     print(
-        f"Calculating mean zonal wind speed at pressure levels {wind_pres_levels}..."
+        f"Calculating mean zonal wind speed at pressure levels {pressure_levels}..."
     )
-    for level in wind_pres_levels:
+    for level in pressure_levels:
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"uwnd_{level}_",
@@ -319,12 +319,12 @@ if any(
 
 if any(
     should_recalc(f"mean_v{level}", processed_df.columns)
-    for level in wind_pres_levels
+    for level in pressure_levels
 ):
     print(
-        f"Calculating mean meridional wind speed at pressure levels {wind_pres_levels}..."
+        f"Calculating mean meridional wind speed at pressure levels {pressure_levels}..."
     )
-    for level in wind_pres_levels:
+    for level in pressure_levels:
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"vwnd_{level}_",
@@ -354,15 +354,14 @@ if should_recalc("mean_swvl2", processed_df.columns):
         "mean_swvl2",
     )
 
-spec_hum_pres_levels = wind_pres_levels
 if any(
     should_recalc(f"mean_q_{level}", processed_df.columns)
-    for level in spec_hum_pres_levels
+    for level in pressure_levels
 ):
     print(
-        f"Calculating mean specific humidity at pressure levels {spec_hum_pres_levels}..."
+        f"Calculating mean specific humidity at pressure levels {pressure_levels}..."
     )
-    for level in spec_hum_pres_levels:
+    for level in pressure_levels:
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"shum_{level}_",
