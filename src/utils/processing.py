@@ -294,7 +294,7 @@ def calc_temporal_rate_of_change(
     return processed_df
 
 
-def calc_spatiotemporal_mean_at_point(
+def calc_spatiotemporal_agg_at_point(
     timestamp: pd.Timestamp,
     lon: float,
     lat: float,
@@ -304,6 +304,7 @@ def calc_spatiotemporal_mean_at_point(
     timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
     variable_bounds: Optional[tuple[float, float]] = None,
+    agg_func: Optional[Callable] = None,
 ) -> np.floating:
     """
     Calculate the spatial mean of a specified variable from an xarray dataset
@@ -318,6 +319,7 @@ def calc_spatiotemporal_mean_at_point(
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
+    :param agg_func: Optional aggregation function to apply to the variable values. If None, np.nanmean will be used.
     :return: Spatial mean of the specified variable within the radius.
     :rtype: np.floating
     """
@@ -388,10 +390,14 @@ def calc_spatiotemporal_mean_at_point(
         ]
 
     # return the mean over all the grid cells, ignoring NaNs unless all are NaN
-    return np.nanmean(var_over_grid)
+    return (
+        agg_func(var_over_grid)
+        if agg_func is not None
+        else np.nanmean(var_over_grid)
+    )
 
 
-def calc_spatiotemporal_mean(
+def calc_spatiotemporal_agg(
     processed_df: pd.DataFrame,
     filename_prefix: str,
     variable_name: str,
@@ -402,6 +408,7 @@ def calc_spatiotemporal_mean(
     timedelta: Optional[pd.Timedelta] = None,
     invariant: bool = False,
     variable_bounds: Optional[tuple[float, float]] = None,
+    agg_func: Optional[Callable] = None,
     fillna_val: Optional[float] = None,
     unit_conv_func: Optional[Callable] = None,
 ) -> pd.DataFrame:
@@ -419,6 +426,7 @@ def calc_spatiotemporal_mean(
     :param timedelta: Time delta to consider for the spatial mean calculation.
     :param invariant: If True, the variable is invariant in time (e.g., static data).
     :param variable_bounds: Optional tuple of (lower, upper) bounds to filter the variable values.
+    :param agg_func: Optional aggregation function to apply to the variable values. If None, np.nanmean will be used.
     :param fillna_val: Optional value to fill NaN values in the new column.
     :param unit_conv_func: Optional function to convert the units of the spatial mean values
                           (e.g., from Kelvin to Celsius).
@@ -450,7 +458,7 @@ def calc_spatiotemporal_mean(
 
         # calculate the spatial mean at each point
         processed_df.loc[group.index, new_col_name] = group.parallel_apply(  # type: ignore
-            lambda row: calc_spatiotemporal_mean_at_point(
+            lambda row: calc_spatiotemporal_agg_at_point(
                 row["timestamp"],
                 row["lon"],
                 row["lat"],
@@ -460,6 +468,7 @@ def calc_spatiotemporal_mean(
                 timedelta=timedelta,
                 invariant=invariant,
                 variable_bounds=variable_bounds,
+                agg_func=agg_func,
             ),
             axis=1,
         )
