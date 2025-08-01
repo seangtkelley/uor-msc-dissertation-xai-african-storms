@@ -89,13 +89,13 @@ if not RECALC_ALL and os.path.exists(config.PROCESSED_DATASET_PATH):
     processed_df = processed_df.merge(raw_df_subset, on=merge_keys, how="left")
 else:
     print("Creating processed dataset from scratch...")
-    if not args.recalc_all:
+    if not RECALC_ALL:
         print(
-            "Warning: args.recalc_all was set to False but existing processed dataset does not exist."
+            "Warning: args.recalc was not set but existing processed dataset does not exist."
         )
 
     # overwrite arg since the processed dataset does not exist
-    args.recalc_all = True
+    RECALC_ALL = True
 
     # processed_df will start as the raw dataframe
     processed_df = raw_df.copy()
@@ -103,9 +103,8 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
-if RECALC_ALL or (
-    should_recalc("orography_height", processed_df.columns)
-    or should_recalc("anor", processed_df.columns)
+if should_recalc("orography_height", processed_df.columns) or should_recalc(
+    "anor", processed_df.columns
 ):
     print("Calculating orography features...")
 
@@ -124,14 +123,14 @@ if RECALC_ALL or (
     geop.close()
     anor.close()
 
-if RECALC_ALL or should_recalc("area", processed_df.columns):
+if should_recalc("area", processed_df.columns):
     print("Calculating storm area...")
 
     # convert storm area from number of pixels to km^2
     # area is given in pixels. 18 pixels is roughly 350 km^2 (18.7 km x 18.7 km)
     processed_df["area"] = (raw_df["area"] / 18) * (18.7**2)
 
-if RECALC_ALL or should_recalc("storm_max_area", processed_df.columns):
+if should_recalc("storm_max_area", processed_df.columns):
     print("Calculating storm maximum area...")
 
     # calculate the maximum storm area for each storm
@@ -140,8 +139,7 @@ if RECALC_ALL or should_recalc("storm_max_area", processed_df.columns):
     ].transform("max")
 
 if (
-    RECALC_ALL
-    or should_recalc("over_land", processed_df.columns)
+    should_recalc("over_land", processed_df.columns)
     or should_recalc("acc_land_time", processed_df.columns)
     or should_recalc("storm_total_land_time", processed_df.columns)
     or should_recalc("mean_land_frac", processed_df.columns)
@@ -167,8 +165,7 @@ if (
     lsm.close()
 
 if (
-    RECALC_ALL
-    or should_recalc("distance_from_prev", processed_df.columns)
+    should_recalc("distance_from_prev", processed_df.columns)
     or should_recalc("bearing_from_prev", processed_df.columns)
     or should_recalc("storm_straight_line_distance", processed_df.columns)
     or should_recalc("storm_bearing", processed_df.columns)
@@ -179,10 +176,8 @@ if (
     # calculate the distance and bearing from the previous point for each storm
     processed_df = processing.calc_storm_distances_and_bearings(processed_df)
 
-if (
-    RECALC_ALL
-    or should_recalc("storm_min_bt", processed_df.columns)
-    or should_recalc("storm_min_bt_reached", processed_df.columns)
+if should_recalc("storm_min_bt", processed_df.columns) or should_recalc(
+    "storm_min_bt_reached", processed_df.columns
 ):
     print("Calculating storm minimum cloudtop brightness...")
 
@@ -211,21 +206,21 @@ if (
         processed_df["storm_min_bt_reached"].astype(bool).ffill()
     )
 
-if RECALC_ALL or should_recalc("dmin_bt_dt", processed_df.columns):
+if should_recalc("dmin_bt_dt", processed_df.columns):
     print("Calculating the rate of change of minimum cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
         processed_df, "min_bt", pd.Timedelta(days=1)
     )
 
-if RECALC_ALL or should_recalc("dmean_bt_dt", processed_df.columns):
+if should_recalc("dmean_bt_dt", processed_df.columns):
     print("Calculating the rate of change of mean cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
         processed_df, "mean_bt", pd.Timedelta(days=1)
     )
 
-if RECALC_ALL or should_recalc("mean_prcp_400", processed_df.columns):
+if should_recalc("mean_prcp_400", processed_df.columns):
     print("Calculating mean precipitation...")
 
     processed_df = processing.calc_spatiotemporal_mean(
@@ -238,7 +233,7 @@ if RECALC_ALL or should_recalc("mean_prcp_400", processed_df.columns):
         unit_conv_func=lambda x: x * 1000.0,
     )
 
-if RECALC_ALL or should_recalc("mean_land_skt", processed_df.columns):
+if should_recalc("mean_land_skt", processed_df.columns):
     print("Calculating mean land skin temperature...")
 
     # load the land sea mask
@@ -264,7 +259,7 @@ if RECALC_ALL or should_recalc("mean_land_skt", processed_df.columns):
     # close dataset
     lsm.close()
 
-if RECALC_ALL or should_recalc("mean_sst", processed_df.columns):
+if should_recalc("mean_sst", processed_df.columns):
     print("Calculating mean sea surface temperature...")
 
     # load the land sea mask
@@ -290,7 +285,7 @@ if RECALC_ALL or should_recalc("mean_sst", processed_df.columns):
     # close dataset
     lsm.close()
 
-if RECALC_ALL or should_recalc("mean_skt", processed_df.columns):
+if should_recalc("mean_skt", processed_df.columns):
     print("Calculating mean skin temperature...")
 
     # if mean_land_skt or mean_sst is nan, use the other, otherwise calculate the mean of the two
@@ -305,7 +300,7 @@ if RECALC_ALL or should_recalc("mean_skt", processed_df.columns):
     )
 
 wind_pres_levels = [200, 500, 850]
-if RECALC_ALL or any(
+if any(
     should_recalc(f"mean_u{level}", processed_df.columns)
     for level in wind_pres_levels
 ):
@@ -322,7 +317,7 @@ if RECALC_ALL or any(
             fillna_val=0.0,
         )
 
-if RECALC_ALL or any(
+if any(
     should_recalc(f"mean_v{level}", processed_df.columns)
     for level in wind_pres_levels
 ):
