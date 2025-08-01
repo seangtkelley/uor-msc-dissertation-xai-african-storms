@@ -334,6 +334,53 @@ if any(
             fillna_val=0.0,
         )
 
+if should_recalc("mean_swvl1", processed_df.columns):
+    print("Calculating mean volumetric soil moisture layer 1...")
+
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "swvl1_d1_",
+        "swvl1",
+        "mean_swvl1",
+    )
+
+if should_recalc("mean_swvl2", processed_df.columns):
+    print("Calculating mean volumetric soil moisture layer 2...")
+
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "swvl2_d2_",
+        "swvl2",
+        "mean_swvl2",
+    )
+
+spec_hum_pres_levels = wind_pres_levels
+if any(
+    should_recalc(f"mean_q_{level}", processed_df.columns)
+    for level in spec_hum_pres_levels
+):
+    print(
+        f"Calculating mean specific humidity at pressure levels {spec_hum_pres_levels}..."
+    )
+    for level in spec_hum_pres_levels:
+        processed_df = processing.calc_spatiotemporal_mean(
+            processed_df,
+            f"shum_{level}_",
+            "shum",
+            f"mean_q_{level}",
+            squeeze_dims=["pressure_level"],
+        )
+
+if should_recalc("mean_cape", processed_df.columns):
+    print("Calculating mean convective available potential energy (CAPE)...")
+
+    processed_df = processing.calc_spatiotemporal_mean(
+        processed_df,
+        "cape_0_",
+        "cape",
+        "mean_cape",
+    )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
