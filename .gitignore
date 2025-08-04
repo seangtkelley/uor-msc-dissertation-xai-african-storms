@@ -207,6 +207,9 @@ report/*.blg
 report/*.run.xml
 report/*.bcf
 report/*-blx.bib
+report/*.lof
+report/*.lot
+report/*.bbl
 
 # ignore data directory
 data
