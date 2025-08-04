@@ -393,6 +393,50 @@ for percent in olr_percents:
             agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
+if should_recalc("wind_angle_anor", processed_df.columns):
+    print("Calculating wind angle relative to subgrid orography...")
+    # TODO: should use mean wind components or centroid wind components?
+    # TODO: should use mean orography angle or centroid orography angle?
+    # TODO: is anor upslope or downslope?
+
+    # rotate/project wind vectors by subgrid orography angle
+    processed_df["wind_angle_anor"] = processed_df["mean_u200"] * np.sin(
+        processed_df["anor"]
+    ) + processed_df["mean_v200"] * np.cos(processed_df["anor"])
+
+    # load geopotential data and convert to height
+    geop, height = processing.load_geop_and_calc_elevation()
+
+    # perform batch indexing for geopotential height
+    lons = xr.DataArray(processed_df["lon"].to_numpy())
+    lats = xr.DataArray(processed_df["lat"].to_numpy())
+    closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
+    closest_lat_indices = processing.closest_indices(
+        closest_geop.latitude.values, geop.latitude.values
+    )
+    closest_lon_indices = processing.closest_indices(
+        closest_geop.longitude.values, geop.longitude.values
+    )
+
+    # calculate grid spacing from geop
+    dx = geop["longitude"].diff(dim="longitude").mean().item()
+    dy = geop["latitude"].diff(dim="latitude").mean().item()
+
+    # calculate the upslope angle of the orography
+    dz_dx, dz_dy = np.gradient(height, dx, dy)
+    theta_upslope = np.arctan2(dz_dy, dz_dx)  # radians from east
+
+    # calculate the wind angle relative to the upslope angle
+    processed_df["wind_angle_upslope"] = processed_df["mean_u200"] * np.sin(
+        theta_upslope[closest_lat_indices, closest_lon_indices]
+    ) + processed_df["mean_v200"] * np.cos(
+        theta_upslope[closest_lat_indices, closest_lon_indices]
+    )
+
+    # close datasets
+    geop.close()
+
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
