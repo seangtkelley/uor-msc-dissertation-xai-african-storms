@@ -1,6 +1,8 @@
 \documentclass[a4paper,11pt,oneside]{book} 
 \usepackage{CS_report}
 
+\makeglossaries
+\makenomenclature
 \begin{document}
 
     \captionsetup[figure]{margin=1.5cm,font=small,name={Figure},labelsep=colon}
@@ -47,7 +49,15 @@
     \tableofcontents
     \listoffigures
     \listoftables
-    \input{chapters/glossaries}
+
+    \include{chapters/nomenclature}
+    \printnomenclature
+    \newpage
+
+    \include{chapters/glossary}
+    \printglossary
+    \printglossary[type=\acronymtype]
+    \newpage
 
     \mainmatter
     

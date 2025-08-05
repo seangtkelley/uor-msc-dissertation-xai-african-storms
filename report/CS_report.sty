@@ -99,11 +99,13 @@
 %\usepackage{longtable,booktabs}
 
 %%-------------------------------------
-%% List of Abbreviations settings
+%% Glossary settings
 %%-------------------------------------
 \usepackage{enumitem}
-\newlist{abbrv}{itemize}{1}
-\setlist[abbrv,1]{label=,labelwidth=1in,align=parleft,itemsep=0.1\baselineskip,leftmargin=!}
+% \newlist{abbrv}{itemize}{1}
+% \setlist[abbrv,1]{label=,labelwidth=1in,align=parleft,itemsep=0.1\baselineskip,leftmargin=!}
+\usepackage[acronym]{glossaries}
+\usepackage{nomencl}
 
 %%-------------------------------------
 %% Link and reference configuration
@@ -134,7 +136,7 @@
 \usepackage[semicolon,authoryear]{natbib}
 \bibliographystyle{ametsocV6}
     
-\usepackage[nottoc]{tocbibind}  % ensure references are included in TOC
+\usepackage[nottoc,notlof,notlot]{tocbibind}  % ensure references are included in TOC
 \renewcommand{\bibname}{References} % DO NOT remove or switch off
 
 %%-------------------------------------
