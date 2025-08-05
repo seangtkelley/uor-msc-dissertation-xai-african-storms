@@ -82,6 +82,20 @@
 \lstset{style=mystyle}
 
 %%-------------------------------------
+%% Link and reference configuration
+%%-------------------------------------
+\usepackage{hyperref}
+\usepackage[nameinlink]{cleveref}
+\definecolor{DarkBlue}{rgb}{0.00,0.00,0.50}
+\hypersetup{colorlinks=true,
+            linkcolor=blue,
+            filecolor=magenta,
+            urlcolor=cyan,
+            citecolor=DarkBlue,
+            pdftitle={MSc UoR Computer Science Report},
+            }
+
+%%-------------------------------------
 %% Graphics/Figures environment settings
 %%-------------------------------------
 \usepackage{graphicx}
@@ -106,20 +120,6 @@
 % \setlist[abbrv,1]{label=,labelwidth=1in,align=parleft,itemsep=0.1\baselineskip,leftmargin=!}
 \usepackage[acronym]{glossaries}
 \usepackage{nomencl}
-
-%%-------------------------------------
-%% Link and reference configuration
-%%-------------------------------------
-\usepackage[hidelinks]{hyperref}
-\usepackage[nameinlink]{cleveref}
-\definecolor{DarkBlue}{rgb}{0.00,0.00,0.50}
-\hypersetup{colorlinks=true,
-            linkcolor=blue,
-            filecolor=magenta,
-            urlcolor=cyan,
-            citecolor=DarkBlue,
-            pdftitle={MSc UoR Computer Science Report},
-            }
 
 %%-------------------------------------
 %% Bibliography/References settings   - Harvard Style was used in this report
