@@ -22,6 +22,7 @@ from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
+from tqdm import tqdm
 
 import config
 
@@ -518,26 +519,39 @@ def calc_wind_angle(processed_df: pd.DataFrame) -> pd.DataFrame:
     grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
 
     # iterate over each year to calculate wind angles
-    for year, group in grouped:
+    for year, group in tqdm(
+        list(grouped), desc="Calculating wind angles by year"
+    ):
         # load u and v wind components at 850 hPa (closest to ground)
         u_wind = xr.open_dataset(
             config.DATA_DIR / "std" / f"uwnd_850_{year}.nc"
-        )
+        ).squeeze(dim="pressure_level")
         v_wind = xr.open_dataset(
             config.DATA_DIR / "std" / f"vwnd_850_{year}.nc"
-        )
+        ).squeeze(dim="pressure_level")
 
         # perform batch indexing for u and v wind components
         group_lons = xr.DataArray(group["lon"].to_numpy())
         group_lats = xr.DataArray(group["lat"].to_numpy())
+        group_timestamps = xr.DataArray(group["timestamp"].to_numpy())
 
         # calculate the wind angle at each point
         processed_df.loc[group.index, "wind_angle"] = np.arctan2(
             v_wind["vwnd"]
-            .sel(latitude=group_lats, longitude=group_lons, method="nearest")
+            .sel(
+                valid_time=group_timestamps,
+                latitude=group_lats,
+                longitude=group_lons,
+                method="nearest",
+            )
             .values,
             u_wind["uwnd"]
-            .sel(latitude=group_lats, longitude=group_lons, method="nearest")
+            .sel(
+                valid_time=group_timestamps,
+                latitude=group_lats,
+                longitude=group_lons,
+                method="nearest",
+            )
             .values,
         )
 
