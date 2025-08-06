@@ -103,8 +103,11 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
-if should_recalc("orography_height", processed_df.columns) or should_recalc(
-    "anor", processed_df.columns
+if (
+    should_recalc("orography_height", processed_df.columns)
+    or should_recalc("anor", processed_df.columns)
+    or should_recalc("upslope_angle", processed_df.columns)
+    or should_recalc("slope_magnitude", processed_df.columns)
 ):
     print("Calculating orography features...")
 
@@ -393,75 +396,22 @@ for percent in olr_percents:
             agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
-if should_recalc("wind_angle_anor", processed_df.columns):
-    print("Calculating wind angle relative to subgrid orography...")
+if should_recalc("wind_angle", processed_df.columns) or should_recalc(
+    "wind_angle_upslope", processed_df.columns
+):
+    print("Calculating wind angle relative to upslope angle...")
 
-    # load geopotential data and convert to height
-    geop, height = processing.load_geop_and_calc_elevation()
+    processed_df = processing.calc_wind_angle(processed_df)
 
-    # perform batch indexing for geopotential height
-    lons = xr.DataArray(processed_df["lon"].to_numpy())
-    lats = xr.DataArray(processed_df["lat"].to_numpy())
-    closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
-    geop_lat_idx = processing.closest_indices(
-        closest_geop.latitude.values, geop.latitude.values
-    )
-    geop_lon_idx = processing.closest_indices(
-        closest_geop.longitude.values, geop.longitude.values
-    )
-
-    # calculate grid spacing from geop
-    dx = geop["longitude"].diff(dim="longitude").mean().item()
-    dy = geop["latitude"].diff(dim="latitude").mean().item()
-
-    # calculate the upslope angle of the orography
-    dz_dx, dz_dy = np.gradient(height, dx, dy)
-    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east
-
-    # group storm data by year
-    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
-
-    # iterate over each year to calculate wind angles
-    for year, group in grouped:
-        # load u and v wind components at 850 hPa (closest to ground)
-        u_wind = xr.open_dataset(
-            config.DATA_DIR / "std" / f"uwnd_850_{year}.nc"
-        )
-        v_wind = xr.open_dataset(
-            config.DATA_DIR / "std" / f"vwnd_850_{year}.nc"
-        )
-
-        # perform batch indexing for u and v wind components
-        group_lons = xr.DataArray(group["lon"].to_numpy())
-        group_lats = xr.DataArray(group["lat"].to_numpy())
-
-        # calculate the wind angle at each point
-        processed_df.loc[group.index, "wind_angle"] = np.arctan2(
-            v_wind["vwnd"]
-            .sel(latitude=group_lats, longitude=group_lons, method="nearest")
-            .values,
-            u_wind["uwnd"]
-            .sel(latitude=group_lats, longitude=group_lons, method="nearest")
-            .values,
-        )
-
-        # close datasets
-        u_wind.close()
-        v_wind.close()
-
-    # rotate the wind angle to be relative to the subgrid orography
+    # rotate the wind angle to be relative to the upslope angle
     processed_df["wind_angle_upslope"] = (
-        processed_df["wind_angle"] - upslope_angle[geop_lat_idx, geop_lon_idx]
+        processed_df["wind_angle"] - processed_df["upslope_angle"]
     )
 
     # ensure the wind angle is in the range [0, 2*pi)
     processed_df["wind_angle_upslope"] = processed_df["wind_angle_upslope"] % (
         2 * np.pi
     )
-
-    # close datasets
-    geop.close()
-
 
 # select only the columns that are in the config
 processed_df = processed_df[
