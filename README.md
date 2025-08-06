@@ -73,7 +73,7 @@ Recommended for complete python environment isolation.
 |--------------|-------------|-------------|
 | `geop.nc` | Geopotential | m²/s² (divide by 9.81 m/s to get orography) |
 | `lsm.nc`  |  land-sea mask | Boolean |
-| `anor.nc` | Angle of sub-gridscale orography | radians | 
+| `anor.nc` | Angle of sub-gridscale orography | radians from East | 
 
 #### Hourly data stored in yearly files:
 
@@ -110,11 +110,13 @@ Notes:
 | `lon` | Longitude of LPS centre | ° E | Yes | No |
 | `lat` | Latitude of LPS centre | ° N | Yes | No |
 | `orography_height` | Elevation of land surface under centre | m | Yes | No |
-| `anor` | Angle of sub-gridscale orography | radians | Yes | No |
+| `anor` | Angle of sub-gridscale orography | radians from East | Yes | No |
+| `upslope_angle` | Upslope angle relative to East | radians from East | Yes | No |
+| `slope_magnitude` | Magnitude of slope | m/m  | Yes | No |
 | `over_land` | Flag for LPS centre (True if storm centre is over land, else False) | boolean | Yes | No |
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
 | `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
-| `mean_land_frac` | Fraction of area within 400 km that is over land | ratio | Yes | No |
+| `mean_land_frac` | Fraction of area within 400 km that is over land | ratio ($[0,1]$) | Yes | No |
 | `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
 | `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
 | `area` | Area of the storm | km² | Yes | No |
@@ -136,9 +138,11 @@ Notes:
 | `mean_v850` | 850 hPa meridional wind | m/s | Yes | No |
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
-| `mean_q_850` | 850 hPa specific humidity | kg/kg  | Yes | No |
-| `mean_q_500` | 500 hPa specific humidity | kg/kg  | Yes | No |
-| `mean_q_200` | 200 hPa specific humidity | kg/kg  | Yes | No |
+| `wind_angle` | Wind direction | radians from East | Yes | No |
+| `wind_angle_upslope` | Wind direction relative to Orographic slope | radians from `upslope_angle` | Yes | No |
+| `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
+| `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
+| `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
 | `mean_cape` | Convective available potential energy (CAPE) | J/kg | Yes | No |
 | `olr_90` | 90th percentile of negative outgoing longwave radiation (OLR) within 400 km | W/m² | Yes | No |
 | `olr_75` | 75th percentile of negative OLR within 400 km | W/m² | Yes | No |
