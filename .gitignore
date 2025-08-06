@@ -198,7 +198,7 @@ cython_debug/
 
 # latex build files
 report/*.synctex.gz
-report/*.aux
+report/**/*.aux
 report/*.log
 report/*.out
 report/*.toc
@@ -207,6 +207,20 @@ report/*.blg
 report/*.run.xml
 report/*.bcf
 report/*-blx.bib
+report/*.lof
+report/*.lot
+report/*.bbl
+report/*.acn
+report/*.acr
+report/*.alg
+report/*.glg
+report/*.glo
+report/*.gls
+report/*.glsdefs
+report/*.ilg
+report/*.ist
+report/*.nlo
+report/*.nls
 
 # ignore data directory
 data
@@ -216,3 +230,4 @@ models/run_*
 
 # ignore wandb files
 wandb/
+

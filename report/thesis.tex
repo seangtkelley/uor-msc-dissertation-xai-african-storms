@@ -1,0 +1,78 @@
+\documentclass[a4paper,11pt,oneside]{book} 
+\usepackage{CS_report}
+
+\glsenablehyper
+\makeglossaries
+\makenomenclature
+\begin{document}
+
+    \captionsetup[figure]{margin=1.5cm,font=small,name={Figure},labelsep=colon}
+    \captionsetup[table]{margin=1.5cm,font=small,name={Table},labelsep=colon}
+    
+    \frontmatter
+    
+    \begin{titlepage}      
+        \begin{center}
+            \includegraphics[width=3cm]{figures/uorlogo.png}\\[0.5cm]
+            {\LARGE University of Reading\\[0.5cm]
+            Department of Meteorology}\\[2cm]
+			%{\color{blue} \rule{\textwidth}{1pt}}
+			
+            \linespread{1.2}\huge {
+                Using machine learning to predict the intensification and propagation of East African storms
+            
+            }
+            \linespread{1}~\\[2cm]
+			%{\color{blue} \rule{\textwidth}{1pt}}
+            {\Large
+                Sean Kelley
+            }\\[1cm] 
+            
+            {\large           
+                \emph{Primary Supervisor:} Dr. Eliza Karlowska\\
+                \emph{Co-supervisors:} Dr. Kieran Hunt, Prof. Andy Turner 
+            }\\[1cm]
+            
+            \large A report submitted in partial fulfilment of the requirements of\\the University of Reading for the degree of\\
+            Master of Science in \textit{Climate Change and Artificial Intelligence (AI)}\\[0.3cm] 
+            \vfill
+            
+            \today % \date{April 2020} for fixed date
+        \end{center}
+    \end{titlepage}
+    
+    \input{chapters/declaration}
+    
+    \input{chapters/abstract}
+
+    \input{chapters/acknowledgments}
+
+    \tableofcontents
+    \listoffigures
+    \listoftables
+
+    \include{chapters/nomenclature}
+    \printnomenclature
+    \newpage
+
+    \include{chapters/glossary}
+    \printglossary
+    \printglossary[type=\acronymtype]
+    \newpage
+
+    \mainmatter
+    
+    \input{chapters/introduction}
+    \input{chapters/literature}
+    \input{chapters/methodology}
+    \input{chapters/results}
+    \input{chapters/discussion}
+    \input{chapters/conclusions}
+
+    \bibliography{references}
+    
+    \begin{appendices}
+        \input{chapters/appendix_A}
+    \end{appendices}
+    
+\end{document}
