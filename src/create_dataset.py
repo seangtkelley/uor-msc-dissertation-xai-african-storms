@@ -396,22 +396,23 @@ for percent in olr_percents:
             agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
-if should_recalc("wind_angle", processed_df.columns) or should_recalc(
-    "wind_angle_upslope", processed_df.columns
-):
-    print("Calculating wind angle relative to upslope angle...")
+if should_recalc("wind_angle", processed_df.columns):
+    print("Calculating wind angle...")
 
     processed_df = processing.calc_wind_angle(processed_df)
+
+if should_recalc("wind_angle_upslope", processed_df.columns):
+    print("Calculating wind angle relative to upslope angle...")
 
     # rotate the wind angle to be relative to the upslope angle
     processed_df["wind_angle_upslope"] = (
         processed_df["wind_angle"] - processed_df["upslope_angle"]
     )
 
-    # ensure the wind angle is in the range [0, 2*pi)
-    processed_df["wind_angle_upslope"] = processed_df["wind_angle_upslope"] % (
-        2 * np.pi
-    )
+    # ensure the wind angle is in the range [-pi, pi]
+    processed_df["wind_angle_upslope"] = (
+        processed_df["wind_angle_upslope"] + np.pi
+    ) % (2 * np.pi) - np.pi
 
 # select only the columns that are in the config
 processed_df = processed_df[
