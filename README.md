@@ -55,7 +55,7 @@ Recommended for complete python environment isolation.
 
 ## Data Description
 
-### Storm Database
+### Database of East African Mesoscale Convective Systems (MCSs)
 - file: `East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv`
 - 27,982 storms longer than 3 hours and that had all storm centroids along the track within (3-15N, 34-52E)
 
@@ -98,8 +98,8 @@ Recommended for complete python environment isolation.
 
 Notes:
 - The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
-- All variables with the `storm_` prefix are valid over the entire storm lifetime, while the others are valid only for the current time step.
-- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the storm centre, **not** the storm area.
+- All variables with the `storm_` prefix are valid over the entire MCS lifetime, while the others are valid only for the current time step.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the MCS centre, **not** the MCS area.
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
@@ -113,20 +113,20 @@ Notes:
 | `anor` | Angle of sub-gridscale orography at MCS centre | radians from East | Yes | No |
 | `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from North | Yes | No |
 | `slope_magnitude` | Magnitude of slope | m/m  | Yes | No |
-| `over_land` | Flag for MCS centre (True if storm centre is over land, else False) | boolean | Yes | No |
+| `over_land` | Flag for MCS centre (True if MCS centre is over land, else False) | boolean | Yes | No |
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
-| `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
+| `storm_total_land_time` | Final value of `acc_land_time` for MCS | hr | Yes | No |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio ($[0,1]$) | Yes | No |
 | `zonal_speed` | $x$-component of MCS centre propagation vector | km/hr | Yes | No |
 | `meridional_speed` | $y$-component of MCS centre propagation vector | km/hr | Yes | No |
-| `area` | Area of the storm | km² | Yes | No |
-| `storm_max_area` | Max value of `area` over storm | km² | Yes | No |
-| `bearing_from_prev` | Compass bearing from previous point | ° from North | Yes | No |
-| `distance_from_prev` | Distance traversed from previous point | km | Yes | No |
+| `area` | Area of the MCS | km² | Yes | No |
+| `storm_max_area` | Max value of `area` over MCS | km² | Yes | No |
+| `bearing_from_prev` | Compass bearing from previous observation | ° from North | Yes | No |
+| `distance_from_prev` | Distance traversed from previous observation | km | Yes | No |
 | `distance_traversed` | Cumulative sum of `distance_from_prev` | km | Yes | No |
-| `storm_bearing` | Compass bearing from first to last point of storm | ° from North | Yes | No |
-| `storm_distance_traversed` | Total cumulative distance traversed by storm | km | Yes | No |
-| `storm_straight_line_distance` | Distance from first to last point of storm | km | Yes | No |
+| `storm_bearing` | Compass bearing from first to last MCS centre | ° from North | Yes | No |
+| `storm_distance_traversed` | Total cumulative distance traversed by MCS centre | km | Yes | No |
+| `storm_straight_line_distance` | Distance from first to last MCS centre | km | Yes | No |
 | `mean_skt` | Surface temperature | K | Yes | No |
 | `mean_land_skt` | Land surface temperature (NaN if entire area is ocean) | K | Yes | No |
 | `mean_sst` | Sea surface temperature (NaN if entire area is land) | K | Yes | No |
@@ -148,16 +148,11 @@ Notes:
 | `olr_75` | 75th percentile of negative OLR within 400 km | W/m² | Yes | No |
 | `olr_50` | 50th percentile of negative OLR within 400 km | W/m² | Yes | No |
 | `mean_prcp_400` | Precipitation over the next 6 hr | mm/hr | Yes | **Yes** |
-| `min_bt` | Minimum cloudtop brightness within storm area | K | Yes | No |
+| `min_bt` | Minimum cloudtop brightness within MCS area | K | Yes | No |
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr | Yes | No |
-| `mean_bt` | Mean cloudtop brightness within storm area | K | Yes | No |
+| `mean_bt` | Mean cloudtop brightness within MCS area | K | Yes | No |
 | `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr | Yes | No |
-| `storm_min_bt` | Minimum value of `min_bt` reached by a storm | K | Yes | **Yes** |
+| `storm_min_bt` | Minimum value of `min_bt` reached over MCS lifetime | K | Yes | **Yes** |
 | `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean | Yes | No |
 | `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 | Yes | No |
 | `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - | Yes | No |
-<!--
-| mean_dthetae_dp_900_750 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 900 and 750 hPa | K/hPa |
-| mean_dthetae_dp_750_500 | $ d\left(\mathsf{theta}\_\mathsf{e}\right)/ dp $ between 750 and 500 hPa | K/hPa |
-| ushear_850 | Meridional shear of 850 hPa zonal wind over India | m/s deg |
--->
