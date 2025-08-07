@@ -13,7 +13,6 @@ __status__ = "Development"
 
 import argparse
 import os
-from datetime import datetime
 from typing import Iterable
 
 import numpy as np
@@ -433,24 +432,13 @@ if should_recalc("mean_tcwv", processed_df.columns):
 if should_recalc("date_angle", processed_df.columns):
     print("Calculating date angle...")
 
-    def date_to_angle(dt: datetime) -> float:
-        """Convert a datetime to an angle in degrees.
-
-        :param dt: The datetime to convert.
-        :return: The angle in degrees (0-360) representing the day of the year.
-        """
-        # calculate the day of the year (1-365)
-        day_of_year = (dt - datetime(dt.year, 1, 1)).days + 1
-
-        # calculate the number of days in the year
-        days_in_year = (
-            datetime(dt.year + 1, 1, 1) - datetime(dt.year, 1, 1)
-        ).days
-
-        # convert to angle
-        return (day_of_year / days_in_year) * 360
-
-    processed_df["date_angle"] = processed_df["timestamp"].apply(date_to_angle)
+    day_of_year = processed_df["timestamp"].dt.dayofyear
+    days_in_year = (
+        processed_df["timestamp"]
+        .dt.is_leap_year.replace({True: 366, False: 365})
+        .infer_objects(copy=False)
+    )
+    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
 
 
 # select only the columns that are in the config
