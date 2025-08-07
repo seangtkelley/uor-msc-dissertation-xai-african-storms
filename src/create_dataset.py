@@ -106,7 +106,7 @@ processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 if (
     should_recalc("orography_height", processed_df.columns)
     or should_recalc("anor", processed_df.columns)
-    or should_recalc("upslope_angle", processed_df.columns)
+    or should_recalc("upslope_bearing", processed_df.columns)
     or should_recalc("slope_magnitude", processed_df.columns)
 ):
     print("Calculating orography features...")
