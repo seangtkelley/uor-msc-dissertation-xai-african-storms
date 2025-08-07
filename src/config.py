@@ -75,6 +75,7 @@ COL_RENAME_MAP = {
 }
 
 FEATURE_COL_NAMES = [
+    "date_angle",
     "eat_hours",
     "storm_total_duration",
     "lon",

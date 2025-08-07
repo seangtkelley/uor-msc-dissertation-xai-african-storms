@@ -105,6 +105,7 @@ Notes:
 |--------------|-------------|-------------|-------------|-------------|
 | `storm_id` | Unique identifier for each MCS | - | No | No |
 | `timestamp` | Datetime of observation | UTC | No | No |
+| `date_angle` | Angle representation of current date within year | radians | Yes | No |
 | `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
 | `storm_total_duration` | Total duration of MCS | hr | Yes | **Yes** |
 | `lon` | Longitude of MCS centre | ° E | Yes | No |
