@@ -98,7 +98,7 @@ def get_orography_features(
     :param geop: Geopotential dataset containing 'geop' variable.
     :param height: Height calculated from geopotential data.
     :param anor: Dataset containing subgrid orography angle data.
-    :return: DataFrame with additional columns for orography height and subgrid orography angle (anor).
+    :return: DataFrame with additional columns for orography height, subgrid orography angle (anor), upslope bearing, and slope magnitude.
     :rtype: pd.DataFrame
     """
     # extract longitude and latitude arrays
@@ -125,11 +125,11 @@ def get_orography_features(
     # calculate the upslope angle of the orography
     dz_dx, dz_dy = np.gradient(height, dx, dy)
     upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi)
-    processed_df["upslope_angle"] = upslope_angle[geop_lat_idx, geop_lon_idx]
+    processed_df["upslope_bearing"] = upslope_angle[geop_lat_idx, geop_lon_idx]
 
     # convert upslope angle to bearing (degrees from north)
     processed_df["upslope_bearing"] = (
-        90 - np.degrees(processed_df["upslope_angle"])
+        90 - np.degrees(processed_df["upslope_bearing"])
     ) % 360
 
     # calculate slope magnitude
