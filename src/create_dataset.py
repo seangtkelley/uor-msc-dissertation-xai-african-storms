@@ -410,14 +410,11 @@ if should_recalc("wind_angle_upslope", processed_df.columns):
     # e.g. wind is going upslope: wind_angle_upslope = 0
     # e.g. wind is going downslope: wind_angle_upslope = 180
     # e.g. wind is going cross-slope: wind_angle_upslope = 90
+    # finally, ensure the direction is in the range [0, 360)
     processed_df["wind_angle_upslope"] = (
-        (processed_df["wind_direction"] + 180) % 360
-    ) - processed_df["upslope_bearing"]
-
-    # ensure the direction is in the range [0, 360)
-    processed_df["wind_angle_upslope"] = (
-        processed_df["wind_angle_upslope"] % 360
-    )
+        ((processed_df["wind_direction"] + 180) % 360)
+        - processed_df["upslope_bearing"]
+    ) % 360
 
 # select only the columns that are in the config
 processed_df = processed_df[
