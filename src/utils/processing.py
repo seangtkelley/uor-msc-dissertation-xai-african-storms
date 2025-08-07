@@ -119,8 +119,18 @@ def get_orography_features(
     ].magnitude
 
     # use the grid spacing of the top left corner of the geopotential grid
-    _, _, dx = geod.inv(lons[0], lats[0], lons[1], lats[0])  # lon = x spacing
-    _, _, dy = geod.inv(lons[0], lats[0], lons[0], lats[1])  # lat = y spacing
+    _, _, dx = geod.inv(
+        geop["longitude"].values[0],
+        geop["latitude"].values[0],
+        geop["longitude"].values[1],
+        geop["latitude"].values[0],
+    )  # lon = x spacing
+    _, _, dy = geod.inv(
+        geop["longitude"].values[0],
+        geop["latitude"].values[0],
+        geop["longitude"].values[0],
+        geop["latitude"].values[1],
+    )  # lat = y spacing
 
     # calculate the upslope angle of the orography
     dz_dx, dz_dy = np.gradient(height, dx, dy)
