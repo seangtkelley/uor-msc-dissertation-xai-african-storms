@@ -419,6 +419,16 @@ if should_recalc("wind_angle_upslope", processed_df.columns):
         processed_df["wind_angle_upslope"] % 360
     )
 
+if should_recalc("mean_tcwv", processed_df.columns):
+    print("Calculating mean total column water vapour (TCWV)...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        f"tcwv_tot_",
+        "tcwv",
+        f"mean_tcwv",
+    )
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
