@@ -139,7 +139,7 @@ Notes:
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
 | `wind_direction` | Compass bearing from which the wind originates | ° from North | Yes | No |
-| `wind_angle_upslope` | Wind angle relative to upslope bearing (wind is going upslope: 0, downslope: 180, cross-slope: 90) | ° from `upslope_bearing` | Yes | No |
+| `wind_angle_upslope` | Wind angle relative to upslope bearing (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
