@@ -124,8 +124,13 @@ def get_orography_features(
 
     # calculate the upslope angle of the orography
     dz_dx, dz_dy = np.gradient(height, dx, dy)
-    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east
+    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi)
     processed_df["upslope_angle"] = upslope_angle[geop_lat_idx, geop_lon_idx]
+
+    # convert upslope angle to bearing (degrees from north)
+    processed_df["upslope_bearing"] = (
+        90 - np.degrees(processed_df["upslope_angle"])
+    ) % 360
 
     # calculate slope magnitude
     slope_magnitude = np.sqrt(dz_dx**2 + dz_dy**2)
@@ -507,12 +512,12 @@ def calc_spatiotemporal_agg(
     return processed_df
 
 
-def calc_wind_angle(processed_df: pd.DataFrame) -> pd.DataFrame:
+def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate the wind angle and wind angle relative to the upslope angle.
 
-    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_angle' columns.
-    :return: DataFrame with an additional column 'wind_angle' containing the calculated wind angles.
+    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_bearing' columns.
+    :return: DataFrame with an additional column 'wind_direction' containing the calculated wind bearings.
     :rtype: pd.DataFrame
     """
     # group storm data by year
@@ -536,7 +541,7 @@ def calc_wind_angle(processed_df: pd.DataFrame) -> pd.DataFrame:
         group_timestamps = xr.DataArray(group["timestamp"].to_numpy())
 
         # calculate the wind angle at each point
-        processed_df.loc[group.index, "wind_angle"] = np.arctan2(
+        processed_df.loc[group.index, "wind_direction"] = np.arctan2(
             v_wind["vwnd"]
             .sel(
                 valid_time=group_timestamps,
@@ -554,6 +559,18 @@ def calc_wind_angle(processed_df: pd.DataFrame) -> pd.DataFrame:
             )
             .values,
         )
+
+        # convert wind angle from radians from East to compass bearing (degrees from North)
+        processed_df.loc[group.index, "wind_direction"] = (
+            90 - np.degrees(processed_df["wind_direction"])
+        ) % 360
+
+        # rotate by 180 degrees to be consistent with standard meteorological convention
+        # this is because the wind direction is defined as the direction from which the wind is coming
+        # so a northerly wind (from the north) is 0 degrees, an easterly wind (from the east) is 90 degrees, etc.
+        processed_df.loc[group.index, "wind_direction"] = (
+            processed_df["wind_direction"] + 180
+        ) % 360
 
         # close datasets
         u_wind.close()

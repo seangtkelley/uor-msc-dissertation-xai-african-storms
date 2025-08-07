@@ -103,28 +103,28 @@ Notes:
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
-| `storm_id` | Unique identifier for each storm | - | No | No |
-| `timestamp` | Time of the storm centre | UTC | No | No |
+| `storm_id` | Unique identifier for each MCS | - | No | No |
+| `timestamp` | Datetime of observation | UTC | No | No |
 | `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
-| `storm_total_duration` | Total duration of storm | hr | Yes | **Yes** |
-| `lon` | Longitude of LPS centre | ° E | Yes | No |
-| `lat` | Latitude of LPS centre | ° N | Yes | No |
-| `orography_height` | Elevation of land surface under centre | m | Yes | No |
-| `anor` | Angle of sub-gridscale orography | radians from East | Yes | No |
-| `upslope_angle` | Upslope angle relative to East | radians from East | Yes | No |
+| `storm_total_duration` | Total duration of MCS | hr | Yes | **Yes** |
+| `lon` | Longitude of MCS centre | ° E | Yes | No |
+| `lat` | Latitude of MCS centre | ° N | Yes | No |
+| `orography_height` | Elevation of land surface at MCS centre | m | Yes | No |
+| `anor` | Angle of sub-gridscale orography at MCS centre | radians from East | Yes | No |
+| `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from North | Yes | No |
 | `slope_magnitude` | Magnitude of slope | m/m  | Yes | No |
-| `over_land` | Flag for LPS centre (True if storm centre is over land, else False) | boolean | Yes | No |
+| `over_land` | Flag for MCS centre (True if storm centre is over land, else False) | boolean | Yes | No |
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
 | `storm_total_land_time` | Final value of `acc_land_time` for a given storm | hr | Yes | No |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio ($[0,1]$) | Yes | No |
-| `zonal_speed` | $x$-component of LPS propagation vector | km/hr | Yes | No |
-| `meridional_speed` | $y$-component of LPS propagation vector | km/hr | Yes | No |
+| `zonal_speed` | $x$-component of MCS centre propagation vector | km/hr | Yes | No |
+| `meridional_speed` | $y$-component of MCS centre propagation vector | km/hr | Yes | No |
 | `area` | Area of the storm | km² | Yes | No |
 | `storm_max_area` | Max value of `area` over storm | km² | Yes | No |
-| `bearing_from_prev` | Compass bearing from previous point | ° | Yes | No |
+| `bearing_from_prev` | Compass bearing from previous point | ° from North | Yes | No |
 | `distance_from_prev` | Distance traversed from previous point | km | Yes | No |
 | `distance_traversed` | Cumulative sum of `distance_from_prev` | km | Yes | No |
-| `storm_bearing` | Compass bearing from first to last point of storm | ° | Yes | No |
+| `storm_bearing` | Compass bearing from first to last point of storm | ° from North | Yes | No |
 | `storm_distance_traversed` | Total cumulative distance traversed by storm | km | Yes | No |
 | `storm_straight_line_distance` | Distance from first to last point of storm | km | Yes | No |
 | `mean_skt` | Surface temperature | K | Yes | No |
@@ -138,8 +138,8 @@ Notes:
 | `mean_v850` | 850 hPa meridional wind | m/s | Yes | No |
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
-| `wind_angle` | Wind direction | radians from East | Yes | No |
-| `wind_angle_upslope` | Wind direction relative to Orographic slope | radians from `upslope_angle` | Yes | No |
+| `wind_bearing` | Wind direction compass bearing | ° from North | Yes | No |
+| `wind_bearing_upslope` | Wind direction relative to upslope direction | ° from `upslope_angle` | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
