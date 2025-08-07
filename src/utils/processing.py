@@ -118,18 +118,18 @@ def get_orography_features(
         geop_lat_idx, geop_lon_idx
     ].magnitude
 
-    # calculate grid spacing from geop
-    dx = geop["longitude"].diff(dim="longitude").mean().item()
-    dy = geop["latitude"].diff(dim="latitude").mean().item()
+    # use the grid spacing of the top left corner of the geopotential grid
+    _, _, dx = geod.inv(lons[0], lats[0], lons[1], lats[0])  # lon = x spacing
+    _, _, dy = geod.inv(lons[0], lats[0], lons[0], lats[1])  # lat = y spacing
 
     # calculate the upslope angle of the orography
     dz_dx, dz_dy = np.gradient(height, dx, dy)
-    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi)
-    processed_df["upslope_bearing"] = upslope_angle[geop_lat_idx, geop_lon_idx]
+    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi]
+    upslope_angle_at_points = upslope_angle[geop_lat_idx, geop_lon_idx]
 
     # convert upslope angle to bearing (degrees from north)
     processed_df["upslope_bearing"] = (
-        90 - np.degrees(processed_df["upslope_bearing"])
+        90 - np.degrees(upslope_angle_at_points)
     ) % 360
 
     # calculate slope magnitude
