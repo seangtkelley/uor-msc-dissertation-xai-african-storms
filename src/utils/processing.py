@@ -541,7 +541,7 @@ def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
         group_timestamps = xr.DataArray(group["timestamp"].to_numpy())
 
         # calculate the wind angle at each point
-        processed_df.loc[group.index, "wind_direction"] = np.arctan2(
+        wind_angles = np.arctan2(
             v_wind["vwnd"]
             .sel(
                 valid_time=group_timestamps,
@@ -561,15 +561,13 @@ def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
         )
 
         # convert wind angle from radians from East to compass bearing (degrees from North)
-        processed_df.loc[group.index, "wind_direction"] = (
-            90 - np.degrees(processed_df["wind_direction"])
-        ) % 360
+        wind_bearings = (90 - np.degrees(wind_angles)) % 360
 
         # rotate by 180 degrees to be consistent with standard meteorological convention
         # this is because the wind direction is defined as the direction from which the wind is coming
         # so a northerly wind (from the north) is 0 degrees, an easterly wind (from the east) is 90 degrees, etc.
         processed_df.loc[group.index, "wind_direction"] = (
-            processed_df["wind_direction"] + 180
+            wind_bearings + 180
         ) % 360
 
         # close datasets
