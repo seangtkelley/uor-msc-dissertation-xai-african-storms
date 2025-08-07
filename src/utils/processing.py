@@ -133,7 +133,7 @@ def get_orography_features(
     )  # lat = y spacing
 
     # calculate the upslope angle of the orography
-    dz_dx, dz_dy = np.gradient(height, dx, dy)
+    dz_dx, dz_dy = np.gradient(height.magnitude, dx, dy)
     upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi]
     upslope_angle_at_points = upslope_angle[geop_lat_idx, geop_lon_idx]
 
