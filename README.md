@@ -105,6 +105,7 @@ Notes:
 |--------------|-------------|-------------|-------------|-------------|
 | `storm_id` | Unique identifier for each MCS | - | No | No |
 | `timestamp` | Datetime of observation | UTC | No | No |
+| `date_angle` | Angle representation of current date within year | ° | Yes | No |
 | `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
 | `storm_total_duration` | Total duration of MCS | hr | Yes | **Yes** |
 | `lon` | Longitude of MCS centre | ° E | Yes | No |
@@ -140,6 +141,7 @@ Notes:
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
 | `wind_direction` | Compass bearing from which the wind originates | ° from North | Yes | No |
 | `wind_angle_upslope` | Wind angle relative to upslope bearing (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` | Yes | No |
+| `mean_tcwv` | Total column water vapour | kg/m² | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
