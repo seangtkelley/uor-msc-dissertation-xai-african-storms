@@ -416,6 +416,28 @@ if should_recalc("wind_angle_upslope", processed_df.columns):
         - processed_df["upslope_bearing"]
     ) % 360
 
+if should_recalc("mean_tcwv", processed_df.columns):
+    print("Calculating mean total column water vapour (TCWV)...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        f"tcwv_tot_",
+        "tcwv",
+        f"mean_tcwv",
+    )
+
+if should_recalc("date_angle", processed_df.columns):
+    print("Calculating date angle...")
+
+    day_of_year = processed_df["timestamp"].dt.dayofyear
+    days_in_year = (
+        processed_df["timestamp"]
+        .dt.is_leap_year.replace({True: 366, False: 365})
+        .infer_objects(copy=False)
+    )
+    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
+
+
 # select only the columns that are in the config
 processed_df = processed_df[
     [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]

@@ -75,6 +75,7 @@ COL_RENAME_MAP = {
 }
 
 FEATURE_COL_NAMES = [
+    "date_angle",
     "eat_hours",
     "storm_total_duration",
     "lon",
@@ -110,6 +111,7 @@ FEATURE_COL_NAMES = [
     "mean_v200",
     "wind_direction",
     "wind_angle_upslope",
+    "mean_tcwv",
     "mean_q_850",
     "mean_q_500",
     "mean_q_200",
