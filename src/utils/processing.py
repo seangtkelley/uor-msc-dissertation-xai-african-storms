@@ -13,6 +13,7 @@ __status__ = "Development"
 
 from typing import Callable, Optional
 
+import metpy.calc as mpcalc
 import numpy as np
 import pandas as pd
 import psutil
@@ -118,23 +119,23 @@ def get_orography_features(
         geop_lat_idx, geop_lon_idx
     ].magnitude
 
-    # use the grid spacing of the top left corner of the geopotential grid
-    _, _, dx = geod.inv(
-        geop["longitude"].values[0],
-        geop["latitude"].values[0],
-        geop["longitude"].values[1],
-        geop["latitude"].values[0],
-    )  # lon = x spacing
-    _, _, dy = geod.inv(
-        geop["longitude"].values[0],
-        geop["latitude"].values[0],
-        geop["longitude"].values[0],
-        geop["latitude"].values[1],
-    )  # lat = y spacing
+    # calc grid spacing using metpy
+    dx_geo, dy_geo = mpcalc.lat_lon_grid_deltas(geop.longitude, geop.latitude)
 
     # calculate the upslope angle of the orography
-    dz_dx, dz_dy = np.gradient(height.magnitude, dx, dy)
-    upslope_angle = np.arctan2(dz_dy, dz_dx)  # radians from east [-pi, pi]
+    grad_geo = mpcalc.geospatial_gradient(height, dx=dx_geo, dy=dy_geo)
+    if grad_geo is None:
+        raise ValueError("Geospatial gradient calculation failed.")
+    dz_dx_geo, dz_dy_geo = grad_geo
+
+    if dz_dx_geo is None or dz_dy_geo is None:
+        raise ValueError("Gradient components are None.")
+
+    # calculate the upslope angle in radians from east [-pi, pi] and extract
+    # the magnitude to avoid issues with angle rotation of pint.Quantity radians
+    upslope_angle = np.arctan2(dz_dy_geo, dz_dx_geo).magnitude
+
+    # get the upslope angle at the storm points
     upslope_angle_at_points = upslope_angle[geop_lat_idx, geop_lon_idx]
 
     # convert upslope angle to bearing (degrees from north)
@@ -144,8 +145,10 @@ def get_orography_features(
 
     # calculate slope angle for a measure of terrain steepness
     # using slope magnitude as the hypotenuse of the gradient vector
-    slope_magnitude = np.sqrt(dz_dx**2 + dz_dy**2)
-    slope_angle = np.arctan(slope_magnitude[geop_lat_idx, geop_lon_idx])
+    slope_magnitude = np.sqrt(dz_dx_geo**2 + dz_dy_geo**2)
+    slope_angle = np.arctan(
+        slope_magnitude[geop_lat_idx, geop_lon_idx]
+    ).magnitude
 
     # convert slope angle to degrees
     processed_df["slope_angle"] = np.degrees(slope_angle)
