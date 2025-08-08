@@ -74,7 +74,6 @@ COL_RENAME_MAP = {
     "Mean BT": "mean_bt",
 }
 
-# TODO: Uncomment when the features are ready
 FEATURE_COL_NAMES = [
     "eat_hours",
     "storm_total_duration",
@@ -82,6 +81,8 @@ FEATURE_COL_NAMES = [
     "lat",
     "orography_height",
     "anor",
+    "upslope_bearing",
+    "slope_angle",
     "over_land",
     "acc_land_time",
     "storm_total_land_time",
@@ -107,6 +108,8 @@ FEATURE_COL_NAMES = [
     "mean_v850",
     "mean_v500",
     "mean_v200",
+    "wind_direction",
+    "wind_angle_upslope",
     "mean_q_850",
     "mean_q_500",
     "mean_q_200",
@@ -121,9 +124,6 @@ FEATURE_COL_NAMES = [
     "dmean_bt_dt",
     "storm_min_bt",
     "storm_min_bt_reached",
-    # "mean_dthetae_dp_900_750",
-    # "mean_dthetae_dp_750_500",
-    # "ushear_850",
     "mjo_phase",
     "mjo_amplitude",
 ]

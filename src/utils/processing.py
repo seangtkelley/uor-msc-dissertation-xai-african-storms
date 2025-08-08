@@ -13,6 +13,7 @@ __status__ = "Development"
 
 from typing import Callable, Optional
 
+import metpy.calc as mpcalc
 import numpy as np
 import pandas as pd
 import psutil
@@ -22,6 +23,7 @@ from metpy.calc import geopotential_to_height
 from pandarallel import pandarallel
 from pint import Quantity
 from scipy.stats import gaussian_kde
+from tqdm import tqdm
 
 import config
 
@@ -97,7 +99,7 @@ def get_orography_features(
     :param geop: Geopotential dataset containing 'geop' variable.
     :param height: Height calculated from geopotential data.
     :param anor: Dataset containing subgrid orography angle data.
-    :return: DataFrame with additional columns for orography height and subgrid orography angle (anor).
+    :return: DataFrame with additional columns for orography height, subgrid orography angle (anor), upslope bearing, and slope magnitude.
     :rtype: pd.DataFrame
     """
     # extract longitude and latitude arrays
@@ -107,15 +109,49 @@ def get_orography_features(
 
     # perform batch indexing for geopotential height
     closest_geop = geop.sel(longitude=lons, latitude=lats, method="nearest")
-    closest_lat_indices = closest_indices(
+    geop_lat_idx = closest_indices(
         closest_geop.latitude.values, geop.latitude.values
     )
-    closest_lon_indices = closest_indices(
+    geop_lon_idx = closest_indices(
         closest_geop.longitude.values, geop.longitude.values
     )
     processed_df["orography_height"] = height[
-        closest_lat_indices, closest_lon_indices
+        geop_lat_idx, geop_lon_idx
     ].magnitude
+
+    # calc grid spacing using metpy
+    dx_geo, dy_geo = mpcalc.lat_lon_grid_deltas(geop.longitude, geop.latitude)
+
+    # calculate the upslope angle of the orography
+    grad_geo = mpcalc.geospatial_gradient(height, dx=dx_geo, dy=dy_geo)
+    if grad_geo is None:
+        raise ValueError("Geospatial gradient calculation failed.")
+    dz_dx_geo, dz_dy_geo = grad_geo
+
+    if dz_dx_geo is None or dz_dy_geo is None:
+        raise ValueError("Gradient components are None.")
+
+    # calculate the upslope angle in radians from east [-pi, pi] and extract
+    # the magnitude to avoid issues with angle rotation of pint.Quantity radians
+    upslope_angle = np.arctan2(dz_dy_geo, dz_dx_geo).magnitude
+
+    # get the upslope angle at the storm points
+    upslope_angle_at_points = upslope_angle[geop_lat_idx, geop_lon_idx]
+
+    # convert upslope angle to bearing (degrees from north)
+    processed_df["upslope_bearing"] = (
+        90 - np.degrees(upslope_angle_at_points)
+    ) % 360
+
+    # calculate slope angle for a measure of terrain steepness
+    # using slope magnitude as the hypotenuse of the gradient vector
+    slope_magnitude = np.sqrt(dz_dx_geo**2 + dz_dy_geo**2)
+    slope_angle = np.arctan(
+        slope_magnitude[geop_lat_idx, geop_lon_idx]
+    ).magnitude
+
+    # convert slope angle to degrees
+    processed_df["slope_angle"] = np.degrees(slope_angle)
 
     # perform batch indexing for subgrid orography angle (anor)
     closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
@@ -487,6 +523,71 @@ def calc_spatiotemporal_agg(
         processed_df[new_col_name] = processed_df[new_col_name].apply(
             unit_conv_func
         )
+
+    return processed_df
+
+
+def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate the wind angle and wind angle relative to the upslope angle.
+
+    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_bearing' columns.
+    :return: DataFrame with an additional column 'wind_direction' containing the calculated wind bearings.
+    :rtype: pd.DataFrame
+    """
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # iterate over each year to calculate wind angles
+    for year, group in tqdm(
+        list(grouped), desc="Calculating wind angles by year"
+    ):
+        # load u and v wind components at 850 hPa (closest to ground)
+        u_wind = xr.open_dataset(
+            config.DATA_DIR / "std" / f"uwnd_850_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        v_wind = xr.open_dataset(
+            config.DATA_DIR / "std" / f"vwnd_850_{year}.nc"
+        ).squeeze(dim="pressure_level")
+
+        # perform batch indexing for u and v wind components
+        group_lons = xr.DataArray(group["lon"].to_numpy())
+        group_lats = xr.DataArray(group["lat"].to_numpy())
+        group_timestamps = xr.DataArray(group["timestamp"].to_numpy())
+
+        # calculate the wind angle at each point
+        wind_angles = np.arctan2(
+            v_wind["vwnd"]
+            .sel(
+                valid_time=group_timestamps,
+                latitude=group_lats,
+                longitude=group_lons,
+                method="nearest",
+            )
+            .values,
+            u_wind["uwnd"]
+            .sel(
+                valid_time=group_timestamps,
+                latitude=group_lats,
+                longitude=group_lons,
+                method="nearest",
+            )
+            .values,
+        )
+
+        # convert wind angle from radians from East to compass bearing (degrees from North)
+        wind_bearings = (90 - np.degrees(wind_angles)) % 360
+
+        # rotate by 180 degrees to be consistent with standard meteorological convention
+        # this is because the wind direction is defined as the direction from which the wind is coming
+        # so a northerly wind (from the north) is 0 degrees, an easterly wind (from the east) is 90 degrees, etc.
+        processed_df.loc[group.index, "wind_direction"] = (
+            wind_bearings + 180
+        ) % 360
+
+        # close datasets
+        u_wind.close()
+        v_wind.close()
 
     return processed_df
 
