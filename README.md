@@ -113,7 +113,7 @@ Notes:
 | `orography_height` | Elevation of land surface at MCS centre | m | Yes | No |
 | `anor` | Angle of sub-gridscale orography at MCS centre | radians from East | Yes | No |
 | `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from North | Yes | No |
-| `slope_magnitude` | Magnitude of slope | m/m  | Yes | No |
+| `slope_angle` | Angle of slope at MCS centre | ° | Yes | No |
 | `over_land` | Flag for MCS centre (True if MCS centre is over land, else False) | boolean | Yes | No |
 | `acc_land_time` | Accumulated time where `over_land=True` | hr | Yes | No |
 | `storm_total_land_time` | Final value of `acc_land_time` for MCS | hr | Yes | No |
