@@ -82,7 +82,7 @@ FEATURE_COL_NAMES = [
     "orography_height",
     "anor",
     "upslope_bearing",
-    "slope_magnitude",
+    "slope_angle",
     "over_land",
     "acc_land_time",
     "storm_total_land_time",

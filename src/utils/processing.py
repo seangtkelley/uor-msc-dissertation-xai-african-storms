@@ -142,11 +142,13 @@ def get_orography_features(
         90 - np.degrees(upslope_angle_at_points)
     ) % 360
 
-    # calculate slope magnitude
+    # calculate slope angle for a measure of terrain steepness
+    # using slope magnitude as the hypotenuse of the gradient vector
     slope_magnitude = np.sqrt(dz_dx**2 + dz_dy**2)
-    processed_df["slope_magnitude"] = slope_magnitude[
-        geop_lat_idx, geop_lon_idx
-    ]
+    slope_angle = np.arctan(slope_magnitude[geop_lat_idx, geop_lon_idx])
+
+    # convert slope angle to degrees
+    processed_df["slope_angle"] = np.degrees(slope_angle)
 
     # perform batch indexing for subgrid orography angle (anor)
     closest_anor = anor.sel(longitude=lons, latitude=lats, method="nearest")
