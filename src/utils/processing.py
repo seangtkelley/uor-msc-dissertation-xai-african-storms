@@ -531,16 +531,16 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate vertical wind shear.
 
-    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_bearing' columns.
-    :return: DataFrame with an additional column 'vertical_wind_shear' containing the calculated vertical wind shear values.
+    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', and 'timestamp' columns.
+    :return: DataFrame with an additional 4 columns for vertical wind shear between 850-500 hPa and 850-200 hPa
     :rtype: pd.DataFrame
     """
     # group storm data by year
     grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
 
-    # iterate over each year to calculate wind angles
+    # iterate over each year to calculate wind shear
     for year, group in tqdm(
-        list(grouped), desc="Calculating wind angles by year"
+        list(grouped), desc="Calculating wind shear by year"
     ):
         # load u and v wind components for all pressure levels
         u_wind_850 = xr.open_dataset(
@@ -563,12 +563,12 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
         ).squeeze(dim="pressure_level")
 
         # calculate vertical wind shear between 850 and 500
-        u_shear_850_500 = u_wind_500["uwnd"] - u_wind_850["uwnd"]
-        v_shear_850_500 = v_wind_500["vwnd"] - v_wind_850["vwnd"]
+        u_shear_850_500 = (u_wind_500["uwnd"] - u_wind_850["uwnd"]).to_dataset()
+        v_shear_850_500 = (v_wind_500["vwnd"] - v_wind_850["vwnd"]).to_dataset()
 
         # calculate vertical wind shear between 850 and 200
-        u_shear_850_200 = u_wind_200["uwnd"] - u_wind_850["uwnd"]
-        v_shear_850_200 = v_wind_200["vwnd"] - v_wind_850["vwnd"]
+        u_shear_850_200 = (u_wind_200["uwnd"] - u_wind_850["uwnd"]).to_dataset()
+        v_shear_850_200 = (v_wind_200["vwnd"] - v_wind_850["vwnd"]).to_dataset()
 
         # calculate the spatial mean at each point
         processed_df.loc[group.index, "mean_u_shear_850_500"] = group.parallel_apply(  # type: ignore
@@ -577,7 +577,7 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 row["lon"],
                 row["lat"],
                 u_shear_850_500,
-                variable_name,
+                "uwnd",
             ),
             axis=1,
         )
@@ -587,7 +587,7 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 row["lon"],
                 row["lat"],
                 v_shear_850_500,
-                variable_name,
+                "vwnd",
             ),
             axis=1,
         )
@@ -597,7 +597,7 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 row["lon"],
                 row["lat"],
                 u_shear_850_200,
-                variable_name,
+                "uwnd",
             ),
             axis=1,
         )
@@ -607,7 +607,7 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 row["lon"],
                 row["lat"],
                 v_shear_850_200,
-                variable_name,
+                "vwnd",
             ),
             axis=1,
         )
