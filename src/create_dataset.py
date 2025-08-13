@@ -437,6 +437,15 @@ if should_recalc("date_angle", processed_df.columns):
     )
     processed_df["date_angle"] = (day_of_year / days_in_year) * 360
 
+if (
+    should_recalc("mean_u_shear_850_500", processed_df.columns)
+    or should_recalc("mean_v_shear_850_500", processed_df.columns)
+    or should_recalc("mean_u_shear_850_200", processed_df.columns)
+    or should_recalc("mean_v_shear_850_200", processed_df.columns)
+):
+    print("Calculating vertical wind shear...")
+
+    processed_df = processing.calc_vertical_wind_shear(processed_df)
 
 # select only the columns that are in the config
 processed_df = processed_df[
