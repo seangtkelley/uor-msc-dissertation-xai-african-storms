@@ -7,16 +7,33 @@
 
 \subsection{MCSs in the Horn of Africa}
 
-The Horn of Africa is a region with complex topography and large-scale climatic variability that affects \acrshort{mcs} development. From the west, the Sahel fades into the Ethiopian Highlands and later the East African Rift Valley, characterised by high topographic relief and complex orography. In the east, the Ethiopian Highlands transition into the low-lying coastal plains of Somalia. Unlike most other countries at this latitude, most of Somalia is arid or semi-arid, with the exception of its border region with Kenya \citep{Beck2023}. This contrast in geography is reflected in storm development and precipitation patterns. The mountains of Ethiopia dominate local convective processes \citep{Negash2024} while the low-lying areas on the south-eastern coast of the region are not nearly as conducive to \acrshort{mcs} development and thus are much more susceptible to storm patterns over the Indian Ocean and the Gulf of Aden \citep{Camberlin2024}. The combination of land surface temperature and soil moisture also impact the storm development and intensification. Notably, multiple studies over distinct regions have demonstrated that strong soil moisture gradients can intensify convection \citep{Barton2021,Klein2020,Taylor2017}. These processes are likewise relevant to the Horn of Africa, especially in transitional climates bridging arid and humid zones. Large-scale \glspl{teleconnection} also play a major role in governing \acrshort{mcs} activity in this region. The \acrfull{mjo} is a dominant intra-seasonal factor which modulates rainfall in the tropics and in East Africa, its active phases coincide with increased convection and extreme rainfall events \citep{Camberlin2019,Ochieng2023,Pohl2006}. Quite uniquely for the tropics, the \acrfull{itcz} passes over the region twice per year leading to two distinct rainy seasons, one short and one long \citep{Palmer2023,Tefera2025}. The \acrfull{tej} is another key feature enhancing vertical wind shear which can both facilitate or hinder \acrshort{mcs} development \citep{Farnsworth2011,Vashisht2021}. Additionally, the \acrfull{enso} and the \acrfull{iod} have also been shown to modulate rainfall patterns in the region, with coupled regional climate models able to reproduce these patterns at various timescales \citep{Dubache2019,Endris2019,Vashisht2021}. Overall, despite this complex array of factors, \acrshortpl{mcs} have been shown to account for over 60\% of extreme rainfall in Ethiopia and Somalia \citep{Hill2023}. 
+The Horn of Africa is a region with complex topography and large-scale climatic variability that affects \acrshort{mcs} development. From the west, the Sahel fades into the Ethiopian Highlands and later the East African Rift Valley, characterised by high topographic relief and complex orography. In the east, the Ethiopian Highlands transition into the low-lying coastal plains of Somalia. Unlike most other countries at this latitude, most of Somalia is arid or semi-arid, with the exception of its border region with Kenya \citep{Beck2023}. This contrast in geography is reflected in storm development and precipitation patterns. The mountains of Ethiopia dominate local convective processes \citep{Negash2024} while the low-lying areas on the south-eastern coast of the region are not nearly as conducive to \acrshort{mcs} development and thus are much more susceptible to storm patterns over the Indian Ocean and the Gulf of Aden \citep{Camberlin2024}. The combination of land surface temperature and soil moisture also impact the storm development and intensification. Notably, multiple studies over distinct regions have demonstrated that strong soil moisture gradients can intensify convection \citep{Barton2021,Klein2020,Taylor2017}. These processes are likewise relevant to the Horn of Africa, especially in transitional climates bridging arid and humid zones. Large-scale \glspl{teleconnection} also play a major role in governing \acrshort{mcs} activity in this region. The \acrfull{mjo} is a dominant intra-seasonal factor which modulates rainfall in the tropics and in East Africa, its active phases coincide with increased convection and extreme rainfall events \citep{Camberlin2019,Ochieng2023,Pohl2006}. Quite uniquely for the tropics, the \acrfull{itcz} passes over the region twice per year leading to two distinct rainy seasons, one short and one long \citep{Palmer2023,Tefera2025}. The \acrfull{tej} is another key feature enhancing vertical wind shear which can both facilitate or hinder \acrshort{mcs} development \citep{Farnsworth2011,Vashisht2021}. Additionally, the \acrfull{enso} and the \acrfull{iod} have also been shown to modulate rainfall patterns in the region, with coupled regional climate models able to reproduce these patterns at various timescales \citep{Dubache2019,Endris2019,Vashisht2021}. Overall, despite this complex array of factors, \acrshortpl{mcs} have been shown to account for over 60\% of extreme rainfall in Ethiopia and Somalia \citep{Hill2023}.
 
-\section{Data-driven Scientific Discovery Approaches in Meteorology}
+MAYBE NEED A PARAGRAPH ABOUT LIMITED RESOURCES AND DATA AVAILABILITY IN THE REGION
 
-The physical sciences have traditionally favoured numerical methods. Data-driven methods were widely avoided due the lack of data and computational infeasibility, even when such methods were known and their potential well-understood [SOURCE FOR EARLY NEURAL NETS]. However, the advent of large datasets and ever-increasing computational power as hardware manufacturers kept pace with Moore's Law [glossary entry] has led to a resurgence of interest in data-driven methods [SOURCE FOR MOORES LAW]. Particular credit can be attributed to the surprise success of deep learning in computer vision and natural language processing, which has led to a broader acceptance of \acrfull{ml} techniques across many scientific disciplines [SOURCE FOR ALEXNET and something NLP].
+\section{Data-driven Scientific Discovery}
 
+The physical sciences have traditionally favoured numerical methods for complex system modelling, most often relying on the resultant equations from first principles and physical laws as the basis for simulation. Since most of these systems are too complex to be solved analytically, numerical methods are used to approximate solutions within certain constraints limiting grid resolution, stability, and subgrid parametrisation [SOURCE FOR NWP and maybe physics too]. The primary benefit of such techniques is that they are inherently based on well-established physical laws, which can provide a degree of interpretability and trustworthiness. 
 
-The field of meteorology has been no exception to this trend, with a growing body of literature exploring the application of ML techniques to various meteorological problems. These include weather prediction, climate modelling, and the analysis of atmospheric phenomena. The use of ML in meteorology is particularly promising due to the complex, non-linear nature of atmospheric processes, which can be difficult to model using traditional numerical methods alone [SOURCE FOR COMPLEXITY OF ATMOSPHERIC PROCESSES].
+I DON"T LIKE THIS SETNENCE: However, these methods often struggle with the non-linear and chaotic nature of many physical systems, particularly in meteorology where small changes can lead to vastly different outcomes [SOURCE FOR CHAOS IN METEOROLOGY, Lorenz maybe].
 
-\subsection{Explainable and Interpretable ML (XAI)}
+ Data-driven methods have historically been avoided due the lack of data and computational infeasibility, even when such methods were known and their potential well-understood [SOURCE FOR EARLY NEURAL NETS]. However, the advent of large datasets and ever-increasing computational power as hardware manufacturers kept pace with Moore's Law [glossary entry] has led to a resurgence of interest in data-driven methods [SOURCE FOR MOORES LAW]. Particular credit can be attributed to the surprise success of deep learning in computer vision and natural language processing, which has led to a broader acceptance of \acrfull{ml} techniques across many scientific disciplines [SOURCE FOR ALEXNET and something NLP].
+
+ PARAGRAPH ABOUT ML METHODS GENERICALLY IN SCIENCE HERE
+
+\subsection{Applications in Meteorology}
+
+The field of meteorology has been no exception to the increasing popularity of data-driven methods, with a growing body of literature exploring the application of \acrshort{ml} techniques to various meteorological problems. The use of \acrshort{ml} in meteorology is particularly promising due to the non-linear nature of atmospheric processes and  hard-to-model subgrid processes, which have long been a source of instability in numerical models [SOURCE FOR COMPLEXITY OF ATMOSPHERIC PROCESSES].
+
+PIML FOR LARGE SCALE MODELS came about to address ml models not obeying the laws of physics, e.g. the biug NVIDIA one, PhyDL-NWP https://arxiv.org/abs/2505.14555
+
+Modern nowcasting methods, such as physics-conditional deep generative models (e.g., NowcastNet), unify physical evolution with statistical learning to achieve short-term, high-resolution forecasts of extreme precipitation by leveraging radar data and ensemble neural networks[NowcastNet SOURCE https://www.nature.com/articles/s41586-023-06184-4]. 
+
+DOwnscaleing: PhyDL-NWP as well https://arxiv.org/abs/2505.14555
+
+subgrid parameterization: gotta be something
+
+\section{Explainable and Interpretable ML (XAI)}
 
 Techniques such as LIME, SHAP, and Layerwise Relevance Propagation (LRP) have been widely adopted to interpret complex ML models...
 
@@ -27,9 +44,22 @@ SPECIFIC EXPLANATION OF SHAP AS ThIS IS ThE BACKGROUND
 
 \subsection{XAI in Meteorology}
 
+
+For example, LIME has helped identify crucial features in random forest models for seasonal precipitation prediction, with explanations aligning closely to known meteorological phenomena like ENSO impacts[https://www.sciencedirect.com/science/article/abs/pii/S1352231024004722].
+
+
 \subsection{XAI for Convective Systems}
 
+Case Studies in Convective Systems:
+
+Tropical Convection and MCSs: LRP has revealed the importance of large-scale vertical velocity and wind shear in predicting convective area and organization in the tropics, with moisture and thermodynamic factors primarily affecting the convective area, and horizontal wind fields impacting system organization[https://www.sciencedirect.com/science/article/abs/pii/S1352231024004722].
+
+Paleoclimate reconstruction of Indian monsoon [https://cp.copernicus.org/articles/21/1/2025/].
+
+Relevant Example: Indian Monsoon Lows, Hunt and Turner (2023) demonstrated the utility of interpretable gradient-boosted decision-tree ensembles in uncovering new dynamical relationships governing Indian monsoon low-pressure systems \citep{Hunt2024}. 
 
 Limitations include for Hunt Turner 2023: 
 - only applied to indian monsoon. would be interesting to apply to other regions and storm types
 - less focus on any prediction capability of models, more just focused on finding novel meteorological relationships
+
+relevant and motivate the work
