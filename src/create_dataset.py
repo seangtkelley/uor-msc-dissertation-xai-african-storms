@@ -396,7 +396,7 @@ for percent in olr_percents:
             agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
-if should_recalc("wind_direction", processed_df.columns):
+if should_recalc("wind_direction_850", processed_df.columns):
     print("Calculating wind direction...")
 
     processed_df = processing.calc_wind_direction(processed_df)
@@ -405,14 +405,14 @@ if should_recalc("wind_angle_upslope", processed_df.columns):
     print("Calculating wind direction relative to upslope direction...")
 
     # first, rotate the wind direction to point to where the wind is going to
-    # as wind_direction is defined as the direction the wind is coming from
+    # as wind_direction_850 is defined as the direction the wind is coming from
     # then, rotate the wind direction to be relative to the upslope direction
     # e.g. wind is going upslope: wind_angle_upslope = 0
     # e.g. wind is going downslope: wind_angle_upslope = 180
     # e.g. wind is going cross-slope: wind_angle_upslope = 90
     # finally, ensure the direction is in the range [0, 360)
     processed_df["wind_angle_upslope"] = (
-        ((processed_df["wind_direction"] + 180) % 360)
+        ((processed_df["wind_direction_850"] + 180) % 360)
         - processed_df["upslope_bearing"]
     ) % 360
 

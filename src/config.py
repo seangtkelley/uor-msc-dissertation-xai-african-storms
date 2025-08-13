@@ -109,7 +109,7 @@ FEATURE_COL_NAMES = [
     "mean_v850",
     "mean_v500",
     "mean_v200",
-    "wind_direction",
+    "wind_direction_850",
     "wind_angle_upslope",
     "mean_tcwv",
     "mean_q_850",

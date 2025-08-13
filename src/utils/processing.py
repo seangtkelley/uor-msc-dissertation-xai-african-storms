@@ -532,7 +532,7 @@ def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
     Calculate the wind angle and wind angle relative to the upslope angle.
 
     :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_bearing' columns.
-    :return: DataFrame with an additional column 'wind_direction' containing the calculated wind bearings.
+    :return: DataFrame with an additional column 'wind_direction_850' containing the calculated wind bearings.
     :rtype: pd.DataFrame
     """
     # group storm data by year
@@ -581,7 +581,7 @@ def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
         # rotate by 180 degrees to be consistent with standard meteorological convention
         # this is because the wind direction is defined as the direction from which the wind is coming
         # so a northerly wind (from the north) is 0 degrees, an easterly wind (from the east) is 90 degrees, etc.
-        processed_df.loc[group.index, "wind_direction"] = (
+        processed_df.loc[group.index, "wind_direction_850"] = (
             wind_bearings + 180
         ) % 360
 
