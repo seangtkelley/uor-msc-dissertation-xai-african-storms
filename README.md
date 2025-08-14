@@ -106,7 +106,7 @@ Notes:
 | `storm_id` | Unique identifier for each MCS | - | No | No |
 | `timestamp` | Datetime of observation | UTC | No | No |
 | `date_angle` | Angle representation of current date within year | ° | Yes | No |
-| `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
+| `eat_hours` | Time step hour of day | East Africa Time (UTC +3) | Yes | No |
 | `storm_total_duration` | Total duration of MCS | hr | Yes | **Yes** |
 | `lon` | Longitude of MCS centre | ° E | Yes | No |
 | `lat` | Latitude of MCS centre | ° N | Yes | No |
@@ -146,8 +146,8 @@ Notes:
 | `mean_v_shear_850_200` | Shear of meridional wind from 850 and 200 hPa | m/s | Yes | No |
 | `wind_direction_850` | Compass bearing from which the 850 hPa wind vector at MCS centre originates | ° from North | Yes | No |
 | `wind_angle_upslope` | Angle of `wind_direction_850` relative to `upslope_bearing` (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` | Yes | No |
-| `mean_tcwv` | Total column water vapour | kg/m² | Yes | No |
-| `domain_mean_tcwv` | Mean total column water vapour over the entire domain of ERA5 data | kg/m² | Yes | No |
+| `mean_tcwv` | Total column water vapour (TCWV) | kg/m² | Yes | No |
+| `domain_mean_tcwv` | Mean TCWV over the entire domain of ERA5 data | kg/m² | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
@@ -163,5 +163,5 @@ Notes:
 | `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr | Yes | No |
 | `storm_min_bt` | Minimum value of `min_bt` reached over MCS lifetime | K | Yes | **Yes** |
 | `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean | Yes | No |
-| `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 | Yes | No |
-| `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - | Yes | No |
+| `mjo_phase` | Phase of Madden–Julian oscillation (MJO) | integer range from 1 to 8 | Yes | No |
+| `mjo_amplitude` | Amplitude of MJO | - | Yes | No |
