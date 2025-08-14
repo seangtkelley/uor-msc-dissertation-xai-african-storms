@@ -571,6 +571,9 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
         v_shear_850_200 = (v_wind_200["vwnd"] - v_wind_850["vwnd"]).to_dataset()
 
         # calculate the spatial mean at each point
+        print(
+            "Calculating spatial mean of zonal shear between 850 and 500 hPa..."
+        )
         processed_df.loc[group.index, "mean_u_shear_850_500"] = group.parallel_apply(  # type: ignore
             lambda row: calc_spatiotemporal_agg_at_point(
                 row["timestamp"],
@@ -580,6 +583,9 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 "uwnd",
             ),
             axis=1,
+        )
+        print(
+            "Calculating spatial mean of meridional shear between 850 and 500 hPa..."
         )
         processed_df.loc[group.index, "mean_v_shear_850_500"] = group.parallel_apply(  # type: ignore
             lambda row: calc_spatiotemporal_agg_at_point(
@@ -591,6 +597,9 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
             ),
             axis=1,
         )
+        print(
+            "Calculating spatial mean of zonal shear between 850 and 200 hPa..."
+        )
         processed_df.loc[group.index, "mean_u_shear_850_200"] = group.parallel_apply(  # type: ignore
             lambda row: calc_spatiotemporal_agg_at_point(
                 row["timestamp"],
@@ -600,6 +609,9 @@ def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
                 "uwnd",
             ),
             axis=1,
+        )
+        print(
+            "Calculating spatial mean of meridional shear between 850 and 200 hPa..."
         )
         processed_df.loc[group.index, "mean_v_shear_850_200"] = group.parallel_apply(  # type: ignore
             lambda row: calc_spatiotemporal_agg_at_point(
