@@ -221,6 +221,7 @@ report/*.ilg
 report/*.ist
 report/*.nlo
 report/*.nls
+report/*.pdf
 
 # ignore data directory
 data
