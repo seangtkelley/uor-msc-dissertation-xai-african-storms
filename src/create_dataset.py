@@ -103,6 +103,17 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
+if should_recalc("date_angle", processed_df.columns):
+    print("Calculating date angle...")
+
+    day_of_year = processed_df["timestamp"].dt.dayofyear
+    days_in_year = (
+        processed_df["timestamp"]
+        .dt.is_leap_year.replace({True: 366, False: 365})
+        .infer_objects(copy=False)
+    )
+    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
+
 if (
     should_recalc("orography_height", processed_df.columns)
     or should_recalc("anor", processed_df.columns)
@@ -425,17 +436,6 @@ if should_recalc("mean_tcwv", processed_df.columns):
         "tcwv",
         f"mean_tcwv",
     )
-
-if should_recalc("date_angle", processed_df.columns):
-    print("Calculating date angle...")
-
-    day_of_year = processed_df["timestamp"].dt.dayofyear
-    days_in_year = (
-        processed_df["timestamp"]
-        .dt.is_leap_year.replace({True: 366, False: 365})
-        .infer_objects(copy=False)
-    )
-    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
 
 if (
     should_recalc("mean_u_shear_850_500", processed_df.columns)
