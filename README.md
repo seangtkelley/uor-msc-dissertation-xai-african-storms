@@ -99,14 +99,14 @@ Recommended for complete python environment isolation.
 Notes:
 - The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
 - All variables with the `storm_` prefix are valid over the entire MCS lifetime, while the others are valid only for the current time step.
-- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the MCS centre, **not** the MCS area.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the MCS centre and are instantaneous unless otherwise specified.
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
 | `storm_id` | Unique identifier for each MCS | - | No | No |
 | `timestamp` | Datetime of observation | UTC | No | No |
 | `date_angle` | Angle representation of current date within year | ° | Yes | No |
-| `eat_hours` | Time step hour of day | EAT (UTC +3) | Yes | No |
+| `eat_hours` | Time step hour of day | East Africa Time (UTC +3) | Yes | No |
 | `storm_total_duration` | Total duration of MCS | hr | Yes | **Yes** |
 | `lon` | Longitude of MCS centre | ° E | Yes | No |
 | `lat` | Latitude of MCS centre | ° N | Yes | No |
@@ -139,17 +139,20 @@ Notes:
 | `mean_v850` | 850 hPa meridional wind | m/s | Yes | No |
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
+| `domain_mean_u500` | Mean 500 hPa zonal wind over the entire domain of ERA5 data | m/s | Yes | No |
 | `mean_u_shear_850_500` | Shear of zonal wind from 850 and 500 hPa | m/s | Yes | No |
 | `mean_v_shear_850_500` | Shear of meridional wind from 850 and 500 hPa | m/s | Yes | No |
 | `mean_u_shear_850_200` | Shear of zonal wind from 850 and 200 hPa | m/s | Yes | No |
 | `mean_v_shear_850_200` | Shear of meridional wind from 850 and 200 hPa | m/s | Yes | No |
 | `wind_direction_850` | Compass bearing from which the 850 hPa wind vector at MCS centre originates | ° from North | Yes | No |
 | `wind_angle_upslope` | Angle of `wind_direction_850` relative to `upslope_bearing` (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` | Yes | No |
-| `mean_tcwv` | Total column water vapour | kg/m² | Yes | No |
+| `mean_tcwv` | Total column water vapour (TCWV) | kg/m² | Yes | No |
+| `domain_mean_tcwv` | Mean TCWV over the entire domain of ERA5 data | kg/m² | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
 | `mean_cape` | Convective available potential energy (CAPE) | J/kg | Yes | No |
+| `domain_mean_cape` | Mean CAPE over the entire domain of ERA5 data | J/kg | Yes | No |
 | `olr_90` | 90th percentile of negative outgoing longwave radiation (OLR) within 400 km | W/m² | Yes | No |
 | `olr_75` | 75th percentile of negative OLR within 400 km | W/m² | Yes | No |
 | `olr_50` | 50th percentile of negative OLR within 400 km | W/m² | Yes | No |
@@ -160,5 +163,5 @@ Notes:
 | `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr | Yes | No |
 | `storm_min_bt` | Minimum value of `min_bt` reached over MCS lifetime | K | Yes | **Yes** |
 | `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean | Yes | No |
-| `mjo_phase` | Phase of Madden–Julian oscillation | integer range from 1 to 8 | Yes | No |
-| `mjo_amplitude` | Amplitude of Madden–Julian oscillation | - | Yes | No |
+| `mjo_phase` | Phase of Madden–Julian oscillation (MJO) | integer range from 1 to 8 | Yes | No |
+| `mjo_amplitude` | Amplitude of MJO | - | Yes | No |
