@@ -99,7 +99,7 @@ Recommended for complete python environment isolation.
 Notes:
 - The features are listed in the order they appear in the dataset calculated by `src/create_dataset.py`.
 - All variables with the `storm_` prefix are valid over the entire MCS lifetime, while the others are valid only for the current time step.
-- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the MCS centre, **not** the MCS area.
+- All variables with the `mean_` prefix are calculated over a 400 km radius square-area from the MCS centre and are instantaneous unless otherwise specified.
 
 | Variable name | Description | Units | Predictor? | Predictand? |
 |--------------|-------------|-------------|-------------|-------------|
@@ -139,6 +139,7 @@ Notes:
 | `mean_v850` | 850 hPa meridional wind | m/s | Yes | No |
 | `mean_v500` | 500 hPa meridional wind | m/s | Yes | No |
 | `mean_v200` | 200 hPa meridional wind | m/s | Yes | No |
+| `domain_mean_u500` | Mean 500 hPa zonal wind over the entire domain of ERA5 data | m/s | Yes | No |
 | `mean_u_shear_850_500` | Shear of zonal wind from 850 and 500 hPa | m/s | Yes | No |
 | `mean_v_shear_850_500` | Shear of meridional wind from 850 and 500 hPa | m/s | Yes | No |
 | `mean_u_shear_850_200` | Shear of zonal wind from 850 and 200 hPa | m/s | Yes | No |
@@ -146,10 +147,12 @@ Notes:
 | `wind_direction_850` | Compass bearing from which the 850 hPa wind vector at MCS centre originates | ° from North | Yes | No |
 | `wind_angle_upslope` | Angle of `wind_direction_850` relative to `upslope_bearing` (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` | Yes | No |
 | `mean_tcwv` | Total column water vapour | kg/m² | Yes | No |
+| `domain_mean_tcwv` | Mean total column water vapour over the entire domain of ERA5 data | kg/m² | Yes | No |
 | `mean_q_850` | 850 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_500` | 500 hPa specific humidity | kg/kg | Yes | No |
 | `mean_q_200` | 200 hPa specific humidity | kg/kg | Yes | No |
 | `mean_cape` | Convective available potential energy (CAPE) | J/kg | Yes | No |
+| `domain_mean_cape` | Mean CAPE over the entire domain of ERA5 data | J/kg | Yes | No |
 | `olr_90` | 90th percentile of negative outgoing longwave radiation (OLR) within 400 km | W/m² | Yes | No |
 | `olr_75` | 75th percentile of negative OLR within 400 km | W/m² | Yes | No |
 | `olr_50` | 50th percentile of negative OLR within 400 km | W/m² | Yes | No |

@@ -359,64 +359,66 @@ def calc_spatiotemporal_agg_at_point(
     :return: Spatial mean of the specified variable within the radius.
     :rtype: np.floating
     """
-    # convert radius to meters
-    radius_m = radius_km * 1000
+    if radius_km == np.inf:
+        # if radius is infinite, use the entire dataset
+        ds_view = dataset
+    else:
+        # convert radius to meters
+        radius_m = radius_km * 1000
 
-    # vars for dataset longitude and latitude arrays
-    dataset_lons = dataset["longitude"].values
-    dataset_lats = dataset["latitude"].values
+        # vars for dataset longitude and latitude arrays
+        dataset_lons = dataset["longitude"].values
+        dataset_lats = dataset["latitude"].values
 
-    # find the grid cell closest to the storm's location
-    lon_idx = closest_indices([lon], dataset_lons).item()
-    lat_idx = closest_indices([lat], dataset_lats).item()
+        # find the grid cell closest to the storm's location
+        lon_idx = closest_indices([lon], dataset_lons).item()
+        lat_idx = closest_indices([lat], dataset_lats).item()
 
-    # find the grid height and width near the storm's location
-    _, _, grid_width_m = geod.inv(
-        dataset_lons[lon_idx],
-        dataset_lats[lat_idx],
-        dataset_lons[min(lon_idx + 1, len(dataset_lons) - 1)],
-        dataset_lats[lat_idx],
-    )
-    _, _, grid_height_m = geod.inv(
-        dataset_lons[lon_idx],
-        dataset_lats[lat_idx],
-        dataset_lons[lon_idx],
-        dataset_lats[min(lat_idx + 1, len(dataset_lats) - 1)],
-    )
+        # find the grid height and width near the storm's location
+        _, _, grid_width_m = geod.inv(
+            dataset_lons[lon_idx],
+            dataset_lats[lat_idx],
+            dataset_lons[min(lon_idx + 1, len(dataset_lons) - 1)],
+            dataset_lats[lat_idx],
+        )
+        _, _, grid_height_m = geod.inv(
+            dataset_lons[lon_idx],
+            dataset_lats[lat_idx],
+            dataset_lons[lon_idx],
+            dataset_lats[min(lat_idx + 1, len(dataset_lats) - 1)],
+        )
 
-    # calculate the number of grid cells in the radius for a square-ish area
-    area_width_cells = int(radius_m // grid_width_m)
-    area_height_cells = int(radius_m // grid_height_m)
+        # calculate the number of grid cells in the radius for a square-ish area
+        area_width_cells = int(radius_m // grid_width_m)
+        area_height_cells = int(radius_m // grid_height_m)
 
-    # calculate the indices of the grid cells within the radius
-    lon_start = max(0, lon_idx - area_width_cells)
-    lon_end = min(len(dataset_lons), lon_idx + area_width_cells + 1)
-    lat_start = max(0, lat_idx - area_height_cells)
-    lat_end = min(len(dataset_lats), lat_idx + area_height_cells + 1)
+        # calculate the indices of the grid cells within the radius
+        lon_start = max(0, lon_idx - area_width_cells)
+        lon_end = min(len(dataset_lons), lon_idx + area_width_cells + 1)
+        lat_start = max(0, lat_idx - area_height_cells)
+        lat_end = min(len(dataset_lats), lat_idx + area_height_cells + 1)
 
-    # extract the relevant grid cells
-    var_over_grid = dataset.isel(
-        longitude=slice(lon_start, lon_end),
-        latitude=slice(lat_start, lat_end),
-        missing_dims="warn",
-    )
+        # extract the relevant grid cells
+        ds_view = dataset.isel(
+            longitude=slice(lon_start, lon_end),
+            latitude=slice(lat_start, lat_end),
+            missing_dims="warn",
+        )
 
     # if invariant, take the first time step
     if invariant:
-        var_over_grid = var_over_grid.isel(valid_time=0)
+        ds_view = ds_view.isel(valid_time=0)
     else:
         # otherwise, select the time range around the storm's timestamp
         if timedelta is None:
-            var_over_grid = var_over_grid.sel(
-                valid_time=timestamp, method="nearest"
-            )
+            ds_view = ds_view.sel(valid_time=timestamp, method="nearest")
         else:
-            var_over_grid = var_over_grid.sel(
+            ds_view = ds_view.sel(
                 valid_time=slice(timestamp, timestamp + timedelta)
             )
 
-    # get variable values over the grid cells
-    var_over_grid = var_over_grid[variable_name].values
+    # get variable values over the grid cells as ndarray
+    var_over_grid = ds_view[variable_name].values
 
     # filter values using variable_bounds if provided
     if variable_bounds is not None:
