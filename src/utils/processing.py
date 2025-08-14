@@ -527,12 +527,120 @@ def calc_spatiotemporal_agg(
     return processed_df
 
 
+def calc_vertical_wind_shear(processed_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate vertical wind shear.
+
+    :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', and 'timestamp' columns.
+    :return: DataFrame with an additional 4 columns for vertical wind shear between 850-500 hPa and 850-200 hPa
+    :rtype: pd.DataFrame
+    """
+    # group storm data by year
+    grouped = processed_df.groupby(processed_df["timestamp"].dt.year)
+
+    # iterate over each year to calculate wind shear
+    for year, group in tqdm(
+        list(grouped), desc="Calculating wind shear by year"
+    ):
+        # load u and v wind components for all pressure levels
+        u_wind_850 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"uwnd_850_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        v_wind_850 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"vwnd_850_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        u_wind_500 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"uwnd_500_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        v_wind_500 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"vwnd_500_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        u_wind_200 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"uwnd_200_{year}.nc"
+        ).squeeze(dim="pressure_level")
+        v_wind_200 = xr.open_dataset(
+            config.DATA_DIR / "std" / f"vwnd_200_{year}.nc"
+        ).squeeze(dim="pressure_level")
+
+        # calculate vertical wind shear between 850 and 500
+        u_shear_850_500 = (u_wind_500["uwnd"] - u_wind_850["uwnd"]).to_dataset()
+        v_shear_850_500 = (v_wind_500["vwnd"] - v_wind_850["vwnd"]).to_dataset()
+
+        # calculate vertical wind shear between 850 and 200
+        u_shear_850_200 = (u_wind_200["uwnd"] - u_wind_850["uwnd"]).to_dataset()
+        v_shear_850_200 = (v_wind_200["vwnd"] - v_wind_850["vwnd"]).to_dataset()
+
+        # calculate the spatial mean at each point
+        print(
+            "Calculating spatial mean of zonal shear between 850 and 500 hPa..."
+        )
+        processed_df.loc[group.index, "mean_u_shear_850_500"] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_agg_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                u_shear_850_500,
+                "uwnd",
+            ),
+            axis=1,
+        )
+        print(
+            "Calculating spatial mean of meridional shear between 850 and 500 hPa..."
+        )
+        processed_df.loc[group.index, "mean_v_shear_850_500"] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_agg_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                v_shear_850_500,
+                "vwnd",
+            ),
+            axis=1,
+        )
+        print(
+            "Calculating spatial mean of zonal shear between 850 and 200 hPa..."
+        )
+        processed_df.loc[group.index, "mean_u_shear_850_200"] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_agg_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                u_shear_850_200,
+                "uwnd",
+            ),
+            axis=1,
+        )
+        print(
+            "Calculating spatial mean of meridional shear between 850 and 200 hPa..."
+        )
+        processed_df.loc[group.index, "mean_v_shear_850_200"] = group.parallel_apply(  # type: ignore
+            lambda row: calc_spatiotemporal_agg_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                v_shear_850_200,
+                "vwnd",
+            ),
+            axis=1,
+        )
+
+        # close all datasets
+        u_wind_850.close()
+        v_wind_850.close()
+        u_wind_500.close()
+        v_wind_500.close()
+        u_wind_200.close()
+        v_wind_200.close()
+
+    return processed_df
+
+
 def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate the wind angle and wind angle relative to the upslope angle.
 
     :param processed_df: DataFrame containing storm data. Must include 'lon', 'lat', 'timestamp', and 'upslope_bearing' columns.
-    :return: DataFrame with an additional column 'wind_direction' containing the calculated wind bearings.
+    :return: DataFrame with an additional column 'wind_direction_850' containing the calculated wind bearings.
     :rtype: pd.DataFrame
     """
     # group storm data by year
@@ -581,7 +689,7 @@ def calc_wind_direction(processed_df: pd.DataFrame) -> pd.DataFrame:
         # rotate by 180 degrees to be consistent with standard meteorological convention
         # this is because the wind direction is defined as the direction from which the wind is coming
         # so a northerly wind (from the north) is 0 degrees, an easterly wind (from the east) is 90 degrees, etc.
-        processed_df.loc[group.index, "wind_direction"] = (
+        processed_df.loc[group.index, "wind_direction_850"] = (
             wind_bearings + 180
         ) % 360
 

@@ -46,17 +46,24 @@ else:
     )
 
 
-def should_recalc(column_name: str, df_cols: Iterable[str]) -> bool:
+def should_recalc(
+    column_names: str | Iterable[str], df_cols: Iterable[str]
+) -> bool:
     """
-    Check if a column should be recalculated based on the command line argument.
-    :param column_name: Name of the column to check.
+    Check if columns should be recalculated.
+
+    :param column_names: Column names to check.
     :param df_cols: List of columns in the processed dataframe.
     :return: True if the column should be recalculated, False otherwise.
     """
-    return (
-        RECALC_ALL
-        or column_name in RECALC_FEATURES
-        or column_name not in df_cols
+    if isinstance(column_names, str):
+        column_names = [column_names]
+
+    return RECALC_ALL or any(
+        [
+            column_name in RECALC_FEATURES or column_name not in df_cols
+            for column_name in column_names
+        ]
     )
 
 
@@ -103,11 +110,20 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
-if (
-    should_recalc("orography_height", processed_df.columns)
-    or should_recalc("anor", processed_df.columns)
-    or should_recalc("upslope_bearing", processed_df.columns)
-    or should_recalc("slope_angle", processed_df.columns)
+if should_recalc("date_angle", processed_df.columns):
+    print("Calculating date angle...")
+
+    day_of_year = processed_df["timestamp"].dt.dayofyear
+    days_in_year = (
+        processed_df["timestamp"]
+        .dt.is_leap_year.replace({True: 366, False: 365})
+        .infer_objects(copy=False)
+    )
+    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
+
+if should_recalc(
+    ["orography_height", "anor", "upslope_bearing", "slope_angle"],
+    processed_df.columns,
 ):
     print("Calculating orography features...")
 
@@ -141,11 +157,9 @@ if should_recalc("storm_max_area", processed_df.columns):
         "area"
     ].transform("max")
 
-if (
-    should_recalc("over_land", processed_df.columns)
-    or should_recalc("acc_land_time", processed_df.columns)
-    or should_recalc("storm_total_land_time", processed_df.columns)
-    or should_recalc("mean_land_frac", processed_df.columns)
+if should_recalc(
+    ["over_land", "acc_land_time", "storm_total_land_time", "mean_land_frac"],
+    processed_df.columns,
 ):
     print("Calculating land mask features...")
 
@@ -167,20 +181,23 @@ if (
     # close dataset
     lsm.close()
 
-if (
-    should_recalc("distance_from_prev", processed_df.columns)
-    or should_recalc("bearing_from_prev", processed_df.columns)
-    or should_recalc("storm_straight_line_distance", processed_df.columns)
-    or should_recalc("storm_bearing", processed_df.columns)
-    or should_recalc("storm_distance_traversed", processed_df.columns)
+if should_recalc(
+    [
+        "distance_from_prev",
+        "bearing_from_prev",
+        "storm_straight_line_distance",
+        "storm_bearing",
+        "storm_distance_traversed",
+    ],
+    processed_df.columns,
 ):
     print("Calculating storm distances and bearings...")
 
     # calculate the distance and bearing from the previous point for each storm
     processed_df = processing.calc_storm_distances_and_bearings(processed_df)
 
-if should_recalc("storm_min_bt", processed_df.columns) or should_recalc(
-    "storm_min_bt_reached", processed_df.columns
+if should_recalc(
+    ["storm_min_bt", "storm_min_bt_reached"], processed_df.columns
 ):
     print("Calculating storm minimum cloudtop brightness...")
 
@@ -303,14 +320,10 @@ if should_recalc("mean_skt", processed_df.columns):
     )
 
 pressure_levels = [200, 500, 850]
-if any(
-    should_recalc(f"mean_u{level}", processed_df.columns)
-    for level in pressure_levels
-):
-    print(
-        f"Calculating mean zonal wind speed at pressure levels {pressure_levels}..."
-    )
-    for level in pressure_levels:
+for level in pressure_levels:
+    if should_recalc(f"mean_u{level}", processed_df.columns):
+        print(f"Calculating mean zonal wind speed at {level} hPa...")
+
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"uwnd_{level}_",
@@ -320,14 +333,10 @@ if any(
             fillna_val=0.0,
         )
 
-if any(
-    should_recalc(f"mean_v{level}", processed_df.columns)
-    for level in pressure_levels
-):
-    print(
-        f"Calculating mean meridional wind speed at pressure levels {pressure_levels}..."
-    )
-    for level in pressure_levels:
+for level in pressure_levels:
+    if should_recalc(f"mean_v{level}", processed_df.columns):
+        print(f"Calculating mean meridional wind speed at {level} hPa...")
+
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"vwnd_{level}_",
@@ -357,14 +366,10 @@ if should_recalc("mean_swvl2", processed_df.columns):
         "mean_swvl2",
     )
 
-if any(
-    should_recalc(f"mean_q_{level}", processed_df.columns)
-    for level in pressure_levels
-):
-    print(
-        f"Calculating mean specific humidity at pressure levels {pressure_levels}..."
-    )
-    for level in pressure_levels:
+for level in pressure_levels:
+    if should_recalc(f"mean_q_{level}", processed_df.columns):
+        print(f"Calculating mean specific humidity at {level} hPa...")
+
         processed_df = processing.calc_spatiotemporal_agg(
             processed_df,
             f"shum_{level}_",
@@ -396,7 +401,7 @@ for percent in olr_percents:
             agg_func=lambda x: np.nanpercentile(x, percent),
         )
 
-if should_recalc("wind_direction", processed_df.columns):
+if should_recalc("wind_direction_850", processed_df.columns):
     print("Calculating wind direction...")
 
     processed_df = processing.calc_wind_direction(processed_df)
@@ -405,14 +410,14 @@ if should_recalc("wind_angle_upslope", processed_df.columns):
     print("Calculating wind direction relative to upslope direction...")
 
     # first, rotate the wind direction to point to where the wind is going to
-    # as wind_direction is defined as the direction the wind is coming from
+    # as wind_direction_850 is defined as the direction the wind is coming from
     # then, rotate the wind direction to be relative to the upslope direction
     # e.g. wind is going upslope: wind_angle_upslope = 0
     # e.g. wind is going downslope: wind_angle_upslope = 180
     # e.g. wind is going cross-slope: wind_angle_upslope = 90
     # finally, ensure the direction is in the range [0, 360)
     processed_df["wind_angle_upslope"] = (
-        ((processed_df["wind_direction"] + 180) % 360)
+        ((processed_df["wind_direction_850"] + 180) % 360)
         - processed_df["upslope_bearing"]
     ) % 360
 
@@ -426,17 +431,18 @@ if should_recalc("mean_tcwv", processed_df.columns):
         f"mean_tcwv",
     )
 
-if should_recalc("date_angle", processed_df.columns):
-    print("Calculating date angle...")
+if should_recalc(
+    [
+        "mean_u_shear_850_500",
+        "mean_v_shear_850_500",
+        "mean_u_shear_850_200",
+        "mean_v_shear_850_200",
+    ],
+    processed_df.columns,
+):
+    print("Calculating vertical wind shear...")
 
-    day_of_year = processed_df["timestamp"].dt.dayofyear
-    days_in_year = (
-        processed_df["timestamp"]
-        .dt.is_leap_year.replace({True: 366, False: 365})
-        .infer_objects(copy=False)
-    )
-    processed_df["date_angle"] = (day_of_year / days_in_year) * 360
-
+    processed_df = processing.calc_vertical_wind_shear(processed_df)
 
 # select only the columns that are in the config
 processed_df = processed_df[
