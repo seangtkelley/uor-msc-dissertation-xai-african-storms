@@ -9,7 +9,7 @@
 
 The Horn of Africa is a region with complex topography and large-scale climatic variability that affects \acrshort{mcs} development. From the west, the Sahel fades into the Ethiopian Highlands and later the East African Rift Valley, characterised by high topographic relief and complex orography. In the east, the Ethiopian Highlands transition into the low-lying coastal plains of Somalia. Unlike most other countries at this latitude, most of Somalia is arid or semi-arid, with the exception of its border region with Kenya \citep{Beck2023}. This contrast in geography is reflected in storm development and precipitation patterns. The mountains of Ethiopia dominate local convective processes \citep{Negash2024} while the low-lying areas on the south-eastern coast of the region are not nearly as conducive to \acrshort{mcs} development and thus are much more susceptible to storm patterns over the Indian Ocean and the Gulf of Aden \citep{Camberlin2024}. The combination of land surface temperature and soil moisture also impact the storm development and intensification. Notably, multiple studies over distinct regions have demonstrated that strong soil moisture gradients can intensify convection \citep{Barton2021,Klein2020,Taylor2017}. These processes are likewise relevant to the Horn of Africa, especially in transitional climates bridging arid and humid zones. Large-scale \glspl{teleconnection} also play a major role in governing \acrshort{mcs} activity in this region. The \acrfull{mjo} is a dominant intra-seasonal factor which modulates rainfall in the tropics and in East Africa, its active phases coincide with increased convection and extreme rainfall events \citep{Camberlin2019,Ochieng2023,Pohl2006}. Quite uniquely for the tropics, the \acrfull{itcz} passes over the region twice per year leading to two distinct rainy seasons, one short and one long \citep{Palmer2023,Tefera2025}. The \acrfull{tej} is another key feature enhancing vertical wind shear which can both facilitate or hinder \acrshort{mcs} development \citep{Farnsworth2011,Vashisht2021}. Additionally, the \acrfull{enso} and the \acrfull{iod} have also been shown to modulate rainfall patterns in the region, with coupled regional climate models able to reproduce these patterns at various timescales \citep{Dubache2019,Endris2019,Vashisht2021,Zaroug2014}. 
 
-MAYBE NEED A PARAGRAPH ABOUT LIMITED RESOURCES AND DATA AVAILABILITY IN THE REGION
+Overall, despite this complex array of factors, \acrshortpl{mcs} have been shown to account for over 60\% of extreme rainfall in Ethiopia and Somalia \citep{Hill2023}. These anomalous events often leads to intense flooding, which not only can effect the local population, but also countries as far as Egypt due to the Ethiopian Highlands being a watershed origin for countless rivers including the Blue Nile \citep{Legese2020,Zaroug2014}. Thus, the importance of understanding these storms, predicting their behaviour, and anticipating their effects cannot be overstated. But due to the long history of colonization and underdevelopment, the entire continent of Africa is considerably underrepresented in high-quality meteorological data and many national meteorological services lack critical resources to more effectively monitor and predict \acrshortpl{mcs} \insertref{bunch of stuff on this}. This discrepancy also has downstream effects on global meteorology, as reanalysis datasets and digital twin systems rely heavily on data assimilation of observations and regional models for calibration abd parametrisation \insertref{bunch of stuff on this}. Although the primary remedy would be increased investment and study, this discrepancy presents an opportunity for otherwise unorthodox methods to make use of existing data to improve predictions and understanding of \acrshortpl{mcs}.
 
 \section{Data-driven Scientific Discovery}
 
@@ -23,12 +23,30 @@ Regardless of the rapid emergence and success of these methods, one fundamental 
 
 \section{Explainable ML (XAI)}
 
-\subsection{Inherently Interpretable Model Frameworks}
+Explainable AI (XAI) \todo{glossary entry} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} models more transparent and interpretable. This is particularly important in domains where understanding the rationale behind predictions is crucial, such as healthcare, finance, and meteorology. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. An summary of XAI taxonomy is given in Figure \ref{fig:xai-taxonomy} as conceived by \insertref{XAI book}.
 
-Techniques such as LIME, SHAP, and Layerwise Relevance Propagation (LRP) have been widely adopted to interpret complex ML models...
+\begin{figure}[h]
+    \centering
+    \missingfigure{XAI taxonomy figure}
+    \caption{XAI Taxonomy.}
+    \label{fig:xai-taxonomy}
+\end{figure}
+
+Inherently interpretable models are designed to be transparent by construction, often using simpler architectures or feature-based approaches that allow for direct interpretation of the relationship between inputs and outputs. Examples include linear regression, decision trees, and rule-based systems. These models are typically easier to understand but may sacrifice some predictive performance compared to more complex models like deep neural networks \todo{acronym for DNNs}. PIML could also be considered a part of this landscape, as it aims to integrate physical knowledge into the modelling process to potentially enhance forecast credibility. 
+
+Post-hoc explanation methods, on the other hand, are applied to models after training to partially interpret their behaviour. Model-specific post-hoc methods directly leverage the learned structure of the model. For example, great strides have been made in pinning the internal embeddings and attention mechanisms of transformer models to real-world entities and concepts \insertref{embedding map website for claude? there's gotta be papers on this}.
+
+\explainindetail{transition into model-agnostic methods}
+
+These methods can be broadly categorised into local and global explanations. Local explanations focus on individual predictions, providing insights into why a model made a specific decision for a given input. Global explanations, in contrast, aim to provide an overall understanding of the model's behaviour for any input. Techniques such as LIME (Local Interpretable Model-agnostic Explanations) and SHAP (SHapley Additive exPlanations) are commonly used for this purpose \insertref{lime and shap}, though LIME has been shown to a subset of SHAP. \explainindetail{trying to justify only explaining SHAP values}
+
+\explainindetail{maybe quickly mention counterfactual methods for local explanations, but not going into detail}
 
 \subsection{SHapley Additive exPlanations (SHAP)}
-SPECIFIC EXPLANATION OF SHAP AS ThIS IS ThE BACKGROUND 
+
+After its introduction in 2017 by Lundberg and Lee \insertref{lundberg lee shap in-text citation}, SHapley Additive exPlanations (SHAP) have emerged as one of the most popular frameworks for post-hoc model explanations. This is achieved through the application of cooperative game theory, specifically the concept of the Shapley value, which fairly distributes the "payout" (i.e., the model's prediction) among the features based on their individual contributions \insertref{original shapley paper}.
+
+\explainindetail{need to talk about coalitions, then the rough outline of how Shapley values are defined theoretically, then maybe how SHAP library from lundberg and lee implements this in practice}
 
 \section{Literature Review}
 
