@@ -37,6 +37,22 @@
   url       = {https://www.nature.com/articles/s41597-023-02549-6},
   year      = {2023}
 }
+@article{Blunn2024,
+  abstract  = {The urban heat island (UHI) effect exacerbates near-surface air temperature (T) extremes in cities, with negative impacts for human health, building energy consumption and infrastructure. Using conventional weather models, it is both difficult and computationally expensive to simulate the complex processes controlling neighbourhood-scale variation of T. We use machine learning (ML) to bias correct and downscale T predictions made by the Met Office operational regional forecast model (UKV) to 100 m horizontal grid length over London, UK. A set of ML models (random forest, XGBoost, multiplayer perceptron) are trained using citizen weather station observations and UKV variables from eight heatwaves, along with high-resolution land cover data. The ML models improve the T mean absolute error (MAE) by up to 0.12°C (11%) relative to the UKV. They also improve the UHI diurnal and spatial representation, reducing the UHI profile MAE from 0.64°C (UKV) to 0.15°C. A multiple linear regression performs almost as well as the ML models in terms of T MAE, but cannot match the UHI bias correction performance of the ML models, only reducing the UHI profile MAE to 0.49°C. UKV latent heat flux is found to be the most important predictor of T bias. It is demonstrated that including more heatwaves and observation sites in training would reduce overfitting and improve ML model performance.},
+  author    = {Lewis P. Blunn and Flynn Ames and Hannah L. Croad and Adam Gainford and Ieuan Higgs and Mathew Lipson and Chun Hay Brian Lo},
+  doi       = {10.1002/MET.2200},
+  issn      = {1469-8080},
+  issue     = {3},
+  journal   = {Meteorological Applications},
+  keywords  = {crowdsourced data,land cover,machine learning,numerical weather prediction,urban heat island},
+  month     = {5},
+  pages     = {e2200},
+  publisher = {John Wiley \& Sons, Ltd},
+  title     = {Machine learning bias correction and downscaling of urban heatwave temperature predictions from kilometre to hectometre scale},
+  volume    = {31},
+  url       = {https://onlinelibrary.wiley.com/doi/full/10.1002/met.2200 https://onlinelibrary.wiley.com/doi/abs/10.1002/met.2200 https://rmets.onlinelibrary.wiley.com/doi/10.1002/met.2200},
+  year      = {2024}
+}
 @article{Camberlin2019,
   abstract  = {The modulation of the rainfall diurnal cycle at intraseasonal and interannual time scales is examined using gridded rainfall data over Eastern Africa and the nearby Indian Ocean for the period 1998–2014. Our focus is on the October-December season which is strongly impacted by both the Madden-Julian Oscillation (MJO) and the Indian Ocean Dipole Mode (IODM). The effect of the MJO, which is not synchronized across the whole region, is mainly through changes in the amplitude of the diurnal cycle, especially an enhancement of the late afternoon peak in active phases of the MJO. The rainfall phase only shows minor variations between the active and quiescent phases of the MJO, except over the drier regions and the Indian Ocean where the overall diurnal rainfall signal is more uneven. The effect of the positive phase of the IODM (warm western Indian Ocean) on Eastern Africa rainfall is found at any time of the day, but the enhancement is more prominent during the wettest part of the day (generally the afternoon). Substantial changes in the diurnal phase of the rains are found in some land areas away from the coast or from mountain ranges, where the dominant afternoon peak during the negative IODM phase is replaced by a nighttime maximum during the positive phase. Cross-sections and a cluster analysis of diurnal rainfall patterns over Kenya and southern Somalia suggest that this feature may be associated with the development of longer-lived rainfall systems propagating inland from the coast during the IODM positive phase.},
   author    = {Pierre Camberlin and Wilson Gitau and George Kiladis and Emily Bosire and Benjamin Pohl},
@@ -68,6 +84,36 @@
   volume    = {129},
   url       = {https://onlinelibrary.wiley.com/doi/full/10.1029/2024JD041109 https://onlinelibrary.wiley.com/doi/abs/10.1029/2024JD041109 https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2024JD041109},
   year      = {2024}
+}
+@article{Chen2022,
+  abstract  = {Global medium-range weather forecasting is critical to decision-making across many social and economic domains. Traditional numerical weather prediction uses increased compute resources to improve forecast accuracy, but cannot directly use historical weather data to improve the underlying model. We introduce a machine learning-based method called "GraphCast", which can be trained directly from reanalysis data. It predicts hundreds of weather variables, over 10 days at 0.25 degree resolution globally, in under one minute. We show that GraphCast significantly outperforms the most accurate operational deterministic systems on 90% of 1380 verification targets, and its forecasts support better severe event prediction, including tropical cyclones, atmospheric rivers, and extreme temperatures. GraphCast is a key advance in accurate and efficient weather forecasting, and helps realize the promise of machine learning for modeling complex dynamical systems.},
+  author    = {Kang Chen and Tao Han and Junchao Gong and Lei Bai and Fenghua Ling and Jing-Jia Luo and Xin Chen and Leiming Ma and Tianning Zhang and Rui Su and Yuanzheng Ci and Bin Li and Xiaokang Yang and Wanli Ouyang and Remi Lam and Alvaro Sanchez-Gonzalez and Matthew Willson and Peter Wirnsberger and Meire Fortunato and Alexander Pritzel and Suman Ravuri and Timo Ewalds and Ferran Alet and Zach Eaton-Rosen and Weihua Hu and Alexander Merose and Stephan Hoyer and George Holland and Jacklynn Stott and Oriol Vinyals and Shakir Mohamed and Peter Battaglia and Karel Lenc and Matthew Willson and Dmitry Kangin and Remi Lam and Piotr Mirowski and Megan Fitzsimons and Maria Athanassiadou and Sheleem Kashem and Sam Madge and Rachel Prudden and Amol Mandhane and Aidan Clark and Andrew Brock and Karen Simonyan and Raia Hadsell and Niall Robinson and Ellen Clancy and Alberto Arribas and Shakir Mohamed and Jaideep Pathak and Shashank Subramanian and Peter Harrington and Sanjeev Raja and Ashesh Chattopadhyay and Morteza Mardani and Thorsten Kurth and David Hall and Zongyi Li and Kamyar Azizzadenesheli and Pedram Hassanzadeh and Karthik Kashinath and Animashree Anandkumar and Lei Chen and Xiaohui Zhong and Feng Zhang and Yuan Cheng and Yinghui Xu and Yuan Qi and Hao Li and Kaifeng Bi and Lingxi Xie and Hengheng Zhang and Xin Chen and Xiaotao Gu and Qi Tian},
+  issn      = {14764687},
+  issue     = {7878},
+  journal   = {Nature},
+  keywords  = {deep learning,ecmwf,era5,graph neural networks,hres,learning simulation,medium-range weather prediction,multi-modal multi-task learning,transformer,weather forecasting},
+  month     = {12},
+  pages     = {1-36},
+  pmid      = {34588668},
+  publisher = {Springer US},
+  title     = {GraphCast: Learning skillful medium-range global weather forecasting},
+  volume    = {597},
+  url       = {https://arxiv.org/abs/2212.12794v2},
+  year      = {2022}
+}
+@article{Dabrowski2020,
+  abstract  = {Recurrent and convolutional neural networks are the most common architectures used for time series forecasting in deep learning literature. These networks use parameter sharing by repeating a set of fixed architectures with fixed parameters over time or space. The result is that the overall architecture is time-invariant (shift-invariant in the spatial domain) or stationary. We argue that time-invariance can reduce the capacity to perform multi-step-ahead forecasting, where modelling the dynamics at a range of scales and resolutions is required. We propose ForecastNet which uses a deep feed-forward architecture to provide a time-variant model. An additional novelty of ForecastNet is interleaved outputs, which we show assist in mitigating vanishing gradients. ForecastNet is demonstrated to outperform statistical and deep learning benchmark models on several datasets.},
+  author    = {Joel Janek Dabrowski and YiFan Zhang and Ashfaqur Rahman},
+  doi       = {10.1007/978-3-030-63836-8_48},
+  journal   = {Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)},
+  keywords  = {Deep learning,ForecastNet,Forecasting,Time-invariance},
+  month     = {6},
+  pages     = {579-591},
+  publisher = {Springer Science and Business Media Deutschland GmbH},
+  title     = {ForecastNet: A Time-Variant Deep Feed-Forward Neural Network Architecture for Multi-Step-Ahead Time-Series Forecasting},
+  volume    = {12534 LNCS},
+  url       = {http://arxiv.org/abs/2002.04155 http://dx.doi.org/10.1007/978-3-030-63836-8_48},
+  year      = {2020}
 }
 @article{Dinku2019,
   abstract  = {Climate data are essential in an array of climate research and applications that include analyses of climate variability and trends and modeling the impact of climate variability and change on different socioeconomic activities. However, the use of climate data for research and applications in Africa has been scanty because availability of and access to climate data is very limited. In many parts of Africa, weather stations are sparse and their number has been declining. Besides, the distribution of existing stations is uneven, with most located along major roads. Where data exist, they are often of poor quality with many gaps. There are different efforts underway to overcome these challenges. One of these efforts is the Enhancing National Climate Services (ENACTS) initiative. This initiative works with National Meteorological Services in Africa to improve the availability and quality of climate data by combining quality-controlled station observation with satellite and reanalysis proxies.},
@@ -281,6 +327,15 @@
   volume  = {7},
   year    = {2020}
 }
+@techreport{Linsenmeier2023,
+  abstract    = {Global weather forecasts are of great economic value for society, but geographical differences in forecast accuracy can create new - and potentially exacerbate existing - economic inequalities. Regional differences in forecast accuracy are particularly relevant if weather forecasts are considered as an important tool to help reduce the negative effects of future climate change such as mortality from extreme temperature events. In this paper, we provide a comprehensive global analysis of the accuracy of short-term numerical weather predictions of temperature and relate our findings to both existing economic inequalities and inequities in global weather monitoring infrastructure. We report three main results: First, temperature forecasts are currently substantially more accurate in high income countries than in low income countries. A seven-day-ahead forecast in a high-income country is on average more accurate than a one-day-ahead forecast in a low income country. Second, while forecast accuracy has improved steadily between 1985 and the present - with the largest increases in the 1990s - there is a persistent gap between high income and low income countries. Third, the infrastructure for weather observations is highly unequally distributed across countries, with fewer land-based weather stations and radiosondes in poorer countries. These inequalities grow even larger when lower reporting rates are taken into account. Remedying these differences in infrastructure would help close the forecast accuracy gap.},
+  author      = {Manuel Linsenmeier and Jeffrey G Shrader},
+  issue       = {7e2jf},
+  institution = {Center for Open Science},
+  title       = {Global inequalities in weather forecasts},
+  url         = {https://EconPapers.repec.org/RePEc:osf:socarx:7e2jf},
+  year        = {2023}
+}
 @article{Lorenz1963,
   abstract = {Finite systems of deterministic ordinary nonlinear differential equations may be designed to represent forced dissipative hydrodynamic flow. Solutions of these equations can be identified with trajectories in phase space. For those systems with bounded solutions, it is found that nonperiodic solutions are ordinarily unstable with respect to small modifications, so that slightly differing initial states can evolve into considerably different states. Systems with bounded solutions are shown to possess bounded numerical solutions.
               
@@ -310,6 +365,20 @@
   volume    = {2017-December},
   url       = {https://arxiv.org/abs/1705.07874v2},
   year      = {2017}
+}
+@article{Luo2025,
+  abstract  = {Weather forecasting is essential but remains computationally intensive and physically incomplete in traditional numerical weather prediction (NWP) methods. Deep learning (DL) models offer efficiency and accuracy but often ignore physical laws, limiting interpretability and generalization. We propose PhyDL-NWP, a physics-guided deep learning framework that integrates physical equations with latent force parameterization into data-driven models. It predicts weather variables from arbitrary spatiotemporal coordinates, computes physical terms via automatic differentiation, and uses a physics-informed loss to align predictions with governing dynamics. PhyDL-NWP enables resolution-free downscaling by modeling weather as a continuous function and fine-tunes pre-trained models with minimal overhead, achieving up to 170x faster inference with only 55K parameters. Experiments show that PhyDL-NWP improves both forecasting performance and physical consistency.},
+  author    = {Yingtao Luo and Shikai Fang and Binqing Wu and Qingsong Wen and Liang Sun},
+  doi       = {10.1145/3711896.3737081},
+  journal   = {Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (KDD '25), August 3â•ﬁ7, 2025, Toronto, ON, Canada},
+  keywords  = {Learning,Parameterization,Physics,Prediction,Weather},
+  month     = {5},
+  pages     = {2010-2020},
+  publisher = {Association for Computing Machinery (ACM)},
+  title     = {Physics-Guided Learning of Meteorological Dynamics for Weather Downscaling and Forecasting},
+  volume    = {1},
+  url       = {http://arxiv.org/abs/2505.14555 http://dx.doi.org/10.1145/3711896.3737081},
+  year      = {2025}
 }
 @article{Lynch2008,
   abstract  = {Numerical simulation of an ever-increasing range of geophysical phenomena is adding enormously to our understanding of complex processes in the Earth system. The consequences for mankind of ongoing climate change will be far-reaching. Earth System Models are capable of replicating climate regimes of past millennia and are the best means we have of predicting the future of our climate. The basic ideas of numerical forecasting and climate modeling were developed about a century ago, long before the first electronic computer was constructed. There were several major practical obstacles to be overcome before numerical prediction could be put into practice. A fuller understanding of atmospheric dynamics allowed the development of simplified systems of equations; regular radiosonde observations of the free atmosphere and, later, satellite data, provided the initial conditions; stable finite difference schemes were developed; and powerful electronic computers provided a practical means of carrying out the prodigious calculations required to predict the changes in the weather. Progress in weather forecasting and in climate modeling over the past 50 years has been dramatic. In this presentation, we will trace the history of computer forecasting through the ENIAC integrations to the present day. The useful range of deterministic prediction is increasing by about one day each decade, and our understanding of climate change is growing rapidly as Earth System Models of ever-increasing sophistication are developed. © 2007 Elsevier Inc. All rights reserved.},
@@ -438,6 +507,23 @@
   url       = {https://onlinelibrary.wiley.com/doi/full/10.1256/qj.05.223 https://onlinelibrary.wiley.com/doi/abs/10.1256/qj.05.223 https://rmets.onlinelibrary.wiley.com/doi/10.1256/qj.05.223},
   year      = {2006}
 }
+@article{Sun2025,
+  abstract  = {Predicting gray swan weather extremes, which are possible but so rare that they are absent from the training dataset, is a major concern for AI weather models and long-term climate emulators. An important open question is whether AI models can extrapolate from weaker weather events present in the training set to stronger, unseen weather extremes. To test this, we train independent versions of the AI weather model FourCastNet on the 1979–2015 ERA5 dataset with all data, or with Category 3–5 tropical cyclones (TCs) removed, either globally or only over the North Atlantic or Western Pacific basin. We then test these versions of FourCastNet on 2018–2023 Category 5 TCs (gray swans). All versions yield similar accuracy for global weather, but the one trained without Category 3–5 TCs cannot accurately forecast Category 5 TCs, indicating that these models cannot extrapolate from weaker storms. The versions trained without Category 3–5 TCs in one basin show some skill forecasting Category 5 TCs in that basin, suggesting that FourCastNet can generalize across tropical basins. This is encouraging and surprising because regional information is implicitly encoded in inputs. Given that current state-of-the-art AI weather and climate models have similar learning strategies, we expect our findings to apply to other models. Other types of weather extremes need to be similarly investigated. Our work demonstrates that novel learning strategies are needed for AI models to reliably provide early warning or estimated statistics for the rarest, most impactful TCs, and, possibly, other weather extremes.},
+  author    = {Y. Qiang Sun and Pedram Hassanzadeh and Mohsen Zand and Ashesh Chattopadhyay and Jonathan Weare and Dorian S. Abbot},
+  doi       = {10.1073/PNAS.2420914122/SUPPL_FILE/PNAS.2420914122.SAPP.PDF},
+  issn      = {10916490},
+  issue     = {21},
+  journal   = {Proceedings of the National Academy of Sciences of the United States of America},
+  keywords  = {AI weather models,gray swan weather extremes,out-of-distribution generalization},
+  month     = {5},
+  pages     = {e2420914122},
+  pmid      = {40392853},
+  publisher = {National Academy of Sciences},
+  title     = {Can AI weather models predict out-of-distribution gray swan tropical cyclones?},
+  volume    = {122},
+  url       = {https://www.pnas.org/doi/abs/10.1073/pnas.2420914122},
+  year      = {2025}
+}
 @article{Taylor2017,
   abstract  = {Since 1982, extreme daily rainfall in the western Sahel has increased persistently, owing to a warmer Sahara which has led to increased wind shear and an increase in intense storms. A warming climate is expected to increase the frequency of extreme rainfall events because warmer air can support higher humidity, but other mechanisms may also be at work. Christopher Taylor et al. show that increases in extreme rainfall in the western Sahel region of Africa since 1982 are driven by a larger gradient in temperature across the region caused by a warmer Sahara desert to the north. In turn, the sharper gradient increases wind shear and seems to have led to the frequency of mesoscale convective systems—which are exactly the kind of weather systems likely to generate extreme rainfall—tripling since 1982. The spatial patterns of global warming are likely to further increase the temperature gradient and intensify mesoscale convective systems, leading to more extreme rainfall events. The hydrological cycle is expected to intensify under global warming1, with studies reporting more frequent extreme rain events in many regions of the world2,3,4, and predicting increases in future flood frequency5. Such early, predominantly mid-latitude observations are essential because of shortcomings within climate models in their depiction of convective rainfall6,7. A globally important group of intense storms—mesoscale convective systems (MCSs)8—poses a particular challenge, because they organize dynamically on spatial scales that cannot be resolved by conventional climate models. Here, we use 35 years of satellite observations from the West African Sahel to reveal a persistent increase in the frequency of the most intense MCSs. Sahelian storms are some of the most powerful on the planet9, and rain gauges in this region have recorded a rise in ‘extreme’17 daily rainfall totals. We find that intense MCS frequency is only weakly related to the multidecadal recovery of Sahel annual rainfall, but is highly correlated with global land temperatures. Analysis of trends across Africa reveals that MCS intensification is limited to a narrow band south of the Sahara desert. During this period, wet-season Sahelian temperatures have not risen, ruling out the possibility that rainfall has intensified in response to locally warmer conditions. On the other hand, the meridional temperature gradient spanning the Sahel has increased in recent decades, consistent with anthropogenic forcing driving enhanced Saharan warming10. We argue that Saharan warming intensifies convection within Sahelian MCSs through increased wind shear and changes to the Saharan air layer. The meridional gradient is projected to strengthen throughout the twenty-first century, suggesting that the Sahel will experience particularly marked increases in extreme rain. The remarkably rapid intensification of Sahelian MCSs since the 1980s sheds new light on the response of organized tropical convection to global warming, and challenges conventional projections made by general circulation models.},
   author    = {Christopher M. Taylor and Danijel Belusic and Françoise Guichard and Douglas J. Parker and Théo Vischel and Olivier Bock and Phil P. Harris and Serge Janicot and Cornelia Klein and Gérémy Panthou},
@@ -471,6 +557,21 @@
   volume    = {15},
   url       = {https://www.nature.com/articles/s41598-025-86564-0},
   year      = {2025}
+}
+@article{Valmassoi2023,
+  author    = {Arianna Valmassoi and Jan D. Keller and Daryl T. Kleist and Stephen English and Bodo Ahrens and Ivan Bašták Ďurán and Elisabeth Bauernschubert and Michael G. Bosilovich and Masatomo Fujiwara and Hans Hersbach and Lili Lei and Ulrich Löhnert and Nabir Mamnun and Cory R. Martin and Andrew Moore and Deborah Niermann and Juan José Ruiz and Leonhard Scheck},
+  doi       = {10.1175/BAMS-D-21-0331.1},
+  issn      = {0003-0007},
+  issue     = {4},
+  journal   = {Bulletin of the American Meteorological Society},
+  keywords  = {Coupled models,Data assimilation,Machine learning,Reanalysis data},
+  month     = {4},
+  pages     = {E756-E767},
+  publisher = {American Meteorological Society},
+  title     = {Current Challenges and Future Directions in Data Assimilation and Reanalysis},
+  volume    = {104},
+  url       = {https://journals.ametsoc.org/view/journals/bams/104/4/BAMS-D-21-0331.1.xml},
+  year      = {2023}
 }
 @article{Vashisht2021,
   abstract  = {Global climate models (GCMs) are critical tools for understanding and projecting climate variability and change, yet the performance of these models is notoriously weak over much of tropical Africa. To improve this situation, process-based studies of African climate dynamics and their representation in GCMs are required. Here, we focus on summer rainfall of eastern Africa (SREA), which is crucial to the Ethiopian Highlands and feeds the flow of the Blue Nile River. The SREA region is highly vulnerable to droughts, with El Niño-Southern Oscillation (ENSO) being a leading cause of interannual rainfall variability. Adequate understanding and accurate representation of climate features that influence regional variability is an important but often neglected issue when evaluating models. We perform a process-based evaluation of GCMs, focusing on the upper-troposphere tropical easterly jet (TEJ), which has been hypothesized to link ENSO to SREA. We find that most models have an ENSO-TEJ coupling similar to observed, but the models diverge in their representation of TEJ-SREA coupling. Differences in the latter explain the majority (80%) of variability in ENSO teleconnection simulation across the models. This is higher than the variance explained by rainfall coupling with the Somali jet (44%) and African easterly jet (55%). However, our diagnostics of the leading hypothesized mechanism in the models-variability in divergence in the TEJ exit region-are not consistent across models and suggest that a deeper understanding of the mechanisms of TEJ-precipitation coupling should be a priority for studies of climate variability and change in the region.},
@@ -529,6 +630,23 @@
   title     = {Droughts and floods over the upper catchment of the Blue Nile and their connections to the timing of El Niño and la Niña events},
   volume    = {18},
   year      = {2014}
+}
+@article{Zhang2023,
+  abstract  = {Extreme precipitation is a considerable contributor to meteorological disasters and there is a great need to mitigate its socioeconomic effects through skilful nowcasting that has high resolution, long lead times and local details1–3. Current methods are subject to blur, dissipation, intensity or location errors, with physics-based numerical methods struggling to capture pivotal chaotic dynamics such as convective initiation4 and data-driven learning methods failing to obey intrinsic physical laws such as advective conservation5. We present NowcastNet, a nonlinear nowcasting model for extreme precipitation that unifies physical-evolution schemes and conditional-learning methods into a neural-network framework with end-to-end forecast error optimization. On the basis of radar observations from the USA and China, our model produces physically plausible precipitation nowcasts with sharp multiscale patterns over regions of 2,048 km × 2,048 km and with lead times of up to 3 h. In a systematic evaluation by 62 professional meteorologists from across China, our model ranks first in 71% of cases against the leading methods. NowcastNet provides skilful forecasts at light-to-heavy rain rates, particularly for extreme-precipitation events accompanied by advective or convective processes that were previously considered intractable. &nbsp;A new nowcasting model unifies physical-evolution schemes and deep-learning methods to accurately predict precipitation with lead times of up to 3 h, including extreme-precipitation events and weather systems that were previously considered intractable with physics-based numerical methods.},
+  author    = {Yuchen Zhang and Mingsheng Long and Kaiyuan Chen and Lanxiang Xing and Ronghua Jin and Michael I. Jordan and Jianmin Wang},
+  doi       = {10.1038/s41586-023-06184-4},
+  issn      = {1476-4687},
+  issue     = {7970},
+  journal   = {Nature 2023 619:7970},
+  keywords  = {Atmospheric science,Computational science,Computer science},
+  month     = {7},
+  pages     = {526-532},
+  pmid      = {37407824},
+  publisher = {Nature Publishing Group},
+  title     = {Skilful nowcasting of extreme precipitation with NowcastNet},
+  volume    = {619},
+  url       = {https://www.nature.com/articles/s41586-023-06184-4},
+  year      = {2023}
 }
 @article{Zhao2022,
   abstract  = {Atmospheric rivers (ARs), tropical storms (TSs), and mesoscale convective systems (MCSs) are important weather phenomena that often threaten society through heavy precipitation and strong winds. Despite their potentially vital role in global and regional hydrological cycles, their contributions to long-term mean and extreme precipitation have not been systematically explored at the global scale. Using observational and reanalysis data, and NOAA’s Geophysical Fluid Dynamics Laboratory’s new high-resolution global climate model, we quantify that despite their occasional (13%) occurrence globally, AR, TS, and MCS days together account for ∼55% of global mean precipitation and ∼75% of extreme precipitation with daily rates exceeding its local 99th percentile. The model reproduces well the observed percentage of mean and extreme precipitation associated with AR, TS, and MCS days. In an idealized global warming simulation with a homogeneous SST increase of 4 K, the modeled changes in global mean and regional distribution of precipitation correspond well with changes in AR/TS/MCS precipitation. Globally, the frequency of AR days increases and migrates toward higher latitudes while the frequency of TS days increases over the central Pacific and part of the south Indian Ocean with a decrease elsewhere. The frequency of MCS days tends to increase over parts of the equatorial western and eastern Pacific warm pools and high latitudes and decreases over most part of the tropics and subtropics. The AR/TS/MCS mean precipitation intensity increases by ∼5% K21 due primarily to precipitation increases in the top 25% of AR/TS/MCS days with the heaviest precipitation, which are dominated by the thermodynamic component with the dynamic and microphysical components playing a secondary role.},
