@@ -28,7 +28,7 @@ The field of meteorology has been no exception to the increasing popularity of d
 
 Regardless of the rapid emergence and success of these methods, one fundamental challenge remains: the trustworthiness of \acrshort{ml} models. The black-box nature of many \acrshort{ml} algorithms, particularly \acrshort{dl} networks, poses significant challenges for understanding how these models make predictions and for ensuring that they are robust and reliable \insertref{black box nature of ML}. This is especially important in meteorology, where the consequences of incorrect predictions can be severe. As a result, there is a growing interest in developing methods for explainable and interpretable \acrshort{ml} (XAI) \todo{glossary entry} to provide insights into the decision-making processes of these models \insertref{XAI SOURCE}. As especially popular approach is to incorporate physical constraints and knowledge into the training process often directly in the architecture or loss function, incentivising the models adhere to the laws of physics known to govern atmospheric processes \citep{Dabrowski2020,Chen2022,Luo2025,Zhang2023}. Referred to as PIML \todo{acronym}, this approach has been shown promise in improving model performance and physical accuracy, but concerns still remain regarding interpretability and long-tail events in training data \citep{Sun2025}\insertref{trust in AIWP}. Regardless, even while many seasoned meteorologists remain sceptical, it is clear that the integration of \acrshort{ml} into meteorology is a rapidly evolving field with significant potential.
 
-\section{Explainable AI (XAI)}
+\section{eXplainable AI (XAI)}
 
 Explainable AI (XAI) \todo{glossary entry} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and interpretable. This is particularly important in domains where understanding the rationale behind predictions is crucial, such as healthcare, finance, and meteorology. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. An summary of XAI taxonomy is given in Figure \ref{fig:xai-taxonomy} as conceived by \insertref{XAI book}.
 
@@ -49,23 +49,35 @@ After its introduction in \cite{Lundberg2017}, SHapley Additive exPlanations (SH
 
 \section{Review of XAI in Meteorology}
 
-LIME has helped identify crucial features in random forest models for seasonal precipitation prediction, with explanations aligning closely to known meteorological phenomena like ENSO impacts[https://www.sciencedirect.com/science/article/abs/pii/S1352231024004722].
+As the \acrshort{ml} techniques increasingly permeate the field of meteorology, the need for explainable AI (XAI) is paramount if operational deployment is to be successful and trustworthy. 
 
+Main surveys:
+\begin{itemize}
+    \item \href{https://www.sciencedirect.com/science/article/pii/S1352231024004722}{Interpretable machine learning for weather and climate prediction: A review}
+    \item \href{https://link.springer.com/chapter/10.1007/978-3-031-04083-2_16#Sec2}{Explainable Artificial Intelligence in Meteorology and Climate Science: Model Fine-Tuning, Calibrating Trust and Learning New Science}
+\end{itemize}
+
+\begin{itemize}
+    \item LIME has helped identify crucial features in random forest models for seasonal precipitation prediction, with explanations aligning closely to known meteorological phenomena like ENSO impacts \insertref{\href{https://www.sciencedirect.com/science/article/abs/pii/S1352231024004722}{source}}.
+    \item SHAP has been used to interpret the predictions of deep learning models for Tropical Cyclone Wind Radius, revealing the importance of environmental factors like sea surface temperature and vertical wind shear \insertref{\href{https://journals.ametsoc.org/view/journals/mwre/151/2/MWR-D-22-0166.1.xml}{source}}.
+    \item 
+\end{itemize}
 
 \subsection{XAI for Convective Systems}
 
-Case Studies in Convective Systems:
+\begin{itemize}
+    \item Layer-wise Relevance Propagation (LRP) in Tropical Cyclone Intensity and Size Estimation \insertref{\href{https://www.scopus.com/pages/publications/851092020842}{source}}.
+    \item Paleoclimate reconstruction of Indian monsoon: \insertref{\href{https://cp.copernicus.org/articles/21/1/2025/}{source}}.
+    \item Predicting rainfall extremes in Africa: \insertref{\href{https://www.sciencedirect.com/science/article/abs/pii/B9780443288678000046}{source}}.
+    \begin{itemize}
+        \item not explicitly XAI, but they did use interpretable models like xgboost
+    \end{itemize}
+    \item Indian Monsoon Low Pressure Systems (LPS) \todo{acronym}: \cite{Hunt2024} demonstrated the utility of interpretable gradient-boosted decision-trees in uncovering new dynamical relationships governing Indian monsoon LPSs.
+    \begin{itemize}
+        \item only applied to indian monsoon. would be interesting to apply to other regions and storm types
+        \item less focus on any prediction capability of models, more just focused on finding novel meteorological relationships
+    \end{itemize} 
+\end{itemize}
 
-Tropical Convection and MCSs: LRP has revealed the importance of large-scale vertical velocity and wind shear in predicting convective area and organization in the tropics, with moisture and thermodynamic factors primarily affecting the convective area, and horizontal wind fields impacting system organization[https://www.sciencedirect.com/science/article/abs/pii/S1352231024004722].
-
-Paleoclimate reconstruction of Indian monsoon: [https://cp.copernicus.org/articles/21/1/2025/].
-
-Direct antecedent of this dissertation: 
-
-Indian Monsoon Low Pressure Systems (LPS) \todo{acronym}: \cite{Hunt2024} demonstrated the utility of interpretable gradient-boosted decision-trees in uncovering new dynamical relationships governing Indian monsoon LPSs.
-
-Limitations include for Hunt Turner 2023: 
-- only applied to indian monsoon. would be interesting to apply to other regions and storm types
-- less focus on any prediction capability of models, more just focused on finding novel meteorological relationships
-
-relevant and motivate the work
+\section{Summary}
+\todo{placeholder section header. may just be a paragraph}
