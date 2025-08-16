@@ -196,6 +196,9 @@ cython_debug/
 # macos directory files
 .DS_Store
 
+# vscode settings
+.vscode/
+
 # latex build files
 report/*.synctex.gz
 report/**/*.aux
