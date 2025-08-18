@@ -82,6 +82,7 @@ processed_df = pd.read_csv(
     config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"]
 )
 
+# define target columns
 target_cols: List[str] = (
     config.TARGET_COL_NAMES if args.target_all else [args.target_col_name]
 )

@@ -4,7 +4,8 @@ from typing import Iterable, Literal
 
 import pandas as pd
 import wandb
-from sklearn.model_selection import KFold
+from sklearn.metrics import root_mean_squared_error
+from sklearn.model_selection import KFold, train_test_split
 from wandb.integration.xgboost import WandbCallback
 from xgboost import XGBRegressor
 from xgboost.callback import EarlyStopping
@@ -56,10 +57,71 @@ def init_wandb(
     return wandb.init(name=run_name, mode=wandb_mode)
 
 
+def train_model(
+    X: pd.DataFrame,
+    y: pd.Series,
+    val_size: float,
+    test_size: float,
+    hyperparams: dict,
+    random_state: int | None,
+    wandb_run: wandb.Run = wandb.Run(
+        wandb.Settings(run_name="test", mode="disabled")
+    ),
+    model_output_dir: Path = config.MODEL_OUTPUT_DIR,
+):
+    # train/test split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state
+    )
+
+    # train/val split
+    if val_size <= 0 or val_size >= 1:
+        raise ValueError(
+            "val_size must be between 0 and 1 (exclusive) for early stopping"
+        )
+
+    # adjust val size for train size
+    # source: https://datascience.stackexchange.com/a/15136
+    val_size = val_size / (1 - test_size)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train, y_train, test_size=val_size, random_state=random_state
+    )
+
+    # add callback to log metrics to Weights & Biases
+    callbacks = [
+        EarlyStopping(**config.XGB_EARLY_STOPPING_PARAMS),
+        WandbCallback(log_model=True),
+    ]
+
+    # init the model
+    model = XGBRegressor(**hyperparams, callbacks=callbacks)
+
+    # train the model
+    model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+
+    # evaluate the model on the test set
+    y_test_pred = model.predict(X_test)
+    test_rmse = root_mean_squared_error(y_test, y_test_pred)
+    print(f"test-rmse: {test_rmse}")
+
+    # log evaluation metric to Weights & Biases
+    wandb_run.log({"test-rmse": test_rmse})
+
+    # save the model
+    model_path = model_output_dir / f"{wandb_run.name}_model.json"
+    model.save_model(model_path)
+    print(f"Model saved to {model_path}")
+
+    # finish the Weights & Biases run
+    wandb_run.finish()
+
+
 def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
-    wandb_run: wandb.Run = wandb.Run(wandb.Settings(mode="disabled")),
+    wandb_run: wandb.Run = wandb.Run(
+        wandb.Settings(run_name="test", mode="disabled")
+    ),
     model_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """

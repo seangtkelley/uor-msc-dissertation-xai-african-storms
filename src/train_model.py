@@ -16,15 +16,10 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-import wandb
 from dotenv import load_dotenv
-from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import train_test_split
-from wandb.integration.xgboost import WandbCallback
-from xgboost import XGBRegressor
-from xgboost.callback import EarlyStopping
 
 import config
+from utils import modelling
 
 load_dotenv()
 
@@ -85,17 +80,6 @@ elif not args.target_all and args.target_col_name is None:
         "--target_col_name must be specified if --target_all is not used"
     )
 
-# set run name with current timestamp and update output model directory
-run_name = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
-output_model_dir = None
-if args.output_model_dir is None:
-    output_model_dir = Path("./models") / run_name
-else:
-    output_model_dir = Path(args.output_model_dir) / run_name
-
-# ensure output model path exists
-output_model_dir.mkdir(parents=True, exist_ok=True)
-
 # set hyperparameters for the model
 random_state = None
 if args.model_type == "xgboost":
@@ -105,20 +89,13 @@ if args.model_type == "xgboost":
 else:
     raise ValueError(f"Unsupported model type: {args.model_type}")
 
-# initialize Weights & Biases
-wandb.init(
-    entity=config.WANDB_ENTITY,
-    project=config.WANDB_PROJECT,
-    name=run_name,
-    mode=args.wandb_mode,
-)
-
 # load the processed dataset
 print("Loading processed dataset...")
 processed_df = pd.read_csv(
     config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"]
 )
 
+# define target columns
 target_cols: List[str] = (
     config.TARGET_COL_NAMES if args.target_all else [args.target_col_name]
 )
@@ -127,54 +104,38 @@ target_cols: List[str] = (
 for target_col in target_cols:
     print(f"Training model for target column: {target_col}")
 
+    # set run name with current timestamp and update output model directory
+    run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
+    output_model_dir = Path("./models")
+    if args.output_model_dir is not None:
+        output_model_dir = Path(args.output_model_dir)
+
+    # create run output dir based on target column and timestamp
+    run_output_dir = output_model_dir / target_col / run_timestamp_str
+
+    # ensure output path exists
+    run_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # create run base name
+    run_base_name = f"{target_col}_{run_timestamp_str}"
+
+    # init Weights & Biases
+    wandb_run = modelling.init_wandb(
+        run_name_base=run_base_name,
+        wandb_mode=args.wandb_mode,
+    )
+
     # separate features and target variable
-    feature_cols = config.FEATURE_COL_NAMES.copy()
-    feature_cols.remove(target_col)
-    X = processed_df[feature_cols]
-    y = processed_df[target_col]
-
-    # train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=args.test_size, random_state=random_state
-    )
-
-    # train/val split
-    if args.val_size <= 0 or args.val_size >= 1:
-        raise ValueError(
-            "val_size must be between 0 and 1 (exclusive) for early stopping"
-        )
-
-    # adjust val size for train size
-    # source: https://datascience.stackexchange.com/a/15136
-    val_size = args.val_size / (1 - args.test_size)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=val_size, random_state=random_state
-    )
-
-    # add callback to log metrics to Weights & Biases
-    callbacks = [
-        EarlyStopping(**config.XGB_EARLY_STOPPING_PARAMS),
-        WandbCallback(log_model=True),
-    ]
-
-    # init the model
-    model = XGBRegressor(**hyperparams, callbacks=callbacks)
+    X, y = modelling.separate_features_and_target(processed_df, target_col)
 
     # train the model
-    model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
-
-    # evaluate the model on the test set
-    y_pred = model.predict(X_test)
-    rmse = root_mean_squared_error(y_test, y_pred)
-    print(f"test-rmse: {rmse}")
-
-    # log evaluation metric to Weights & Biases
-    wandb.log({"test-rmse": rmse})
-
-    # save the model
-    model_path = output_model_dir / f"{target_col}_model.json"
-    model.save_model(model_path)
-    print(f"Model saved to {model_path}")
-
-    # finish the Weights & Biases run
-    wandb.finish()
+    modelling.train_model(
+        X,
+        y,
+        args.val_size,
+        args.test_size,
+        hyperparams,
+        random_state=random_state,
+        wandb_run=wandb_run,
+        model_output_dir=output_model_dir,
+    )
