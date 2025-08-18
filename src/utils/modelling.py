@@ -1,6 +1,6 @@
 import uuid
 from pathlib import Path
-from typing import Iterable, Literal
+from typing import Iterable, Literal, Optional
 
 import pandas as pd
 import wandb
@@ -45,6 +45,7 @@ def separate_features_and_target(
 
     :param processed_df: The processed DataFrame containing features and target.
     :param target_col: The target column for the experiment.
+    :param feature_cols: Iterable of feature column names to use (default=config.FEATURE_COLS). The target column and any columns excluded for this target will be removed from this list.
     :return: A tuple containing the features DataFrame and the target Series.
     """
     feature_cols = [
@@ -70,7 +71,6 @@ def init_wandb(
     Initialize Weights & Biases for tracking experiments.
 
     :param run_name_base: The base name for the W&B run.
-    :param target_col: The target column for the experiment.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
     # initialize Weights & Biases run
@@ -82,11 +82,13 @@ def init_wandb(
 def train_model(
     X: pd.DataFrame,
     y: pd.Series,
-    wandb_run: wandb.Run = wandb.Run(
-        wandb.Settings(run_name="test", mode="disabled")
-    ),
+    wandb_run: Optional[wandb.Run] = None,
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
+    # if wandb_run is None, provide a no-op run
+    if wandb_run is None:
+        wandb_run = wandb.init(name="test", mode="disabled")
+
     # train/test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE
