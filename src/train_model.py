@@ -12,7 +12,6 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 import argparse
-from pathlib import Path
 from typing import List
 
 import pandas as pd
@@ -46,18 +45,6 @@ parser.add_argument(
     default=False,
 )
 parser.add_argument(
-    "--test_size",
-    type=float,
-    default=0.2,
-    help="Proportion of the dataset to include in the test split",
-)
-parser.add_argument(
-    "--val_size",
-    type=float,
-    default=0.2,
-    help="Proportion of the training set to include in the validation split",
-)
-parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
@@ -88,9 +75,7 @@ target_cols: List[str] = (
 for target_col in target_cols:
     print(f"Training model for target column: {target_col}")
 
-    run_output_dir, run_base_name = modelling.setup_run_metadata(
-        target_col, output_model_dir=Path(args.output_model_dir)
-    )
+    run_output_dir, run_base_name = modelling.setup_run_metadata(target_col)
 
     # init Weights & Biases
     wandb_run = modelling.init_wandb(
@@ -105,8 +90,6 @@ for target_col in target_cols:
     modelling.train_model(
         X,
         y,
-        args.val_size,
-        args.test_size,
         wandb_run=wandb_run,
-        model_output_dir=run_output_dir,
+        local_output_dir=run_output_dir,
     )

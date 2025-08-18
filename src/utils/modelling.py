@@ -13,21 +13,18 @@ from xgboost.callback import EarlyStopping
 import config
 
 
-def setup_run_metadata(
-    target_col: str, output_model_dir: Path = config.MODEL_OUTPUT_DIR
-) -> tuple[Path, str]:
+def setup_run_metadata(target_col: str) -> tuple[Path, str]:
     """
     Set up the run metadata for the experiment.
 
     :param target_col: The target column for the experiment.
-    :param output_model_dir: The output directory for the model.
     :return: A tuple containing the run output directory and the run base name.
     """
     # set run name with current timestamp
     run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
 
     # create run output dir based on target column and timestamp
-    run_output_dir = output_model_dir / target_col / run_timestamp_str
+    run_output_dir = config.MODEL_OUTPUT_DIR / target_col / run_timestamp_str
 
     # ensure output path exists
     run_output_dir.mkdir(parents=True, exist_ok=True)
@@ -85,27 +82,25 @@ def init_wandb(
 def train_model(
     X: pd.DataFrame,
     y: pd.Series,
-    val_size: float,
-    test_size: float,
     wandb_run: wandb.Run = wandb.Run(
         wandb.Settings(run_name="test", mode="disabled")
     ),
-    model_output_dir: Path = config.MODEL_OUTPUT_DIR,
+    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     # train/test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=config.RANDOM_STATE
+        X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE
     )
 
     # train/val split
-    if val_size <= 0 or val_size >= 1:
+    if config.VAL_SIZE <= 0 or config.VAL_SIZE >= 1:
         raise ValueError(
             "val_size must be between 0 and 1 (exclusive) for early stopping"
         )
 
     # adjust val size for train size
     # source: https://datascience.stackexchange.com/a/15136
-    val_size = val_size / (1 - test_size)
+    val_size = config.VAL_SIZE / (1 - config.TEST_SIZE)
     X_train, X_val, y_train, y_val = train_test_split(
         X_train, y_train, test_size=val_size, random_state=config.RANDOM_STATE
     )
@@ -131,7 +126,7 @@ def train_model(
     wandb_run.log({"test-rmse": test_rmse})
 
     # save the model
-    model_path = model_output_dir / f"{wandb_run.name}_model.json"
+    model_path = local_output_dir / f"{wandb_run.name}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
 
@@ -145,7 +140,7 @@ def train_model_cv(
     wandb_run: wandb.Run = wandb.Run(
         wandb.Settings(run_name="test", mode="disabled")
     ),
-    model_output_dir: Path = config.MODEL_OUTPUT_DIR,
+    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model on the processed dataset for a specific target column.
@@ -153,8 +148,14 @@ def train_model_cv(
     :param target_col: The target column to predict.
     :param output_model_dir: The directory to save the trained model.
     """
-    # get random state from W&B config
-    random_state = wandb.config.get("random_state", None)
+
+    # train/test split
+    # test set is ignored here as it's not needed for cross-validation
+    # but with the random state, we can ensure reproducibility for later
+    # testing of the best model without data leakage
+    X_train, _, y_train, _ = train_test_split(
+        X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE
+    )
 
     # Cross-validation setup
     kfold = KFold(**config.CV_PARAMS)
@@ -162,10 +163,10 @@ def train_model_cv(
     cv_models = []
 
     # perform cross-validation
-    for train_idx, val_idx in kfold.split(X, y):
+    for train_idx, val_idx in kfold.split(X_train, y_train):
         # create train and val sets
-        X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
-        y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+        X_train, X_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
+        y_train, y_val = y_train.iloc[train_idx], y_train.iloc[val_idx]
 
         # add callback to log metrics to W&B
         callbacks = [
@@ -191,12 +192,12 @@ def train_model_cv(
     wandb_run.log({"val-rmse": best_cv_score})
 
     # save the model to the output directory
-    model_path = model_output_dir / f"{wandb_run.name}_model.json"
+    model_path = local_output_dir / f"{wandb_run.name}_model.json"
     best_cv_model.save_model(str(model_path))
     print(f"Model saved to {model_path}")
 
     # upload the model to W&B
-    wandb_run.save(str(model_path), base_path=model_output_dir)
+    wandb_run.save(str(model_path), base_path=local_output_dir)
 
     # finish the W&B run
     wandb_run.finish()
@@ -207,7 +208,7 @@ def wandb_sweep_func(
     y: pd.Series,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    model_output_dir: Path = config.MODEL_OUTPUT_DIR,
+    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Wrapper function for sweeping hyperparameters using Weights & Biases.
@@ -224,7 +225,7 @@ def wandb_sweep_func(
     )
 
     # train the model
-    train_model_cv(X, y, wandb_run=run, model_output_dir=model_output_dir)
+    train_model_cv(X, y, wandb_run=run, local_output_dir=local_output_dir)
 
 
 def wandb_sweep(
@@ -234,7 +235,7 @@ def wandb_sweep(
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    model_output_dir: Path = config.MODEL_OUTPUT_DIR,
+    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     # setup hyperparameters sweep
     sweep_id = wandb.sweep(
@@ -256,7 +257,7 @@ def wandb_sweep(
             y,
             run_base_name=run_base_name,
             wandb_mode=wandb_mode,
-            model_output_dir=model_output_dir,
+            local_output_dir=local_output_dir,
         ),
         count=trials,
     )

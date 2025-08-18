@@ -6,7 +6,6 @@ __author__ = "Sean Kelley"
 __version__ = "0.1.0"
 
 import argparse
-from pathlib import Path
 from typing import List
 
 import pandas as pd
@@ -20,12 +19,6 @@ load_dotenv()
 # parse cli arguments
 parser = argparse.ArgumentParser(
     description="Train model on processed storm dataset given specified parameters"
-)
-parser.add_argument(
-    "--output_model_dir",
-    type=str,
-    default=str(config.MODEL_OUTPUT_DIR),
-    help="Path to save the trained model",
 )
 parser.add_argument(
     "--target_col_name",
@@ -76,9 +69,7 @@ target_cols: List[str] = (
 for target_col in target_cols:
     print(f"Finding best model for target column: {target_col}")
 
-    run_output_dir, run_base_name = modelling.setup_run_metadata(
-        target_col, output_model_dir=Path(args.output_model_dir)
-    )
+    run_output_dir, run_base_name = modelling.setup_run_metadata(target_col)
 
     modelling.wandb_sweep(
         processed_df,

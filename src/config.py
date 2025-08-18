@@ -171,6 +171,8 @@ TARGET_EXCLUDE_COLS = {
 # ==============================================================================
 RANDOM_STATE = 114
 
+VAL_SIZE, TEST_SIZE = 0.2, 0.2
+
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,
