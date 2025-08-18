@@ -79,7 +79,7 @@ COL_RENAME_MAP = {
 }
 
 # meteorological features calculated from ERA5 data
-ERA5_MET_FEATURE_NAMES = [
+ERA5_MET_FEATURE_COLS = [
     "mean_skt",
     "mean_land_skt",
     "mean_sst",
@@ -111,7 +111,7 @@ ERA5_MET_FEATURE_NAMES = [
     "mean_prcp_400",
 ]
 
-FEATURE_COL_NAMES = (
+FEATURE_COLS = (
     [
         "date_angle",
         "eat_hours",
@@ -138,7 +138,7 @@ FEATURE_COL_NAMES = (
         "storm_straight_line_distance",
         "min_bt",
     ]
-    + ERA5_MET_FEATURE_NAMES
+    + ERA5_MET_FEATURE_COLS
     + [
         "dmin_bt_dt",
         "mean_bt",
@@ -152,7 +152,7 @@ FEATURE_COL_NAMES = (
 
 TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
 
-DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
+DATASET_COLS = ["storm_id", "timestamp"] + FEATURE_COLS
 
 TARGET_EXCLUDE_COLS = {
     "mean_prcp_400": [],

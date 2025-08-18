@@ -38,7 +38,7 @@ def setup_run_metadata(target_col: str) -> tuple[Path, str]:
 def separate_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COL_NAMES,
+    feature_cols: Iterable[str] = config.FEATURE_COLS,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """
     Separate features and target variable from the processed DataFrame.
@@ -231,7 +231,7 @@ def wandb_sweep_func(
 def wandb_sweep(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COL_NAMES,
+    feature_cols: Iterable[str] = config.FEATURE_COLS,
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",

@@ -474,7 +474,7 @@ if should_recalc("domain_mean_cape", processed_df.columns):
 
 # select only the columns that are in the config
 processed_df = processed_df[
-    [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
+    [col for col in config.DATASET_COLS if col in processed_df.columns]
 ]
 
 # save the processed dataset
