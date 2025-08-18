@@ -41,7 +41,7 @@ Inherently interpretable models are designed to be transparent by construction, 
 
 \subsection{Shapley Additive Explanations}
 
-After its introduction in \cite{Lundberg2017}, \acrfull{shap} have emerged as one of the most popular frameworks for post-hoc model explanations. This is achieved through the application of cooperative game theory, specifically the concept of the Shapley value, which fairly distributes the "payout" (i.e., the model's prediction ) among the features based on their individual contributions \insertref{original shapley paper}.
+After its popularisation via \cite{Lundberg2017} and the accompanying \texttt{shap} \texttt{python} library, \acrfull{shap} have emerged as one of the most prominent frameworks for post-hoc explainability. This is achieved through the application of coalitional game theory where the algorithm approximates a fair distribution of "payout", in this case a fraction of the model's prediction, among the input features based on their individual contributions to the prediction \citep{Shapley1953}.
 
 \explainindetail{need to talk about coalitions, then the rough outline of how Shapley values are defined theoretically, then maybe how SHAP library from lundberg and lee implements this in practice}
 
