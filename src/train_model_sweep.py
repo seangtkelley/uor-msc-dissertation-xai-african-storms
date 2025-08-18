@@ -23,7 +23,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--target_cols",
     type=str,
-    choices=config.TARGET_COLS,
     help="Comma-separated list of the target columns in the dataset",
 )
 parser.add_argument(
