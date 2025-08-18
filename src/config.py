@@ -21,7 +21,7 @@ DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures"
 SRC_DIR = REPO_ROOT / "src"
-OUTPUT_MODEL_DIR = REPO_ROOT / "models"
+MODEL_OUTPUT_DIR = REPO_ROOT / "models"
 
 RAW_STORM_DB_PATH = (
     DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"
@@ -62,6 +62,10 @@ ERA5_DATA_EXTENT = (
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
 
+# degree Kelvin bounds for Earthly temperatures
+EARTH_TEMP_BOUNDS = (180, 330)
+
+# column renaming map from raw dataset to processed dataset
 COL_RENAME_MAP = {
     "Lon": "lon",
     "Lat": "lat",
@@ -74,30 +78,8 @@ COL_RENAME_MAP = {
     "Mean BT": "mean_bt",
 }
 
-FEATURE_COL_NAMES = [
-    "date_angle",
-    "eat_hours",
-    "storm_total_duration",
-    "lon",
-    "lat",
-    "orography_height",
-    "anor",
-    "upslope_bearing",
-    "slope_angle",
-    "over_land",
-    "acc_land_time",
-    "storm_total_land_time",
-    "mean_land_frac",
-    "zonal_speed",
-    "meridional_speed",
-    "area",
-    "storm_max_area",
-    "bearing_from_prev",
-    "distance_from_prev",
-    "distance_traversed",
-    "storm_bearing",
-    "storm_distance_traversed",
-    "storm_straight_line_distance",
+# meteorological features calculated from ERA5 data
+ERA5_MET_FEATURE_NAMES = [
     "mean_skt",
     "mean_land_skt",
     "mean_sst",
@@ -127,22 +109,61 @@ FEATURE_COL_NAMES = [
     "olr_75",
     "olr_50",
     "mean_prcp_400",
-    "min_bt",
-    "dmin_bt_dt",
-    "mean_bt",
-    "dmean_bt_dt",
-    "storm_min_bt",
-    "storm_min_bt_reached",
-    "mjo_phase",
-    "mjo_amplitude",
 ]
 
-TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
+FEATURE_COL_NAMES = (
+    [
+        "date_angle",
+        "eat_hours",
+        "storm_total_duration",
+        "lon",
+        "lat",
+        "orography_height",
+        "anor",
+        "upslope_bearing",
+        "slope_angle",
+        "over_land",
+        "acc_land_time",
+        "storm_total_land_time",
+        "mean_land_frac",
+        "zonal_speed",
+        "meridional_speed",
+        "area",
+        "storm_max_area",
+        "bearing_from_prev",
+        "distance_from_prev",
+        "distance_traversed",
+        "storm_bearing",
+        "storm_distance_traversed",
+        "storm_straight_line_distance",
+        "min_bt",
+    ]
+    + ERA5_MET_FEATURE_NAMES
+    + [
+        "dmin_bt_dt",
+        "mean_bt",
+        "dmean_bt_dt",
+        "storm_min_bt",
+        "storm_min_bt_reached",
+        "mjo_phase",
+        "mjo_amplitude",
+    ]
+)
+
+TARGET_COL_NAMES = ["mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
-# Kelvin bounds for Earthly temperatures
-EARTH_TEMP_BOUNDS = (180, 330)
+TARGET_EXCLUDE_COLS = {
+    "mean_prcp_400": [],
+    "storm_min_bt": [
+        "min_bt",
+        "dmin_bt_dt",
+        "mean_bt",
+        "dmean_bt_dt",
+        "storm_min_bt_reached",
+    ],
+}
 
 
 # ==============================================================================
@@ -207,4 +228,4 @@ WANDB_SWEEP_CONFIG = {
     },
 }
 
-WANDB_DEFAULT_SWEEP_COUNT = 15
+WANDB_DEFAULT_SWEEP_TRIALS = 15

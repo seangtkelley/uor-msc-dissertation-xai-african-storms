@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
+import wandb
 from dotenv import load_dotenv
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -24,7 +25,6 @@ from xgboost import XGBRegressor
 from xgboost.callback import EarlyStopping
 
 import config
-import wandb
 
 load_dotenv()
 
@@ -42,7 +42,7 @@ parser.add_argument(
 parser.add_argument(
     "--output_model_dir",
     type=str,
-    default=str(config.OUTPUT_MODEL_DIR),
+    default=str(config.MODEL_OUTPUT_DIR),
     help="Path to save the trained model",
 )
 parser.add_argument(
