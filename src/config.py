@@ -169,6 +169,8 @@ TARGET_EXCLUDE_COLS = {
 # ==============================================================================
 #                       MODEL AND TRAINING CONFIGURATION
 # ==============================================================================
+RANDOM_STATE = 114
+
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,
@@ -177,7 +179,7 @@ XGB_HYPERPARAMS = {
     "alpha": 10,
     "gamma": 0,
     "n_estimators": 120,
-    "random_state": None,
+    "random_state": RANDOM_STATE,
 }
 
 # Weights & Biases configuration
@@ -187,6 +189,7 @@ WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"
 CV_PARAMS = {
     "n_splits": 5,
     "shuffle": True,
+    "random_state": RANDOM_STATE,
 }
 
 XGB_EARLY_STOPPING_PARAMS = {
@@ -218,7 +221,7 @@ WANDB_SWEEP_CONFIG = {
         "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
         "max_depth": {"values": [6]},
         "n_estimators": {"values": [120]},
-        "random_state": {"values": [None]},
+        "random_state": {"values": [RANDOM_STATE]},
     },
     "early_terminate": {
         "type": "hyperband",

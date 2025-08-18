@@ -87,8 +87,6 @@ def train_model(
     y: pd.Series,
     val_size: float,
     test_size: float,
-    hyperparams: dict,
-    random_state: int | None,
     wandb_run: wandb.Run = wandb.Run(
         wandb.Settings(run_name="test", mode="disabled")
     ),
@@ -96,7 +94,7 @@ def train_model(
 ):
     # train/test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
+        X, y, test_size=test_size, random_state=config.RANDOM_STATE
     )
 
     # train/val split
@@ -109,7 +107,7 @@ def train_model(
     # source: https://datascience.stackexchange.com/a/15136
     val_size = val_size / (1 - test_size)
     X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=val_size, random_state=random_state
+        X_train, y_train, test_size=val_size, random_state=config.RANDOM_STATE
     )
 
     # add callback to log metrics to Weights & Biases
@@ -119,7 +117,7 @@ def train_model(
     ]
 
     # init the model
-    model = XGBRegressor(**hyperparams, callbacks=callbacks)
+    model = XGBRegressor(**config.XGB_HYPERPARAMS, callbacks=callbacks)
 
     # train the model
     model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
@@ -159,7 +157,7 @@ def train_model_cv(
     random_state = wandb.config.get("random_state", None)
 
     # Cross-validation setup
-    kfold = KFold(**config.CV_PARAMS, random_state=random_state)
+    kfold = KFold(**config.CV_PARAMS)
     cv_scores = []
     cv_models = []
 

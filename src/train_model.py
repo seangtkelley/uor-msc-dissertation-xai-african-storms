@@ -28,13 +28,6 @@ parser = argparse.ArgumentParser(
     description="Train model on processed storm dataset given specified parameters"
 )
 parser.add_argument(
-    "--model_type",
-    type=str,
-    choices=["xgboost"],
-    default="xgboost",
-    help="Type of model to train",
-)
-parser.add_argument(
     "--output_model_dir",
     type=str,
     default=str(config.MODEL_OUTPUT_DIR),
@@ -80,15 +73,6 @@ elif not args.target_all and args.target_col_name is None:
         "--target_col_name must be specified if --target_all is not used"
     )
 
-# set hyperparameters for the model
-random_state = None
-if args.model_type == "xgboost":
-    # load hyperparameters from config
-    hyperparams = config.XGB_HYPERPARAMS.copy()
-    random_state = hyperparams.get("random_state", None)
-else:
-    raise ValueError(f"Unsupported model type: {args.model_type}")
-
 # load the processed dataset
 print("Loading processed dataset...")
 processed_df = pd.read_csv(
@@ -123,8 +107,6 @@ for target_col in target_cols:
         y,
         args.val_size,
         args.test_size,
-        hyperparams,
-        random_state=random_state,
         wandb_run=wandb_run,
         model_output_dir=run_output_dir,
     )
