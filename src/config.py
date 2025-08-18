@@ -150,7 +150,7 @@ FEATURE_COL_NAMES = (
     ]
 )
 
-TARGET_COL_NAMES = ["mean_prcp_400", "storm_min_bt"]
+TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
 
 DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
 
