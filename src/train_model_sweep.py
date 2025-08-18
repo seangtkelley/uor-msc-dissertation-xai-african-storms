@@ -91,20 +91,9 @@ target_cols: List[str] = (
 for target_col in target_cols:
     print(f"Finding best model for target column: {target_col}")
 
-    # set run name with current timestamp and update output model directory
-    run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-    output_model_dir = Path("./models")
-    if args.output_model_dir is not None:
-        output_model_dir = Path(args.output_model_dir)
-
-    # create run output dir based on target column and timestamp
-    run_output_dir = output_model_dir / target_col / run_timestamp_str
-
-    # ensure output path exists
-    run_output_dir.mkdir(parents=True, exist_ok=True)
-
-    # create run base name
-    run_base_name = f"{target_col}_{run_timestamp_str}"
+    run_output_dir, run_base_name = modelling.setup_run_metadata(
+        target_col, output_model_dir=Path(args.output_model_dir)
+    )
 
     modelling.wandb_sweep(
         processed_df,

@@ -13,6 +13,31 @@ from xgboost.callback import EarlyStopping
 import config
 
 
+def setup_run_metadata(
+    target_col: str, output_model_dir: Path = config.MODEL_OUTPUT_DIR
+) -> tuple[Path, str]:
+    """
+    Set up the run metadata for the experiment.
+
+    :param target_col: The target column for the experiment.
+    :param output_model_dir: The output directory for the model.
+    :return: A tuple containing the run output directory and the run base name.
+    """
+    # set run name with current timestamp
+    run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
+
+    # create run output dir based on target column and timestamp
+    run_output_dir = output_model_dir / target_col / run_timestamp_str
+
+    # ensure output path exists
+    run_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # create run base name
+    run_base_name = f"{target_col}_{run_timestamp_str}"
+
+    return run_output_dir, run_base_name
+
+
 def separate_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
