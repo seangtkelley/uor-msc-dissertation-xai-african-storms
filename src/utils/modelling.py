@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""modelling.py: Helper functions for training models using Weights & Biases"""
+
+__author__ = "Sean Kelley"
+__copyright__ = "Copyright 2025, University of Reading"
+__credits__ = ["Sean Kelley"]
+__license__ = "MIT"
+__version__ = "0.1.0"
+__maintainer__ = "Sean Kelley"
+__email__ = "s.g.t.kelley@student.reading.ac.uk"
+__status__ = "Development"
+
 import uuid
 from pathlib import Path
 from typing import Iterable, Literal, Optional

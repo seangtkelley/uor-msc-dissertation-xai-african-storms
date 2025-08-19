@@ -3,7 +3,13 @@
 """train_model_sweep.py: Modified training script for W&B sweeps"""
 
 __author__ = "Sean Kelley"
+__copyright__ = "Copyright 2025, University of Reading"
+__credits__ = ["Sean Kelley"]
+__license__ = "MIT"
 __version__ = "0.1.0"
+__maintainer__ = "Sean Kelley"
+__email__ = "s.g.t.kelley@student.reading.ac.uk"
+__status__ = "Development"
 
 import argparse
 from typing import List
