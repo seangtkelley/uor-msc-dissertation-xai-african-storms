@@ -139,17 +139,20 @@ def train_model(
 def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
-    wandb_run: wandb.Run = wandb.Run(
-        wandb.Settings(run_name="test", mode="disabled")
-    ),
+    wandb_run: Optional[wandb.Run] = None,
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model on the processed dataset for a specific target column.
 
-    :param target_col: The target column to predict.
-    :param output_model_dir: The directory to save the trained model.
+    :param X: Features DataFrame.
+    :param y: Target Series.
+    :param wandb_run: Weights & Biases run object.
+    :param local_output_dir: Local output directory for saving models.
     """
+    # if wandb_run is None, provide a no-op run
+    if wandb_run is None:
+        wandb_run = wandb.init(name="test", mode="disabled")
 
     # train/test split
     # test set is ignored here as it's not needed for cross-validation
@@ -167,8 +170,14 @@ def train_model_cv(
     # perform cross-validation
     for train_idx, val_idx in kfold.split(X_train, y_train):
         # create train and val sets
-        X_train, X_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
-        y_train, y_val = y_train.iloc[train_idx], y_train.iloc[val_idx]
+        X_train_fold, X_val_fold = (
+            X_train.iloc[train_idx],
+            X_train.iloc[val_idx],
+        )
+        y_train_fold, y_val_fold = (
+            y_train.iloc[train_idx],
+            y_train.iloc[val_idx],
+        )
 
         # add callback to log metrics to W&B
         callbacks = [
@@ -180,7 +189,9 @@ def train_model_cv(
         model = XGBRegressor(**wandb.config.as_dict(), callbacks=callbacks)
 
         # train the model
-        model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+        model.fit(
+            X_train_fold, y_train_fold, eval_set=[(X_val_fold, y_val_fold)]
+        )
 
         # save the best score and model
         cv_scores.append(model.best_score)
@@ -215,10 +226,11 @@ def wandb_sweep_func(
     """
     Wrapper function for sweeping hyperparameters using Weights & Biases.
 
-    :param processed_df: The processed DataFrame containing features and target.
-    :param feature_cols: The feature columns for the experiment.
+    :param X: Features DataFrame.
+    :param y: Target Series.
     :param run_base_name: The base name for the W&B run.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
+    :param local_output_dir: Local output directory for saving models.
     """
     # init W&B run
     run = init_wandb(
@@ -254,7 +266,7 @@ def wandb_sweep(
     # run the sweep
     wandb.agent(
         sweep_id=sweep_id,
-        function=wandb_sweep_func(
+        function=lambda: wandb_sweep_func(
             X,
             y,
             run_base_name=run_base_name,
