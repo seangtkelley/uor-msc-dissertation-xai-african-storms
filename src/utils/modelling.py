@@ -98,6 +98,14 @@ def train_model(
     wandb_run: Optional[wandb.Run] = None,
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
+    """
+    Train an XGBoost model using train/val/test splits.
+
+    :param X: Features DataFrame.
+    :param y: Target Series.
+    :param wandb_run: Weights & Biases run object.
+    :param local_output_dir: Local output directory for saving models.
+    """
     # if wandb_run is None, provide a no-op run
     if wandb_run is None:
         wandb_run = wandb.init(name="test", mode="disabled")
@@ -156,7 +164,7 @@ def train_model_cv(
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
-    Train an XGBoost model on the processed dataset for a specific target column.
+    Train an XGBoost model using cross-validation.
 
     :param X: Features DataFrame.
     :param y: Target Series.
@@ -264,7 +272,18 @@ def wandb_sweep(
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
-    # setup hyperparameters sweep
+    """
+    Perform a hyperparameter sweep using Weights & Biases.
+
+    :param processed_df: The processed DataFrame containing features and target.
+    :param target_col: The target column for the model.
+    :param feature_cols: The feature columns for the model.
+    :param trials: The number of trials for the sweep.
+    :param run_base_name: The base name for the W&B run.
+    :param wandb_mode: The mode for W&B (online, offline, disabled).
+    :param local_output_dir: Local output directory for saving models.
+    """
+    # init W&B sweep
     sweep_id = wandb.sweep(
         config.WANDB_SWEEP_CONFIG,
         entity=config.WANDB_ENTITY,
