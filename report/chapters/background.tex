@@ -28,16 +28,7 @@ Despite of the rapid emergence and success of these methods, the fundamental cha
 
 \section{Explainable Artificial Intelligence}
 
-\acrfull{xai} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and interpretable. This is particularly important in domains where understanding the rationale behind predictions is crucial, such as healthcare, finance, and meteorology. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. A summary of \acrshort{xai} taxonomy is given in Figure \ref{fig:xai-taxonomy} as conceived by \citep{Molnar2025}.
-
-\begin{figure}[h]
-    \centering
-    \missingfigure{XAI taxonomy figure}
-    \caption{XAI Taxonomy.}
-    \label{fig:xai-taxonomy}
-\end{figure}
-
-Inherently interpretable models are designed to be transparent by construction, often using simpler architectures or feature-based approaches that allow for direct interpretation of the relationship between inputs and outputs. Examples include linear regression, decision trees, and rule-based systems. A clear disadvantage is that these simpler models may sacrifice some predictive performance compared to more complex ones like \acrfull{dnn}. \acrshort{piml} could also be considered a part of this landscape, as it aims to integrate existing physical knowledge into architectures and training processes to enhance forecast accuracy and credibility. Post-hoc explanation methods, on the other hand, are applied to models after training to partially interpret their behaviour. Model-specific post-hoc methods directly leverage the learned structure of the model. For example, great strides have been made in pinning the internal embeddings and attention mechanisms of transformer models to real-world entities and concepts \insertref{embedding map website for claude? there's gotta be papers on this}. Notably for this research, model-agnostic methods are predominantly designed to make no assumptions as to underlying model architecture, making them some of the most generally applicable and widely used techniques in XAI \insertref{stats for XAI library usage}. These methods can be broadly categorised into local and global explanations. Local explanations focus on individual predictions, providing insights into model behaviour for a given input. In contrast, global explanations aim to provide an overall understanding of the model's behaviour for any input. For local explanations, counterfactual analysis has gained traction, especially for classification tasks, where the model's local decision boundary can be more interactively explored through slight perturbations of the a given input \citep{Mothilal2019}. Techniques such as LIME (Local Interpretable Model-agnostic Explanations) and SHAP (SHapley Additive exPlanations) are commonly used for both objectives \citep{Lundberg2017}\insertref{lime}. Though, LIME does have limited advantages over SHAP in specific use cases, \cite{Lundberg2017} showed it to be a subset of SHAP and thus a brief overview of SHAP follows.
+\acrfull{xai} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and interpretable. This is particularly important in domains where understanding the rationale behind predictions is crucial, such as healthcare, finance, and meteorology.
 
 \subsection{Shapley Additive Explanations}
 
