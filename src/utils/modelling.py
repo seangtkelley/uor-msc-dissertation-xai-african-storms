@@ -16,14 +16,15 @@ from pathlib import Path
 from typing import Iterable, Literal, Optional
 
 import pandas as pd
-import wandb
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 from wandb.integration.xgboost import WandbCallback
+from wandb.sdk.wandb_run import Run
 from xgboost import XGBRegressor
 from xgboost.callback import EarlyStopping
 
 import config
+import wandb
 
 
 def setup_run_metadata(target_col: str) -> tuple[Path, str]:
@@ -79,7 +80,7 @@ def separate_features_and_target(
 def init_wandb(
     run_name_base: str,
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-) -> wandb.Run:
+) -> Run:
     """
     Initialize Weights & Biases for tracking experiments.
 
@@ -95,7 +96,7 @@ def init_wandb(
 def train_model(
     X: pd.DataFrame,
     y: pd.Series,
-    wandb_run: Optional[wandb.Run] = None,
+    wandb_run: Optional[Run] = None,
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
@@ -160,7 +161,7 @@ def train_model(
 def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
-    wandb_run: Optional[wandb.Run] = None,
+    wandb_run: Optional[Run] = None,
     local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
