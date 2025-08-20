@@ -226,7 +226,7 @@ report/*.nls
 data
 
 # ignore model files
-models/run_*
+models/**/*.json
 
 # ignore wandb files
 wandb/
