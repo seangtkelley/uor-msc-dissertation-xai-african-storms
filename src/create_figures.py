@@ -15,22 +15,23 @@ import config
 from utils import plotting, processing
 
 # %%
-# suppress warnings from cartopy about downloading data
 warnings.filterwarnings("ignore", message=".*Downloading.*", module="cartopy")
 
 # %%
 sns.set_theme(style="darkgrid")
 
 # %%
+print("Loading processed dataset and displaying first few rows.")
 df = pd.read_csv(config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"])
 df.head()
 
 # %%
-# group by storm
+print("Grouping storms by storm_id and getting initial points.")
 storm_groups = df.groupby("storm_id")
 storm_inits = storm_groups.first()
 
 # %%
+print("Plotting histogram of storm initial locations.")
 plt.figure(figsize=(10, 6))
 ax = plotting.init_map()
 plotting.add_borders(ax, edgecolor="white")
@@ -44,7 +45,7 @@ plt.title("Storm Initial Locations Histogram")
 plotting.save_plot("storm_init_hist2d.png")
 
 # %%
-# 2D kernel density estimation
+print("Performing 2D kernel density estimation for storm initial locations.")
 X, Y, Z = processing.calc_kde(storm_inits["lon"], storm_inits["lat"])
 
 plt.figure(figsize=(10, 10))
@@ -57,9 +58,11 @@ ax.set_title("Storm Initial Locations")
 plotting.save_plot("storm_init_kde.png")
 
 # %%
+print("Loading geopotential height and calculating elevation.")
 geop, height = processing.load_geop_and_calc_elevation()
 
 # %%
+print("Plotting orography, storm initial, and end locations KDE.")
 fig, axs = plt.subplots(
     1, 3, figsize=(15, 5), subplot_kw={"projection": ccrs.PlateCarree()}
 )
@@ -90,6 +93,7 @@ axs[2].set_title("Storm End Locations")
 plotting.save_plot("orography_storm_init_end_kde.png")
 
 # %%
+print("Plotting storm initial location density contours with orography.")
 plt.figure(figsize=(10, 6))
 ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
 plotting.add_geopotential_height(geop, height, ax)
@@ -108,9 +112,11 @@ ax.set_title("Storm Initial Location Density Contours with Orography")
 plotting.save_plot("orography_storm_init_locations.png")
 
 # %%
+print("Loading angle of sub-gridscale orography dataset.")
 anor = xr.open_dataset(config.DATA_DIR / "std" / "anor.nc")
 
 # %%
+print("Plotting angle of sub-gridscale orography and storm locations KDE.")
 fig, axs = plt.subplots(
     1, 3, figsize=(15, 5), subplot_kw={"projection": ccrs.PlateCarree()}
 )
@@ -152,7 +158,7 @@ axs[2].set_title("Storm End Locations")
 plotting.save_plot("anor_storm_init_end_kde.png")
 
 # %%
-# group the storm inits by latitude and longitude
+print("Binning storm initial locations by latitude and longitude.")
 n_bins = 50
 storm_init_2dbinned_eat_hour = storm_inits.groupby(
     [
@@ -183,10 +189,13 @@ storm_init_eat_hour_mode_by_loc["center_lon"] = (
 )
 
 # %%
+print(
+    "Displaying first few rows of binned storm initial EAT hour mode and mean."
+)
 storm_init_eat_hour_mode_by_loc.head()
 
 # %%
-# reshape the eat_hours_mode and eat_hours_mean to 2D grids
+print("Reshaping EAT hour mode and mean to 2D grids for plotting.")
 eat_mode_grid = (
     storm_init_eat_hour_mode_by_loc["eat_hours_mode"]
     .to_numpy()
@@ -205,6 +214,7 @@ eat_mean_grid = (
 )
 
 # %%
+print("Plotting storm initial locations with mode of EAT hours.")
 plt.figure(figsize=(10, 6))
 ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
 
@@ -226,6 +236,7 @@ plt.title("Storm Initial Locations with Mode of EAT Hours")
 plotting.save_plot("storm_init_eat_hours_mode_by_loc.png")
 
 # %%
+print("Plotting orography, storm initial EAT hour mode, and mean.")
 fig, axs = plt.subplots(
     1, 3, figsize=(15, 5), subplot_kw={"projection": ccrs.PlateCarree()}
 )
@@ -271,6 +282,9 @@ plotting.add_gridlines(axs[2])
 plotting.save_plot("orography_storm_init_eat_hours_mode_mean.png")
 
 # %%
+print(
+    "Plotting storm tracks for 98th percentile duration storms with orography."
+)
 plt.figure(figsize=(10, 6))
 ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
 plotting.add_geopotential_height(geop, height, ax)
@@ -291,7 +305,9 @@ ax.set_title("98% Percentile Duration Storm Tracks with Orography")
 plotting.save_plot("orography_storm_tracks_p98_duration.png")
 
 # %%
-# 2D kernel density estimation
+print(
+    "Performing KDE for initial locations of 98th percentile duration storms."
+)
 p98_duration_inits = (
     p98_duration_df.sort_values(["timestamp"]).groupby("storm_id").first()
 )
@@ -309,6 +325,7 @@ ax.set_title("Storm Initial Locations for 98% Percentile Duration Storms")
 plotting.save_plot("p98_duration_storm_init_kde.png")
 
 # %%
+print("Plotting storm tracks for 98th percentile area storms with orography.")
 plt.figure(figsize=(10, 6))
 ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
 plotting.add_geopotential_height(geop, height, ax)
@@ -329,7 +346,7 @@ ax.set_title("98% Percentile Area Storm Tracks with Orography")
 plotting.save_plot("orography_storm_tracks_p98_area.png")
 
 # %%
-# 2D kernel density estimation
+print("Performing KDE for initial locations of 98th percentile area storms.")
 p98_area_inits = (
     p98_area_df.sort_values(["timestamp"]).groupby("storm_id").first()
 )
@@ -345,6 +362,7 @@ ax.set_title("Storm Initial Locations for 98% Percentile Area Storms")
 plotting.save_plot("p98_area_storm_init_kde.png")
 
 # %%
+print("Plotting histogram of storm area with percentile lines.")
 plt.figure(figsize=(10, 6))
 plt.hist(df["area"], bins=50)
 plt.yscale("log")
@@ -376,6 +394,7 @@ plt.title("Storm Area Histogram")
 plotting.save_plot("storm_area_hist.png")
 
 # %%
+print("Plotting histogram of zonal speed for 98th percentile area storms.")
 plt.figure(figsize=(10, 6))
 plt.hist(p98_area_df["zonal_speed"], bins=50)
 plt.xlabel("Zonal Speed (m/s)")
@@ -384,6 +403,7 @@ plt.title("Storm Zonal Speed Histogram for 98% Percentile Area Storms")
 plotting.save_plot("p98_area_storm_zonal_speed_hist.png")
 
 # %%
+print("Defining mapping from degrees to cardinal directions.")
 degrees_to_cardinal_map = {
     90: "E",
     67.5: "ENE",
@@ -405,7 +425,7 @@ degrees_to_cardinal_map = {
 cardinal_directions = list(degrees_to_cardinal_map.values())
 
 # %%
-# convert storm bearing to closest cardinal direction
+print("Converting storm bearing to closest cardinal direction.")
 df["storm_closest_cardinal_direction"] = (
     ((df["storm_bearing"] % 360) + (22.5 / 2)).floordiv(22.5) * 22.5 % 360
 )
@@ -416,6 +436,7 @@ df["storm_closest_cardinal_direction"] = (
 )
 
 # %%
+print("Plotting polar chart of storm cardinal directions distribution.")
 fig = go.Figure()
 
 fig.add_trace(
@@ -477,6 +498,7 @@ fig.write_html(
 )
 
 # %%
+print("Plotting histogram of storm total duration.")
 plt.figure(figsize=(10, 6))
 plt.hist(df["storm_total_duration"], bins=50)
 
@@ -486,6 +508,9 @@ plt.title("Storm Duration Histogram")
 plotting.save_plot("storm_duration_hist.png")
 
 # %%
+print(
+    "Plotting subplots comparing storm straight line and traversed distances."
+)
 fig, axs = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
 
 # 98th percentile duration storms
@@ -563,6 +588,7 @@ plt.tight_layout()
 plotting.save_plot("storm_distance_hist_subplots.png")
 
 # %%
+print("Plotting histogram of storm zonal speed.")
 plt.figure(figsize=(10, 6))
 plt.hist(df["zonal_speed"], bins=50)
 
@@ -572,6 +598,7 @@ plt.title("Storm Zonal Speed Histogram")
 plotting.save_plot("storm_zonal_speed_hist.png")
 
 # %%
+print("Plotting histogram of storm meridional speed.")
 plt.figure(figsize=(10, 6))
 plt.hist(df["meridional_speed"], bins=50)
 
@@ -581,6 +608,7 @@ plt.title("Storm Meridional Speed Histogram")
 plotting.save_plot("storm_meridional_speed_hist.png")
 
 # %%
+print("Plotting histogram of storm speed (magnitude).")
 plt.figure(figsize=(10, 6))
 plt.hist(np.sqrt(df["zonal_speed"] ** 2 + df["meridional_speed"] ** 2), bins=50)
 
@@ -590,9 +618,11 @@ plt.title("Storm Speed Histogram")
 plotting.save_plot("storm_speed_hist.png")
 
 # %%
+print("Calculating correlation matrix for numeric features.")
 df_corr = df.select_dtypes(include=[np.number]).corr()
 
 # %%
+print("Plotting heatmap of feature correlations.")
 plt.figure(figsize=(40, 40))
 sns.heatmap(
     df_corr,
@@ -603,6 +633,7 @@ sns.heatmap(
 plotting.save_plot("feature_correlation_heatmap.png")
 
 # %%
+print("Plotting heatmap of orography, anor, and storm duration correlations.")
 sns.heatmap(
     df[["orography_height", "anor", "storm_total_duration"]].corr(),
     annot=True,
@@ -611,6 +642,9 @@ sns.heatmap(
 plotting.save_plot("orography_anor_correlation_heatmap.png")
 
 # %%
+print(
+    "Commented out: plotting mutual information heatmap for all numeric features."
+)
 # sns.heatmap(
 #     df.select_dtypes(include=[np.number]).corr(
 #         method=lambda x, y: mutual_info_regression(
@@ -623,6 +657,9 @@ plotting.save_plot("orography_anor_correlation_heatmap.png")
 # plotting.save_plot("mutual_info_heatmap.png")
 
 # %%
+print(
+    "Commented out: plotting mutual information heatmap for orography, anor, and duration."
+)
 # sns.heatmap(
 #     df[["orography_height", "anor", "storm_total_duration"]].corr(
 #         method=lambda x, y: mutual_info_regression(
@@ -635,6 +672,9 @@ plotting.save_plot("orography_anor_correlation_heatmap.png")
 # plotting.save_plot("orography_anor_mutual_info_heatmap.png")
 
 # %%
+print(
+    "Calculating storm counts per day and plotting with MJO phase and amplitude."
+)
 df["date"] = pd.to_datetime(df["timestamp"]).dt.date
 storm_counts = df.groupby("date")["storm_id"].nunique().reset_index()
 storm_counts.columns = ["date", "storm_count"]
@@ -658,16 +698,23 @@ plt.suptitle("Storm Counts, MJO Phases, and Amplitudes Over Time")
 plotting.save_plot("storm_counts_per_day_vs_mjo.png")
 
 # %%
+print(
+    "Converting 'over_land' and 'storm_min_bt_reached' columns to integer type."
+)
 df["over_land"] = df["over_land"].astype(int)
 df["storm_min_bt_reached"] = df["storm_min_bt_reached"].astype(int)
 
 # %%
+print(
+    "Interpolating all storms to have 11 points each for life cycle analysis."
+)
 # interpolate all storms to have 11 points each
 # 11 ensures that there are points at 0%, 100%, and 10% intervals
 n_points = 11
 storm_10_points_df = processing.interpolate_all_storms(df, n_points=n_points)
 
 # %%
+print("Reshaping min_bt column to 2D array for EOF analysis.")
 # reshape the min_bt column to a 2D array with shape (num_storms, n_points)
 min_bt_by_storm_arr = (
     storm_10_points_df["min_bt"]
@@ -676,6 +723,7 @@ min_bt_by_storm_arr = (
 )
 
 # %%
+print("Performing EOF analysis on minimum BT by storm.")
 # perform EOF analysis on the minimum BT by storm
 solver = eofs.standard.Eof(min_bt_by_storm_arr)
 pcs = solver.pcs(pcscaling=0)  # 0 means unscaled pcs
@@ -685,6 +733,7 @@ eofs_list = eofs_list = solver.eofs(
 variance_fractions = solver.varianceFraction()
 
 # %%
+print("Plotting first 5 EOFs of minimum brightness temperature.")
 # plot the first 5 EOFs
 plt.figure(figsize=(10, 6))
 for i in range(5):
@@ -703,6 +752,9 @@ plt.legend()
 plotting.save_plot("eofs_min_bt.png")
 
 # %%
+print(
+    "Grouping storms by land/sea and day/night initiation for life cycle analysis."
+)
 # get the first point of each storm
 storm_first_points = storm_10_points_df.groupby("storm_id").first()
 
@@ -729,6 +781,9 @@ storm_10_points_df["night_init"] = storm_10_points_df["storm_id"].isin(
 )
 
 # %%
+print(
+    "Calculating mean minimum BT over storm life cycle for each initiation type."
+)
 land_init_points = storm_10_points_df[storm_10_points_df["land_init"] == True]
 land_init_min_bt_mean = (
     land_init_points["min_bt"]
@@ -760,6 +815,7 @@ night_init_min_bt_mean = (
 )
 
 # %%
+print("Plotting mean minimum BT over storm life cycle by initiation type.")
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # plot the mean minimum brightness temperature over the storm life cycle
@@ -798,5 +854,3 @@ ax.legend()
 
 plt.tight_layout()
 plotting.save_plot("min_bt_over_lifecycle_by_init_type.png")
-
-# %%
