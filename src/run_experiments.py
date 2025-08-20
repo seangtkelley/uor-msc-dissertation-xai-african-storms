@@ -1,7 +1,10 @@
 import pandas as pd
+from dotenv import load_dotenv
 
 import config
 from utils import modelling
+
+load_dotenv()
 
 # load the processed dataset
 print("Loading processed dataset...")
@@ -20,6 +23,8 @@ modelling.wandb_sweep(
     processed_df=processed_df,
     target_col=exp1_target_col,
     feature_cols=config.FEATURE_COLS,
+    run_base_name=run_base_name,
+    wandb_mode="online",
 )
 
 # ==============================================================================
@@ -33,4 +38,6 @@ modelling.wandb_sweep(
     processed_df=processed_df,
     target_col=exp2_target_col,
     feature_cols=config.ERA5_MET_FEATURE_COLS,
+    run_base_name=run_base_name,
+    wandb_mode="online",
 )
