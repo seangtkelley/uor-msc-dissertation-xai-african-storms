@@ -3,6 +3,7 @@ import warnings
 
 import cartopy.crs as ccrs
 import eofs
+import kaleido
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -19,6 +20,9 @@ warnings.filterwarnings("ignore", message=".*Downloading.*", module="cartopy")
 
 # %%
 sns.set_theme(style="darkgrid")
+
+# %%
+kaleido.get_chrome_sync()
 
 # %%
 print("Loading processed dataset and displaying first few rows.")
@@ -493,8 +497,8 @@ fig.update_layout(
     title="Storm Cardinal Directions Distribution",
 )
 
-fig.write_html(
-    config.FIGURES_DIR / "storm_cardinal_directions_distribution.html"
+fig.write_image(
+    config.FIGURES_DIR / "storm_cardinal_directions_distribution.png"
 )
 
 # %%
