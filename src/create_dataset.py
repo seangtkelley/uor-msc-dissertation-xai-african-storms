@@ -117,7 +117,7 @@ if should_recalc("date_angle", processed_df.columns):
     days_in_year = (
         processed_df["timestamp"]
         .dt.is_leap_year.replace({True: 366, False: 365})
-        .infer_objects(copy=False)
+        .infer_objects(copy=False)  # type: ignore
     )
     processed_df["date_angle"] = (day_of_year / days_in_year) * 360
 
