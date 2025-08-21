@@ -626,13 +626,21 @@ print("Calculating correlation matrix for numeric features.")
 df_corr = df.select_dtypes(include=[np.number]).corr()
 
 # %%
+print("Filtering for highly correlated features.")
+df_corr = df_corr - np.eye(df_corr.shape[0])
+df_corr = df_corr[df_corr.abs() > 0.5]
+df_corr = df_corr.dropna(how="all")
+
+# %%
 print("Plotting heatmap of feature correlations.")
-plt.figure(figsize=(40, 40))
+plt.figure(figsize=(40, 30))
 sns.heatmap(
     df_corr,
     annot=True,
     fmt=".2f",
     cmap="coolwarm",
+    vmax=1,
+    vmin=-1,
 )
 plotting.save_plot("feature_correlation_heatmap.png")
 
