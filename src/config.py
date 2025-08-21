@@ -19,7 +19,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
-FIGURES_DIR = REPO_ROOT / "figures"
+FIGURES_DIR = REPO_ROOT / "figures" / "generated"
 SRC_DIR = REPO_ROOT / "src"
 MODEL_OUTPUT_DIR = REPO_ROOT / "models"
 
