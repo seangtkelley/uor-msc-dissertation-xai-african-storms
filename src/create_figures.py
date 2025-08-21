@@ -731,7 +731,7 @@ print("Performing EOF analysis on minimum BT by storm.")
 # perform EOF analysis on the minimum BT by storm
 solver = eofs.standard.Eof(min_bt_by_storm_arr)
 pcs = solver.pcs(pcscaling=0)  # 0 means unscaled pcs
-eofs_list = eofs_list = solver.eofs(
+eofs_list = solver.eofs(
     neofs=10, eofscaling=1
 )  # 1 means normalised EOF(divided by the square-root of their eignevalues)
 variance_fractions = solver.varianceFraction()
