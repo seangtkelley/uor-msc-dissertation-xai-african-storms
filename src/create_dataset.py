@@ -117,7 +117,7 @@ if should_recalc("date_angle", processed_df.columns):
     days_in_year = (
         processed_df["timestamp"]
         .dt.is_leap_year.replace({True: 366, False: 365})
-        .infer_objects(copy=False)
+        .infer_objects(copy=False)  # type: ignore
     )
     processed_df["date_angle"] = (day_of_year / days_in_year) * 360
 
@@ -426,9 +426,9 @@ if should_recalc("mean_tcwv", processed_df.columns):
 
     processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
-        f"tcwv_tot_",
+        "tcwv_tot_",
         "tcwv",
-        f"mean_tcwv",
+        "mean_tcwv",
     )
 
 if should_recalc(
@@ -444,9 +444,37 @@ if should_recalc(
 
     processed_df = processing.calc_vertical_wind_shear(processed_df)
 
+if should_recalc("domain_mean_u500", processed_df.columns):
+    print("Calculating domain mean 500 hPa zonal wind...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df,
+        "uwnd_500_",
+        "uwnd",
+        "domain_mean_u500",
+        radius_km=np.inf,
+        squeeze_dims=["pressure_level"],
+    )
+
+if should_recalc("domain_mean_tcwv", processed_df.columns):
+    print("Calculating domain mean total column water vapour (TCWV)...")
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df, "tcwv_tot_", "tcwv", "domain_mean_tcwv", radius_km=np.inf
+    )
+
+if should_recalc("domain_mean_cape", processed_df.columns):
+    print(
+        "Calculating domain mean convective available potential energy (CAPE)..."
+    )
+
+    processed_df = processing.calc_spatiotemporal_agg(
+        processed_df, "cape_0_", "cape", "domain_mean_cape", radius_km=np.inf
+    )
+
 # select only the columns that are in the config
 processed_df = processed_df[
-    [col for col in config.DATASET_COL_NAMES if col in processed_df.columns]
+    [col for col in config.DATASET_COLS if col in processed_df.columns]
 ]
 
 # save the processed dataset

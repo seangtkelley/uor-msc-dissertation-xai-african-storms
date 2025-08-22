@@ -21,7 +21,7 @@ DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures" / "generated"
 SRC_DIR = REPO_ROOT / "src"
-OUTPUT_MODEL_DIR = REPO_ROOT / "models"
+MODEL_OUTPUT_DIR = REPO_ROOT / "models"
 
 RAW_STORM_DB_PATH = (
     DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"
@@ -62,6 +62,10 @@ ERA5_DATA_EXTENT = (
 DATA_START = "2014-01-01"
 DATA_END = "2019-12-31"
 
+# degree Kelvin bounds for Earthly temperatures
+EARTH_TEMP_BOUNDS = (180, 330)
+
+# column renaming map from raw dataset to processed dataset
 COL_RENAME_MAP = {
     "Lon": "lon",
     "Lat": "lat",
@@ -74,30 +78,8 @@ COL_RENAME_MAP = {
     "Mean BT": "mean_bt",
 }
 
-FEATURE_COL_NAMES = [
-    "date_angle",
-    "eat_hours",
-    "storm_total_duration",
-    "lon",
-    "lat",
-    "orography_height",
-    "anor",
-    "upslope_bearing",
-    "slope_angle",
-    "over_land",
-    "acc_land_time",
-    "storm_total_land_time",
-    "mean_land_frac",
-    "zonal_speed",
-    "meridional_speed",
-    "area",
-    "storm_max_area",
-    "bearing_from_prev",
-    "distance_from_prev",
-    "distance_traversed",
-    "storm_bearing",
-    "storm_distance_traversed",
-    "storm_straight_line_distance",
+# meteorological features calculated from ERA5 data
+ERA5_MET_FEATURE_COLS = [
     "mean_skt",
     "mean_land_skt",
     "mean_sst",
@@ -109,6 +91,7 @@ FEATURE_COL_NAMES = [
     "mean_v850",
     "mean_v500",
     "mean_v200",
+    "domain_mean_u500",
     "mean_u_shear_850_500",
     "mean_v_shear_850_500",
     "mean_u_shear_850_200",
@@ -116,35 +99,80 @@ FEATURE_COL_NAMES = [
     "wind_direction_850",
     "wind_angle_upslope",
     "mean_tcwv",
+    "domain_mean_tcwv",
     "mean_q_850",
     "mean_q_500",
     "mean_q_200",
     "mean_cape",
+    "domain_mean_cape",
     "olr_90",
     "olr_75",
     "olr_50",
     "mean_prcp_400",
-    "min_bt",
-    "dmin_bt_dt",
-    "mean_bt",
-    "dmean_bt_dt",
-    "storm_min_bt",
-    "storm_min_bt_reached",
-    "mjo_phase",
-    "mjo_amplitude",
 ]
 
-TARGET_COL_NAMES = ["storm_total_duration", "mean_prcp_400", "storm_min_bt"]
+FEATURE_COLS = (
+    [
+        "date_angle",
+        "eat_hours",
+        "storm_total_duration",
+        "lon",
+        "lat",
+        "orography_height",
+        "anor",
+        "upslope_bearing",
+        "slope_angle",
+        "over_land",
+        "acc_land_time",
+        "storm_total_land_time",
+        "mean_land_frac",
+        "zonal_speed",
+        "meridional_speed",
+        "area",
+        "storm_max_area",
+        "bearing_from_prev",
+        "distance_from_prev",
+        "distance_traversed",
+        "storm_bearing",
+        "storm_distance_traversed",
+        "storm_straight_line_distance",
+        "min_bt",
+    ]
+    + ERA5_MET_FEATURE_COLS
+    + [
+        "dmin_bt_dt",
+        "mean_bt",
+        "dmean_bt_dt",
+        "storm_min_bt",
+        "storm_min_bt_reached",
+        "mjo_phase",
+        "mjo_amplitude",
+    ]
+)
 
-DATASET_COL_NAMES = ["storm_id", "timestamp"] + FEATURE_COL_NAMES
+TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
 
-# Kelvin bounds for Earthly temperatures
-EARTH_TEMP_BOUNDS = (180, 330)
+DATASET_COLS = ["storm_id", "timestamp"] + FEATURE_COLS
+
+TARGET_EXCLUDE_COLS = {
+    "mean_prcp_400": [],
+    "storm_min_bt": [
+        "min_bt",
+        "dmin_bt_dt",
+        "mean_bt",
+        "dmean_bt_dt",
+        "storm_min_bt_reached",
+    ],
+}
 
 
 # ==============================================================================
 #                       MODEL AND TRAINING CONFIGURATION
 # ==============================================================================
+RANDOM_STATE = 114
+
+VAL_SIZE, TEST_SIZE = 0.2, 0.2
+
 XGB_HYPERPARAMS = {
     "objective": "reg:squarederror",
     "colsample_bytree": 0.3,
@@ -153,7 +181,7 @@ XGB_HYPERPARAMS = {
     "alpha": 10,
     "gamma": 0,
     "n_estimators": 120,
-    "random_state": None,
+    "random_state": RANDOM_STATE,
 }
 
 # Weights & Biases configuration
@@ -163,6 +191,7 @@ WANDB_PROJECT = "uor-msc-dissertation-xai-african-storms"
 CV_PARAMS = {
     "n_splits": 5,
     "shuffle": True,
+    "random_state": RANDOM_STATE,
 }
 
 XGB_EARLY_STOPPING_PARAMS = {
@@ -194,7 +223,7 @@ WANDB_SWEEP_CONFIG = {
         "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
         "max_depth": {"values": [6]},
         "n_estimators": {"values": [120]},
-        "random_state": {"values": [None]},
+        "random_state": {"values": [RANDOM_STATE]},
     },
     "early_terminate": {
         "type": "hyperband",
@@ -204,4 +233,4 @@ WANDB_SWEEP_CONFIG = {
     },
 }
 
-WANDB_DEFAULT_SWEEP_COUNT = 15
+WANDB_DEFAULT_SWEEP_TRIALS = 15

@@ -230,7 +230,7 @@ report/*.pdf
 data
 
 # ignore model files
-models/run_*
+models/**/*.json
 
 # ignore wandb files
 wandb/
