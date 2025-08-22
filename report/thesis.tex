@@ -1,6 +1,10 @@
 \documentclass[a4paper,11pt,oneside]{book} 
 \usepackage{CS_report}
 
+\newcommand{\insertref}[1]{\todo[color=green!40,caption={Missing Citation}]{#1}}
+\newcommand{\explainindetail}[1]{\todo[color=red!20,caption={More Details}]{#1}}
+\newcommand{\askfeedback}[1]{\todo[color=blue!40,caption={Feedback Needed}]{#1}}
+
 \glsenablehyper
 \makeglossaries
 \makenomenclature
@@ -13,7 +17,7 @@
     
     \begin{titlepage}      
         \begin{center}
-            \includegraphics[width=3cm]{figures/uorlogo.png}\\[0.5cm]
+            \includegraphics[width=3cm]{../figures/static/uorlogo.png}\\[0.5cm]
             {\LARGE University of Reading\\[0.5cm]
             Department of Meteorology}\\[2cm]
 			%{\color{blue} \rule{\textwidth}{1pt}}
@@ -56,6 +60,7 @@
     \newpage
 
     \include{chapters/glossary}
+    \setglossarystyle{list}
     \printglossary
     \printglossary[type=\acronymtype]
     \newpage
@@ -64,10 +69,11 @@
     
     \input{chapters/introduction}
     \input{chapters/background}
+    \input{chapters/data}
     \input{chapters/methodology}
     \input{chapters/results}
     \input{chapters/discussion}
-    \input{chapters/conclusions}
+    \input{chapters/conclusion}
 
     \bibliography{references}
     

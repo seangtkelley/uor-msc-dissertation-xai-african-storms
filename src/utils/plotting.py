@@ -12,18 +12,15 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 
-from typing import Optional, Union
+from typing import Optional
 
 import cartopy.crs as ccrs
 import cartopy.feature as cf
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import xarray as xr
 from matplotlib.axes import Axes
 from matplotlib.colors import ListedColormap
-from metpy.calc import geopotential_to_height
-from metpy.units import units
 from pint import Quantity
 
 import config
@@ -194,7 +191,7 @@ def add_all_map_features(
 def save_plot(
     filename: str,
     dpi: int = 300,
-    show: bool = True,
+    show: bool = False,
 ) -> None:
     """
     Save the current plot to a file and optionally show it.

@@ -17,3 +17,4 @@ eofs==2.0.0
 xgboost==3.0.2
 wandb==0.21.0
 python-dotenv==1.1.1
+kaleido==1.0.0
