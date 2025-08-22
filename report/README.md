@@ -2,7 +2,15 @@
 
 This directory contains the LaTeX source files for the MSc dissertation.
 
-## Compiling the Thesis
+# Latex Packages
+
+Run the following command to install all required packages
+
+```bash
+sudo tlmgr install slantsc relsize algorithms algorithmicx cleveref subfigure lipsum multirow makecell enumitem glossaries nomencl tocbibind appendix todonotes texcount
+```
+
+# Compiling the Thesis
 
 The following are the minimum required settings needed to compile the `thesis.tex` with [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) in vscode:
 ```json
