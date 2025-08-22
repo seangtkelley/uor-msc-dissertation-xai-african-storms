@@ -110,6 +110,12 @@ else:
 # sort by storm_id and timestamp to ensure consistent order before processing
 processed_df = processed_df.sort_values(by=["storm_id", "timestamp"])
 
+if should_recalc("storm_obs_idx", processed_df.columns):
+    print("Calculating storm observation index...")
+
+    # calculate the storm observation index for each storm
+    processed_df["storm_obs_idx"] = processed_df.groupby("storm_id").cumcount()
+
 if should_recalc("date_angle", processed_df.columns):
     print("Calculating date angle...")
 

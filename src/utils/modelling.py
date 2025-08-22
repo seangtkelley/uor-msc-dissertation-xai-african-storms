@@ -47,7 +47,7 @@ def setup_run_metadata(target_col: str) -> str:
 def separate_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COLS,
+    feature_cols: Iterable[str] = config.ALL_FEATURE_COLS,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """
     Separate features and target variable from the processed DataFrame.

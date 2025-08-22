@@ -104,6 +104,7 @@ Notes:
 | Variable name | Description | Units |
 |--------------|-------------|-------------|
 | `storm_id` | Unique identifier for each MCS | - |
+| `storm_obs_idx` | Observation index within MCS (0 for first observation, 1 for second, etc.) | - |
 | `timestamp` | Datetime of observation | UTC |
 | `date_angle` | Angle representation of current date within year | ° |
 | `eat_hours` | Time step hour of day | East Africa Time (UTC +3) |

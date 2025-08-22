@@ -111,7 +111,7 @@ ERA5_MET_FEATURE_COLS = [
     "mean_prcp_400",
 ]
 
-FEATURE_COLS = (
+ALL_FEATURE_COLS = (
     [
         "date_angle",
         "eat_hours",
@@ -138,10 +138,10 @@ FEATURE_COLS = (
         "storm_bearing",
         "storm_distance_traversed",
         "storm_straight_line_distance",
-        "min_bt",
     ]
     + ERA5_MET_FEATURE_COLS
     + [
+        "min_bt",
         "dmin_bt_dt",
         "mean_bt",
         "dmean_bt_dt",
@@ -154,7 +154,7 @@ FEATURE_COLS = (
 
 TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
 
-DATASET_COLS = ["storm_id", "timestamp"] + FEATURE_COLS
+DATASET_COLS = ["storm_id", "storm_obs_idx", "timestamp"] + ALL_FEATURE_COLS
 
 TARGET_EXCLUDE_COLS = {
     "mean_prcp_400": [],
