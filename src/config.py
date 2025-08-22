@@ -152,19 +152,52 @@ ALL_FEATURE_COLS = (
     ]
 )
 
-TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
+TARGET_COLS = [
+    "mean_prcp_400",
+    "storm_min_bt",
+    "storm_bearing",
+    "dmin_bt_dt",
+    "bearing_to_next",
+    "distance_to_next",
+]
 
 DATASET_COLS = ["storm_id", "storm_obs_idx", "timestamp"] + ALL_FEATURE_COLS
 
-TARGET_EXCLUDE_COLS = {
+ALL_TARGET_EXCLUDE_COLS = [
+    # storm aggregate features
+    "storm_total_duration",
+    "storm_total_land_time",
+    "storm_max_area",
+    "storm_bearing",
+    "storm_distance_traversed",
+    "storm_straight_line_distance",
+    "storm_min_bt",
+    "storm_min_bt_reached",
+    # future info features
+    "bearing_to_next",
+    "distance_to_next",
+    # features removed due to high correlation with others
+    "mean_swvl2",
+    "olr_75",  # need to justify these two
+    "olr_50",
+]
+
+TARGET_EXCLUDE_COLS_MAP = {
     "mean_prcp_400": [],
     "storm_min_bt": [
         "min_bt",
         "dmin_bt_dt",
         "mean_bt",
         "dmean_bt_dt",
-        "storm_min_bt_reached",
     ],
+    "storm_bearing": ["bearing_from_prev"],
+    "dmin_bt_dt": [
+        "min_bt",
+        "mean_bt",
+        "dmean_bt_dt",
+    ],
+    "bearing_to_next": ["bearing_from_prev"],
+    "distance_to_next": ["distance_from_prev"],
 }
 
 

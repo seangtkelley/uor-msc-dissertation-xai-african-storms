@@ -63,9 +63,9 @@ def get_features_and_target(
         # remove target
         if col != target_col
         # remove excluded features for this target
-        and col not in config.TARGET_EXCLUDE_COLS.get(target_col, [])
-        # remove storm features (allows model to look into future)
-        and not col.startswith("storm_")
+        and col not in config.TARGET_EXCLUDE_COLS_MAP.get(target_col, [])
+        # remove all target excluded features
+        and col not in config.ALL_TARGET_EXCLUDE_COLS
     ]
 
     # filter dataset
