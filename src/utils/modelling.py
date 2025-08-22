@@ -44,7 +44,7 @@ def setup_run_metadata(target_col: str) -> str:
     return run_base_name
 
 
-def separate_features_and_target(
+def get_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
     feature_cols: Iterable[str] = config.ALL_FEATURE_COLS,
@@ -101,7 +101,6 @@ def train_model(
     :param X: Features DataFrame.
     :param y: Target Series.
     :param wandb_run: Weights & Biases run object.
-    :param local_output_dir: Local output directory for saving models.
     """
     # if wandb_run is None, provide a no-op run
     if wandb_run is None:
@@ -153,8 +152,8 @@ def train_model(
     # upload the model to W&B
     wandb_run.save(str(model_path), base_path=temp_dir)
 
-    # finish the Weights & Biases run
-    wandb_run.finish()
+    # update run config with test dataset index
+    wandb_run.config.update({"test_dataset_index": y_test.index.tolist()})
 
 
 def train_model_cv(
@@ -168,7 +167,6 @@ def train_model_cv(
     :param X: Features DataFrame.
     :param y: Target Series.
     :param wandb_run: Weights & Biases run object.
-    :param local_output_dir: Local output directory for saving models.
     """
     # if wandb_run is None, provide a no-op run
     if wandb_run is None:
@@ -178,7 +176,7 @@ def train_model_cv(
     # test set is ignored here as it's not needed for cross-validation
     # but with the random state, we can ensure reproducibility for later
     # testing of the best model without data leakage
-    X_train, _, y_train, _ = train_test_split(
+    X_train, _, y_train, y_test = train_test_split(
         X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE
     )
 
@@ -232,8 +230,8 @@ def train_model_cv(
     # upload the model to W&B
     wandb_run.save(str(model_path), base_path=temp_dir)
 
-    # finish the W&B run
-    wandb_run.finish()
+    # update run config with test dataset index
+    wandb_run.config.update({"test_dataset_index": y_test.index.tolist()})
 
 
 def wandb_sweep_func(
@@ -249,22 +247,24 @@ def wandb_sweep_func(
     :param y: Target Series.
     :param run_base_name: The base name for the W&B run.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
-    :param local_output_dir: Local output directory for saving models.
     """
     # init W&B run
-    run = init_wandb(
+    wandb_run = init_wandb(
         run_name_base=run_base_name,
         wandb_mode=wandb_mode,
     )
 
     # train the model
-    train_model_cv(X, y, wandb_run=run)
+    train_model_cv(X, y, wandb_run=wandb_run)
+
+    # finish the W&B run
+    wandb_run.finish()
 
 
 def wandb_sweep(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COLS,
+    feature_cols: Iterable[str],
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
@@ -278,7 +278,6 @@ def wandb_sweep(
     :param trials: The number of trials for the sweep.
     :param run_base_name: The base name for the W&B run.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
-    :param local_output_dir: Local output directory for saving models.
     """
     # init W&B sweep
     sweep_id = wandb.sweep(
@@ -288,7 +287,7 @@ def wandb_sweep(
     )
 
     # separate features and target
-    X, y = separate_features_and_target(
+    X, y = get_features_and_target(
         processed_df, target_col, feature_cols=feature_cols
     )
 
