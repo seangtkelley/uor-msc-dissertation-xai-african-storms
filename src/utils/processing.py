@@ -217,7 +217,9 @@ def calc_storm_distances_and_bearings(
 ) -> pd.DataFrame:
     # init columns
     processed_df["distance_from_prev"] = np.nan
+    processed_df["distance_to_next"] = np.nan
     processed_df["bearing_from_prev"] = np.nan
+    processed_df["bearing_to_next"] = np.nan
     processed_df["storm_straight_line_distance"] = np.nan
     processed_df["storm_bearing"] = np.nan
 
@@ -233,7 +235,13 @@ def calc_storm_distances_and_bearings(
     processed_df.loc[processed_df.index[1:], "distance_from_prev"] = (
         distances_m / 1000
     )
+    processed_df.loc[processed_df.index[:-1], "distance_to_next"] = (
+        distances_m / 1000
+    )
     processed_df.loc[processed_df.index[1:], "bearing_from_prev"] = (
+        fwd_azimuths % 360  # normalize to [0, 360)
+    )
+    processed_df.loc[processed_df.index[:-1], "bearing_to_next"] = (
         fwd_azimuths % 360  # normalize to [0, 360)
     )
 
@@ -257,12 +265,18 @@ def calc_storm_distances_and_bearings(
     )
 
     # fill in first point for each storm with 0 distance_from_prev
+    # same but opposite for distance_to_next
     processed_df.loc[storm_inits.index, "distance_from_prev"] = 0
+    processed_df.loc[storm_ends.index, "distance_to_next"] = 0
 
     # fill in first point bearing_from_prev for each storm with the overall storm bearing
     # this should be more meaningful than 0 as that would imply all storms initialize moving north
+    # same for bearing_to_next
     processed_df.loc[storm_inits.index, "bearing_from_prev"] = processed_df.loc[
         storm_inits.index, "storm_bearing"
+    ]
+    processed_df.loc[storm_ends.index, "bearing_to_next"] = processed_df.loc[
+        storm_ends.index, "storm_bearing"
     ]
 
     # fill in missing values for storm distances and bearings by forward filling

@@ -184,7 +184,9 @@ if should_recalc(
 if should_recalc(
     [
         "distance_from_prev",
+        "distance_to_next",
         "bearing_from_prev",
+        "bearing_to_next",
         "storm_straight_line_distance",
         "storm_bearing",
         "storm_distance_traversed",
