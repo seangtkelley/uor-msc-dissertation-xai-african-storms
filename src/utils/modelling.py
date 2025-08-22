@@ -11,6 +11,7 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Iterable, Literal, Optional
@@ -27,26 +28,20 @@ import config
 import wandb
 
 
-def setup_run_metadata(target_col: str) -> tuple[Path, str]:
+def setup_run_metadata(target_col: str) -> str:
     """
     Set up the run metadata for the experiment.
 
     :param target_col: The target column for the experiment.
-    :return: A tuple containing the run output directory and the run base name.
+    :return: The run base name.
     """
     # set run name with current timestamp
     run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
 
-    # create run output dir based on target column and timestamp
-    run_output_dir = config.MODEL_OUTPUT_DIR / target_col / run_timestamp_str
-
-    # ensure output path exists
-    run_output_dir.mkdir(parents=True, exist_ok=True)
-
     # create run base name
     run_base_name = f"{target_col}_{run_timestamp_str}"
 
-    return run_output_dir, run_base_name
+    return run_base_name
 
 
 def separate_features_and_target(
@@ -97,7 +92,6 @@ def train_model(
     X: pd.DataFrame,
     y: pd.Series,
     wandb_run: Optional[Run] = None,
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model using train/val/test splits.
@@ -149,10 +143,13 @@ def train_model(
     # log evaluation metric to Weights & Biases
     wandb_run.log({"test-rmse": test_rmse})
 
-    # save the model
-    model_path = local_output_dir / f"{wandb_run.name}_model.json"
+    # save the model to temp dir
+    temp_dir = Path(tempfile.gettempdir())
+    model_path = temp_dir / f"{wandb_run.name}_model.json"
     model.save_model(model_path)
-    print(f"Model saved to {model_path}")
+
+    # upload the model to W&B
+    wandb_run.save(str(model_path), base_path=temp_dir)
 
     # finish the Weights & Biases run
     wandb_run.finish()
@@ -162,7 +159,6 @@ def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
     wandb_run: Optional[Run] = None,
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model using cross-validation.
@@ -226,13 +222,13 @@ def train_model_cv(
     # log the best score across all cv folds to W&B for the sweep
     wandb_run.log({"val-rmse": best_cv_score})
 
-    # save the model to the output directory
-    model_path = local_output_dir / f"{wandb_run.name}_model.json"
-    best_cv_model.save_model(str(model_path))
-    print(f"Model saved to {model_path}")
+    # save the model to temp dir
+    temp_dir = Path(tempfile.gettempdir())
+    model_path = temp_dir / f"{wandb_run.name}_model.json"
+    best_cv_model.save_model(model_path)
 
     # upload the model to W&B
-    wandb_run.save(str(model_path), base_path=local_output_dir)
+    wandb_run.save(str(model_path), base_path=temp_dir)
 
     # finish the W&B run
     wandb_run.finish()
@@ -243,7 +239,6 @@ def wandb_sweep_func(
     y: pd.Series,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Wrapper function for sweeping hyperparameters using Weights & Biases.
@@ -261,7 +256,7 @@ def wandb_sweep_func(
     )
 
     # train the model
-    train_model_cv(X, y, wandb_run=run, local_output_dir=local_output_dir)
+    train_model_cv(X, y, wandb_run=run)
 
 
 def wandb_sweep(
@@ -271,7 +266,6 @@ def wandb_sweep(
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Perform a hyperparameter sweep using Weights & Biases.
@@ -304,7 +298,6 @@ def wandb_sweep(
             y,
             run_base_name=run_base_name,
             wandb_mode=wandb_mode,
-            local_output_dir=local_output_dir,
         ),
         count=trials,
     )
