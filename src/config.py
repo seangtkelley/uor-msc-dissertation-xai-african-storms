@@ -22,6 +22,7 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures" / "generated"
 SRC_DIR = REPO_ROOT / "src"
 MODEL_OUTPUT_DIR = REPO_ROOT / "models"
+WANDB_LOG_DIR = REPO_ROOT / "wandb"
 
 RAW_STORM_DB_PATH = (
     DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"

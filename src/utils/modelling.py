@@ -11,11 +11,14 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
+import tempfile
 import uuid
+from glob import glob
 from pathlib import Path
 from typing import Iterable, Literal, Optional
 
 import pandas as pd
+import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 from wandb.integration.xgboost import WandbCallback
@@ -153,6 +156,9 @@ def train_model(
     model_path = local_output_dir / f"{wandb_run.name}_model.json"
     model.save_model(model_path)
     print(f"Model saved to {model_path}")
+
+    # upload the model to W&B
+    wandb_run.save(str(model_path), base_path=local_output_dir)
 
     # finish the Weights & Biases run
     wandb_run.finish()
@@ -311,3 +317,56 @@ def wandb_sweep(
 
     # clean up W&B sweep
     wandb.teardown()
+
+
+def get_best_model_from_sweep(
+    wandb_api: wandb.Api, sweep_id: str
+) -> xgb.Booster:
+    """
+    Get the best model from a W&B sweep.
+
+    :param sweep_id: The ID of the W&B sweep.
+    :param local_output_dir: Local output directory for saving models.
+    :return: The best model from the sweep.
+    """
+    # get all runs from the sweep
+    sweep_runs = wandb_api.sweep(
+        f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}/{sweep_id}"
+    ).runs
+
+    # find the best run (lowest validation loss)
+    best_run = min(
+        sweep_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
+    )
+
+    bst = xgb.Booster()
+    run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{best_run.id}*"))
+    model_filepath = None
+    try:
+        if len(run_dir_search) == 1:
+            raise ValueError("Multiple run directories found.")
+
+        print("Loading model from local run directory...")
+
+        # load the model
+        model_filepath = Path(run_dir_search[0]) / f"{best_run.name}_model.json"
+
+        # check the file exists
+        if not model_filepath.exists():
+            raise FileNotFoundError(f"Model file not found: {model_filepath}")
+
+    except Exception as e:
+        print("Downloading model from W&B...")
+        # download the best model to a temp directory
+        temp_dir = tempfile.gettempdir()
+        model_filepath = Path(temp_dir) / f"{best_run.name}_model.json"
+        best_run.download(str(model_filepath), base_path=temp_dir)
+
+    finally:
+        if model_filepath is not None:
+            # load the model
+            bst.load_model(model_filepath)
+        else:
+            raise RuntimeError("Failed to locate or download the model file.")
+
+    return bst
