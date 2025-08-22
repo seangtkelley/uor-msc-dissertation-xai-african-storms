@@ -325,8 +325,8 @@ def get_best_model_from_sweep(
     """
     Get the best model from a W&B sweep.
 
+    :param wandb_api: The W&B API object.
     :param sweep_id: The ID of the W&B sweep.
-    :param local_output_dir: Local output directory for saving models.
     :return: The best model from the sweep.
     """
     # get all runs from the sweep
