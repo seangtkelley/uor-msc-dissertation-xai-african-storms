@@ -64,6 +64,8 @@ def separate_features_and_target(
         if col != target_col
         # remove excluded features for this target
         and col not in config.TARGET_EXCLUDE_COLS.get(target_col, [])
+        # remove storm features (allows model to look into future)
+        and not col.startswith("storm_")
     ]
 
     # filter dataset
