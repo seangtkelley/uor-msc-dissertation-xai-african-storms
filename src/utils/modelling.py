@@ -305,3 +305,47 @@ def wandb_sweep(
 
     # clean up W&B sweep
     wandb.teardown()
+
+
+def run_experiment(
+    exp_name: str,
+    processed_df: pd.DataFrame,
+    first_points_only: bool,
+    target_col: str,
+    feature_cols: str | list[str],
+    wandb_mode: Literal["online", "offline", "disabled"],
+):
+    """
+    Run a W&B sweep for the given experiment.
+
+    :param exp_name: The name of the experiment.
+    :param processed_df: The processed DataFrame containing features and target.
+    :param first_points_only: Whether to use only the first points of each storm.
+    :param target_col: The target column for the model.
+    :param feature_cols: The feature columns for the model.
+    :param wandb_mode: The mode for W&B (online, offline, disabled).
+    """
+    run_base_name = setup_run_metadata(target_col)
+    df = (
+        processed_df.groupby("storm_id").first()
+        if first_points_only
+        else processed_df
+    )
+
+    if type(feature_cols) == str:
+        if feature_cols == "all":
+            feature_cols = config.ALL_FEATURE_COLS
+        elif feature_cols == "era5":
+            feature_cols = config.ERA5_MET_FEATURE_COLS
+        else:
+            raise ValueError(f"Unknown feature column set: {feature_cols}")
+    elif type(feature_cols) == list:
+        feature_cols = feature_cols
+
+    wandb_sweep(
+        processed_df=df,
+        target_col=target_col,
+        feature_cols=feature_cols,
+        run_base_name=run_base_name,
+        wandb_mode=wandb_mode,
+    )

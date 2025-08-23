@@ -269,3 +269,70 @@ WANDB_SWEEP_CONFIG = {
 }
 
 WANDB_DEFAULT_SWEEP_TRIALS = 15
+
+
+# ==============================================================================
+#                       EXPERIMENT CONFIGURATION
+# ==============================================================================
+EXPERIMENT_CONFIG = {
+    "max_intensity_all": {
+        "first_points_only": True,
+        "target_col": "storm_min_bt",
+        "feature_cols": "all",
+    },
+    "max_intensity_era5": {
+        "first_points_only": True,
+        "target_col": "storm_min_bt",
+        "feature_cols": "era5",
+    },
+    "direction_all": {
+        "first_points_only": True,
+        "target_col": "storm_bearing",
+        "feature_cols": "all",
+    },
+    "direction_era5": {
+        "first_points_only": True,
+        "target_col": "storm_bearing",
+        "feature_cols": "era5",
+    },
+    "intensification_all": {
+        "first_points_only": False,
+        "target_col": "dmin_bt_dt",
+        "feature_cols": "all",
+    },
+    "intensification_era5": {
+        "first_points_only": False,
+        "target_col": "dmin_bt_dt",
+        "feature_cols": "era5",
+    },
+    "next_direction_all": {
+        "first_points_only": False,
+        "target_col": "bearing_to_next",
+        "feature_cols": "all",
+    },
+    "next_direction_era5": {
+        "first_points_only": False,
+        "target_col": "bearing_to_next",
+        "feature_cols": "era5",
+    },
+    "next_distance_all": {
+        "first_points_only": False,
+        "target_col": "distance_to_next",
+        "feature_cols": "all",
+    },
+    "next_distance_era5": {
+        "first_points_only": False,
+        "target_col": "distance_to_next",
+        "feature_cols": "era5",
+    },
+    "precipitation_all": {
+        "first_points_only": False,
+        "target_col": "mean_prcp_400",
+        "feature_cols": "all",
+    },
+    "precipitation_era5": {
+        "first_points_only": False,
+        "target_col": "mean_prcp_400",
+        "feature_cols": "era5",
+    },
+}
