@@ -349,21 +349,45 @@ for level in pressure_levels:
 if should_recalc("mean_swvl1", processed_df.columns):
     print("Calculating mean volumetric soil moisture layer 1...")
 
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
+
     processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
         "swvl1_d1_",
         "swvl1",
         "mean_swvl1",
+        mask=land_mask,
     )
 
 if should_recalc("mean_swvl2", processed_df.columns):
     print("Calculating mean volumetric soil moisture layer 2...")
+
+    # load the land sea mask
+    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
+    land_mask = (
+        lsm["lsm"]
+        .isel(valid_time=0)
+        .squeeze()
+        .drop_vars("valid_time")
+        .round()
+        .astype(bool)
+    )
 
     processed_df = processing.calc_spatiotemporal_agg(
         processed_df,
         "swvl2_d2_",
         "swvl2",
         "mean_swvl2",
+        mask=land_mask,
     )
 
 for level in pressure_levels:
