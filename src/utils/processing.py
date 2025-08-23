@@ -500,6 +500,52 @@ def calc_spatiotemporal_agg(
             config.DATA_DIR / "std" / f"{filename_prefix}{year}.nc"
         )
 
+        # pad dataset if timedelta is provided
+        if timedelta is not None:
+            if timedelta > pd.Timedelta(0):
+
+                next_year = year + 1
+                try:
+                    next_dataset = xr.open_dataset(
+                        config.DATA_DIR
+                        / "std"
+                        / f"{filename_prefix}{next_year}.nc"
+                    ).sel(
+                        valid_time=slice(
+                            # select only relevant data forward from last valid_time
+                            None,
+                            dataset["valid_time"].values[-1] + timedelta,
+                        )
+                    )
+                    dataset = xr.concat(
+                        [dataset, next_dataset], dim="valid_time"
+                    ).sortby("valid_time")
+                except FileNotFoundError:
+                    print(
+                        f"Warning: Positive timedelta but next year file not found."
+                    )
+            else:
+                prev_year = year - 1
+                try:
+                    prev_dataset = xr.open_dataset(
+                        config.DATA_DIR
+                        / "std"
+                        / f"{filename_prefix}{prev_year}.nc"
+                    ).sel(
+                        valid_time=slice(
+                            # select only relevant data back from first valid_time
+                            dataset["valid_time"].values[0] - timedelta,
+                            None,
+                        )
+                    )
+                    dataset = xr.concat(
+                        [prev_dataset, dataset], dim="valid_time"
+                    ).sortby("valid_time")
+                except FileNotFoundError:
+                    print(
+                        f"Warning: Negative timedelta but previous year file not found."
+                    )
+
         # if mask is provided, apply it to the dataset over the entire grid
         if mask is not None:
             dataset = dataset.where(mask)
