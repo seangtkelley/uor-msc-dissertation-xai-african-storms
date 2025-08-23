@@ -26,7 +26,7 @@ from utils import modelling
 #  Target: storm_min_bt
 #  Features: All columns except leakage
 # =======================================
-def run_exp1(processed_df: pd.DataFrame):
+def max_intensity_all(processed_df: pd.DataFrame):
     target_col = "storm_min_bt"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -47,7 +47,7 @@ def run_exp1(processed_df: pd.DataFrame):
 #  Target: storm_min_bt
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp2(processed_df: pd.DataFrame):
+def max_intensity_era5(processed_df: pd.DataFrame):
     target_col = "storm_min_bt"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -68,7 +68,7 @@ def run_exp2(processed_df: pd.DataFrame):
 #  Target: storm_bearing
 #  Features: All columns except leakage
 # =======================================
-def run_exp3(processed_df: pd.DataFrame):
+def direction_all(processed_df: pd.DataFrame):
     target_col = "storm_bearing"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -89,7 +89,7 @@ def run_exp3(processed_df: pd.DataFrame):
 #  Target: storm_bearing
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp4(processed_df: pd.DataFrame):
+def direction_era5(processed_df: pd.DataFrame):
     target_col = "storm_bearing"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -116,7 +116,7 @@ def run_exp4(processed_df: pd.DataFrame):
 #  Target: dmin_bt_dt
 #  Features: All columns except leakage
 # =======================================
-def run_exp5(processed_df: pd.DataFrame):
+def intensification_all(processed_df: pd.DataFrame):
     target_col = "dmin_bt_dt"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -135,7 +135,7 @@ def run_exp5(processed_df: pd.DataFrame):
 #  Target: dmin_bt_dt
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp6(processed_df: pd.DataFrame):
+def intensification_era5(processed_df: pd.DataFrame):
     target_col = "dmin_bt_dt"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -154,7 +154,7 @@ def run_exp6(processed_df: pd.DataFrame):
 #  Target: bearing_to_next
 #  Features: All columns except leakage
 # =======================================
-def run_exp7(processed_df: pd.DataFrame):
+def next_direction_all(processed_df: pd.DataFrame):
     target_col = "bearing_to_next"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -173,7 +173,7 @@ def run_exp7(processed_df: pd.DataFrame):
 #  Target: bearing_to_next
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp8(processed_df: pd.DataFrame):
+def next_direction_era5(processed_df: pd.DataFrame):
     target_col = "bearing_to_next"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -192,7 +192,7 @@ def run_exp8(processed_df: pd.DataFrame):
 #  Target: distance_to_next
 #  Features: All columns except leakage
 # =======================================
-def run_exp9(processed_df: pd.DataFrame):
+def next_distance_all(processed_df: pd.DataFrame):
     target_col = "distance_to_next"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -200,7 +200,7 @@ def run_exp9(processed_df: pd.DataFrame):
     modelling.wandb_sweep(
         processed_df=processed_df,
         target_col=target_col,
-        feature_cols=config.ERA5_MET_FEATURE_COLS,
+        feature_cols=config.ALL_FEATURE_COLS,
         run_base_name=run_base_name,
         wandb_mode="online",
     )
@@ -211,7 +211,7 @@ def run_exp9(processed_df: pd.DataFrame):
 #  Target: distance_to_next
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp10(processed_df: pd.DataFrame):
+def next_distance_era5(processed_df: pd.DataFrame):
     target_col = "distance_to_next"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -230,7 +230,7 @@ def run_exp10(processed_df: pd.DataFrame):
 #  Target: mean_prcp_400
 #  Features: All columns except leakage
 # =======================================
-def run_exp11(processed_df: pd.DataFrame):
+def precipitation_all(processed_df: pd.DataFrame):
     target_col = "mean_prcp_400"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -249,7 +249,7 @@ def run_exp11(processed_df: pd.DataFrame):
 #  Target: mean_prcp_400
 #  Features: ERA5 meteorological cols only
 # =======================================
-def run_exp12(processed_df: pd.DataFrame):
+def precipitation_era5(processed_df: pd.DataFrame):
     target_col = "mean_prcp_400"
     run_base_name = modelling.setup_run_metadata(target_col)
 
@@ -263,16 +263,17 @@ def run_exp12(processed_df: pd.DataFrame):
     )
 
 
-all_experiments = [
-    run_exp1,
-    run_exp2,
-    run_exp3,
-    run_exp4,
-    run_exp5,
-    run_exp6,
-    run_exp7,
-    run_exp8,
-    run_exp9,
-    run_exp10,
-    run_exp11,
-]
+all_experiments = {
+    "max_intensity_all": max_intensity_all,
+    "max_intensity_era5": max_intensity_era5,
+    "direction_all": direction_all,
+    "direction_era5": direction_era5,
+    "intensification_all": intensification_all,
+    "intensification_era5": intensification_era5,
+    "next_direction_all": next_direction_all,
+    "next_direction_era5": next_direction_era5,
+    "next_distance_all": next_distance_all,
+    "next_distance_era5": next_distance_era5,
+    "precipitation_all": precipitation_all,
+    "precipitation_era5": precipitation_era5,
+}
