@@ -342,14 +342,14 @@ def run_experiment(
         else processed_df
     )
 
-    if type(feature_cols) == str:
+    if isinstance(feature_cols, str):
         if feature_cols == "all":
             feature_cols = config.ALL_FEATURE_COLS
         elif feature_cols == "era5":
             feature_cols = config.ERA5_MET_FEATURE_COLS
         else:
             raise ValueError(f"Unknown feature column set: {feature_cols}")
-    elif type(feature_cols) == list:
+    elif isinstance(feature_cols, list):
         feature_cols = feature_cols
 
     wandb_sweep(
