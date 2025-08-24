@@ -285,43 +285,43 @@ WANDB_DEFAULT_SWEEP_TRIALS = 20
 #                       EXPERIMENT CONFIGURATION
 # ==============================================================================
 EXPERIMENT_CONFIG = {
-    "storm_max_intensity_all_first_points": {
-        "first_points_only": True,
-        "target_col": "storm_min_bt",
-        "feature_cols": "all",
-    },
     "storm_max_intensity_all": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
     },
-    "storm_max_intensity_era5_first_points": {
+    "storm_max_intensity_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
-        "feature_cols": "era5",
+        "feature_cols": "all",
     },
     "storm_max_intensity_era5": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
     },
-    "storm_direction_all_first_points": {
+    "storm_max_intensity_era5_first_points": {
         "first_points_only": True,
-        "target_col": "storm_bearing",
-        "feature_cols": "all",
+        "target_col": "storm_min_bt",
+        "feature_cols": "era5",
     },
     "storm_direction_all": {
         "first_points_only": False,
         "target_col": "storm_bearing",
         "feature_cols": "all",
     },
-    "storm_direction_era5_first_points": {
+    "storm_direction_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_bearing",
-        "feature_cols": "era5",
+        "feature_cols": "all",
     },
     "storm_direction_era5": {
         "first_points_only": False,
+        "target_col": "storm_bearing",
+        "feature_cols": "era5",
+    },
+    "storm_direction_era5_first_points": {
+        "first_points_only": True,
         "target_col": "storm_bearing",
         "feature_cols": "era5",
     },
