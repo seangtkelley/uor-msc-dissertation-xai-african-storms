@@ -71,7 +71,7 @@ for target_col in target_cols:
     modelling.wandb_sweep(
         processed_df,
         target_col,
-        feature_cols=config.FEATURE_COLS,
+        feature_cols=config.ALL_FEATURE_COLS,
         trials=args.wandb_sweep_count,
         run_base_name=run_base_name,
         wandb_mode=args.wandb_mode,

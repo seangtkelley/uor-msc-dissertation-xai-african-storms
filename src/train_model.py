@@ -76,12 +76,10 @@ for target_col in target_cols:
     )
 
     # separate features and target variable
-    X, y = modelling.separate_features_and_target(processed_df, target_col)
+    X, y = modelling.get_features_and_target(processed_df, target_col)
 
     # train the model
-    modelling.train_model(
-        X,
-        y,
-        wandb_run=wandb_run,
-        local_output_dir=run_output_dir,
-    )
+    modelling.train_model(X, y, wandb_run=wandb_run)
+
+    # finish the W&B run
+    wandb_run.finish()

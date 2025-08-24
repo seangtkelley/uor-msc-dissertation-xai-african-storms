@@ -111,7 +111,7 @@ ERA5_MET_FEATURE_COLS = [
     "mean_prcp_400",
 ]
 
-FEATURE_COLS = (
+ALL_FEATURE_COLS = (
     [
         "date_angle",
         "eat_hours",
@@ -131,15 +131,17 @@ FEATURE_COLS = (
         "area",
         "storm_max_area",
         "bearing_from_prev",
+        "bearing_to_next",
         "distance_from_prev",
+        "distance_to_next",
         "distance_traversed",
         "storm_bearing",
         "storm_distance_traversed",
         "storm_straight_line_distance",
-        "min_bt",
     ]
     + ERA5_MET_FEATURE_COLS
     + [
+        "min_bt",
         "dmin_bt_dt",
         "mean_bt",
         "dmean_bt_dt",
@@ -150,19 +152,52 @@ FEATURE_COLS = (
     ]
 )
 
-TARGET_COLS = ["mean_prcp_400", "storm_min_bt"]
+TARGET_COLS = [
+    "mean_prcp_400",
+    "storm_min_bt",
+    "storm_bearing",
+    "dmin_bt_dt",
+    "bearing_to_next",
+    "distance_to_next",
+]
 
-DATASET_COLS = ["storm_id", "timestamp"] + FEATURE_COLS
+DATASET_COLS = ["storm_id", "storm_obs_idx", "timestamp"] + ALL_FEATURE_COLS
 
-TARGET_EXCLUDE_COLS = {
+ALL_TARGET_EXCLUDE_COLS = [
+    # storm aggregate features
+    "storm_total_duration",
+    "storm_total_land_time",
+    "storm_max_area",
+    "storm_bearing",
+    "storm_distance_traversed",
+    "storm_straight_line_distance",
+    "storm_min_bt",
+    "storm_min_bt_reached",
+    # future info features
+    "bearing_to_next",
+    "distance_to_next",
+    # features removed due to high correlation with others
+    "mean_swvl2",
+    "olr_75",  # need to justify these two
+    "olr_50",
+]
+
+TARGET_EXCLUDE_COLS_MAP = {
     "mean_prcp_400": [],
     "storm_min_bt": [
         "min_bt",
         "dmin_bt_dt",
         "mean_bt",
         "dmean_bt_dt",
-        "storm_min_bt_reached",
     ],
+    "storm_bearing": ["bearing_from_prev"],
+    "dmin_bt_dt": [
+        "min_bt",
+        "mean_bt",
+        "dmean_bt_dt",
+    ],
+    "bearing_to_next": ["bearing_from_prev"],
+    "distance_to_next": ["distance_from_prev"],
 }
 
 
@@ -215,14 +250,24 @@ WANDB_SWEEP_CONFIG = {
             "min": 0,
             "max": 5,
         },
-        "alpha": {
+        "reg_alpha": {
             "distribution": "uniform",
             "min": 0,
-            "max": 20,
+            "max": 5,
+        },
+        "reg_lambda": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 5,
+        },
+        "colsample_bytree": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 1.0,
         },
         "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
-        "max_depth": {"values": [6]},
-        "n_estimators": {"values": [120]},
+        "max_depth": {"values": [3, 6, 9, 12]},
+        "n_estimators": {"values": [60, 120, 180]},
         "random_state": {"values": [RANDOM_STATE]},
     },
     "early_terminate": {
@@ -233,4 +278,91 @@ WANDB_SWEEP_CONFIG = {
     },
 }
 
-WANDB_DEFAULT_SWEEP_TRIALS = 15
+WANDB_DEFAULT_SWEEP_TRIALS = 20
+
+
+# ==============================================================================
+#                       EXPERIMENT CONFIGURATION
+# ==============================================================================
+EXPERIMENT_CONFIG = {
+    "storm_max_intensity_all": {
+        "first_points_only": False,
+        "target_col": "storm_min_bt",
+        "feature_cols": "all",
+    },
+    "storm_max_intensity_all_first_points": {
+        "first_points_only": True,
+        "target_col": "storm_min_bt",
+        "feature_cols": "all",
+    },
+    "storm_max_intensity_era5": {
+        "first_points_only": False,
+        "target_col": "storm_min_bt",
+        "feature_cols": "era5",
+    },
+    "storm_max_intensity_era5_first_points": {
+        "first_points_only": True,
+        "target_col": "storm_min_bt",
+        "feature_cols": "era5",
+    },
+    "storm_direction_all": {
+        "first_points_only": False,
+        "target_col": "storm_bearing",
+        "feature_cols": "all",
+    },
+    "storm_direction_all_first_points": {
+        "first_points_only": True,
+        "target_col": "storm_bearing",
+        "feature_cols": "all",
+    },
+    "storm_direction_era5": {
+        "first_points_only": False,
+        "target_col": "storm_bearing",
+        "feature_cols": "era5",
+    },
+    "storm_direction_era5_first_points": {
+        "first_points_only": True,
+        "target_col": "storm_bearing",
+        "feature_cols": "era5",
+    },
+    "obs_intensification_all": {
+        "first_points_only": False,
+        "target_col": "dmin_bt_dt",
+        "feature_cols": "all",
+    },
+    "obs_intensification_era5": {
+        "first_points_only": False,
+        "target_col": "dmin_bt_dt",
+        "feature_cols": "era5",
+    },
+    "obs_next_direction_all": {
+        "first_points_only": False,
+        "target_col": "bearing_to_next",
+        "feature_cols": "all",
+    },
+    "obs_next_direction_era5": {
+        "first_points_only": False,
+        "target_col": "bearing_to_next",
+        "feature_cols": "era5",
+    },
+    "obs_next_distance_all": {
+        "first_points_only": False,
+        "target_col": "distance_to_next",
+        "feature_cols": "all",
+    },
+    "obs_next_distance_era5": {
+        "first_points_only": False,
+        "target_col": "distance_to_next",
+        "feature_cols": "era5",
+    },
+    "obs_precipitation_all": {
+        "first_points_only": False,
+        "target_col": "mean_prcp_400",
+        "feature_cols": "all",
+    },
+    "obs_precipitation_era5": {
+        "first_points_only": False,
+        "target_col": "mean_prcp_400",
+        "feature_cols": "era5",
+    },
+}
