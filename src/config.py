@@ -278,7 +278,7 @@ WANDB_SWEEP_CONFIG = {
     },
 }
 
-WANDB_DEFAULT_SWEEP_TRIALS = 15
+WANDB_DEFAULT_SWEEP_TRIALS = 20
 
 
 # ==============================================================================
