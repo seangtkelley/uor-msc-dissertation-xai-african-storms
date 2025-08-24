@@ -3,7 +3,7 @@
 
 The results of the experiments conducted in this study are presented in this chapter. The findings are organized according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will following in Chapter \ref{ch:discuss}.
 
-\section{Dataset Inspection}
+\section{Manual Exploration of Dataset}
 
 \begin{figure}[h]
     \centering
@@ -21,13 +21,15 @@ The results of the experiments conducted in this study are presented in this cha
 
 \section{Experimental Setup}
 
-For each experiment, the model was trained twice: once using all available data and once using only ERA5 meteorological data. This approach allows for a comparison of model performance when utilizing comprehensive data versus a more focused subset of meteorological features.
+For all experiments listed below, two models were trained: once using all available data and once using only ERA5 meteorological data. This approach allows for a comparison of model performance when utilizing comprehensive data versus a more focused subset of meteorological features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only ERA5 data. This setup aims to further evaluate the predictive power of initial storm observations.
 
 \section{Predict Storm Aggregate Features from First Observation}
 
 These experiments aim to predict the overall characteristics of a storm based on its initial observation.
 
 \subsection{Storm Max Intensity}
+
+\subsubsection{All Observations}
 
 \begin{figure}[h]
     \centering
@@ -36,13 +38,33 @@ These experiments aim to predict the overall characteristics of a storm based on
     \label{fig:storm_max_intensity_summary}
 \end{figure}
 
+\subsubsection{First Points Only}
+
+\begin{figure}[h]
+    \centering
+    \missingfigure{2x2 Subplots: Row 1: Actual vs Predicted scatter with regression, Row 2: SHAP beeswarm top features.}
+    \caption{Comparison of performance and top features for storm max intensity (First Points Only).}
+    \label{fig:storm_max_intensity_first_points_summary}
+\end{figure}
+
 \subsection{Storm Direction}
+
+\subsubsection{All Observations}
 
 \begin{figure}[h]
     \centering
     \missingfigure{2x2 Subplots: Row 1: Actual vs Predicted scatter with regression, Row 2: SHAP beeswarm top features.}
     \caption{Comparison of performance and top features for storm direction.}
     \label{fig:storm_direction_summary}
+\end{figure}
+
+\subsubsection{First Points Only}
+
+\begin{figure}[h]
+    \centering
+    \missingfigure{2x2 Subplots: Row 1: Actual vs Predicted scatter with regression, Row 2: SHAP beeswarm top features.}
+    \caption{Comparison of performance and top features for storm direction (First Points Only).}
+    \label{fig:storm_direction_first_points_summary}
 \end{figure}
 
 \subsection{Predict Immediate Characteristics at an Observation}
