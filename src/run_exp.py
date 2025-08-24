@@ -18,6 +18,12 @@ parser.add_argument(
     help="Name of the experiment",
 )
 parser.add_argument(
+    "--trials",
+    type=int,
+    default=config.WANDB_DEFAULT_SWEEP_TRIALS,
+    help="Number of trials for hyperparameter sweep",
+)
+parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
@@ -42,5 +48,6 @@ modelling.run_experiment(
     first_points_only=exp_config["first_points_only"],
     target_col=exp_config["target_col"],
     feature_cols=exp_config["feature_cols"],
+    trials=args.trials,
     wandb_mode=args.wandb_mode,
 )

@@ -28,22 +28,6 @@ import config
 import wandb
 
 
-def setup_run_metadata(exp_name: str) -> str:
-    """
-    Set up the run metadata for the experiment.
-
-    :param exp_name: The experiment name.
-    :return: The run base name.
-    """
-    # set run name with current timestamp
-    run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-
-    # create run base name
-    run_base_name = f"{exp_name}_{run_timestamp_str}"
-
-    return run_base_name
-
-
 def get_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
@@ -265,8 +249,8 @@ def wandb_sweep(
     processed_df: pd.DataFrame,
     target_col: str,
     feature_cols: Iterable[str],
+    run_base_name: str,
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
-    run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
 ):
     """
@@ -275,8 +259,8 @@ def wandb_sweep(
     :param processed_df: The processed DataFrame containing features and target.
     :param target_col: The target column for the model.
     :param feature_cols: The feature columns for the model.
-    :param trials: The number of trials for the sweep.
     :param run_base_name: The base name for the W&B run.
+    :param trials: The number of trials for the sweep.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
     # get prior run names if they exist
@@ -323,6 +307,7 @@ def run_experiment(
     first_points_only: bool,
     target_col: str,
     feature_cols: str | list[str],
+    trials: int,
     wandb_mode: Literal["online", "offline", "disabled"],
 ):
     """
@@ -335,13 +320,14 @@ def run_experiment(
     :param feature_cols: The feature columns for the model.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
-    run_base_name = setup_run_metadata(exp_name)
+    # get data
     df = (
         processed_df.groupby("storm_id").first()
         if first_points_only
         else processed_df
     )
 
+    # set feature columns
     if isinstance(feature_cols, str):
         if feature_cols == "all":
             feature_cols = config.ALL_FEATURE_COLS
@@ -352,10 +338,12 @@ def run_experiment(
     elif isinstance(feature_cols, list):
         feature_cols = feature_cols
 
+    # run W&B sweep
     wandb_sweep(
         processed_df=df,
         target_col=target_col,
         feature_cols=feature_cols,
-        run_base_name=run_base_name,
+        run_base_name=exp_name,
+        trials=trials,
         wandb_mode=wandb_mode,
     )
