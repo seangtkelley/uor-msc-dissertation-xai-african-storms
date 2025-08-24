@@ -1,7 +1,7 @@
 \chapter{Results}
 \label{ch:results}
 
-The results of the experiments conducted in this study are presented in this chapter. The findings are organized according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will following in Chapter \ref{ch:discuss}.
+The results of the experiments conducted in this study are presented in this chapter. The findings are organized according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will follow in Chapter \ref{ch:discuss}.
 
 \section{Manual Exploration of Dataset}
 
@@ -21,9 +21,9 @@ The results of the experiments conducted in this study are presented in this cha
 
 \section{Experimental Setup}
 
-For all experiments listed below, two models were trained: once using all available data and once using only ERA5 meteorological data. This approach allows for a comparison of model performance when utilizing comprehensive data versus a more focused subset of meteorological features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only ERA5 data. This setup aims to further evaluate the predictive power of initial storm observations.
+For all experiments listed below, two models were trained: once using all available features and once using only ERA5 meteorological features. This approach allows for a comparison of model performance when utilising only focused subset of meteorological variables. While it is clear from the manual exploration above that storm location and orography will play a major role, it's possible that those features could confound the effects of other environmental factors like soil moisture or skin temperature. Thus, through this setup, we ensure that one model is exclusively learning from the meteorology. If model performance differs significantly, this would imply that the geographic, topological, or temporal features contain unique information not captured by the meteorological features. Through a comparison of relative feature importance of the meteorological features, we can also gain insights into their interaction with the other features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only ERA5 features. This aspect of the setup aims to evaluate the predictive power of initial storm observations.
 
-\section{Predict Storm Aggregate Features from First Observation}
+\section{Predict Storm Aggregate Features}
 
 These experiments aim to predict the overall characteristics of a storm based on its initial observation.
 
