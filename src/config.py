@@ -250,14 +250,24 @@ WANDB_SWEEP_CONFIG = {
             "min": 0,
             "max": 5,
         },
-        "alpha": {
+        "reg_alpha": {
             "distribution": "uniform",
             "min": 0,
-            "max": 20,
+            "max": 5,
+        },
+        "reg_lambda": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 5,
+        },
+        "colsample_bytree": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 1.0,
         },
         "learning_rate": {"distribution": "uniform", "min": 0, "max": 1.0},
-        "max_depth": {"values": [6]},
-        "n_estimators": {"values": [120]},
+        "max_depth": {"values": [3, 6, 9, 12]},
+        "n_estimators": {"values": [60, 120, 180]},
         "random_state": {"values": [RANDOM_STATE]},
     },
     "early_terminate": {
