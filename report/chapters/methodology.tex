@@ -1,6 +1,29 @@
 \chapter{Methodology}
 \label{ch:method}
 
+\section{Data Collection and Preprocessing}
+
+\subsection{Data Sources}
+
+\begin{itemize}
+    \item \textbf{Database of East African Mesoscale Convective Systems (MCSs)}
+    \begin{itemize}
+        \item File: \texttt{East\_Africa\_tracked\_MCSs\_2014\_2019\_longer\_than\_3\_hours.csv}
+        \item Contains 27,982 storms longer than 3 hours, with all storm centroids along the track within (3--15N, 34--52E)
+    \end{itemize}
+    \item \textbf{ERA5 Data}
+    \begin{itemize}
+        \item ERA5 data for 31--53E, 2--16N region for 2014--2019, totalling 27 GB
+        \item The ERA5 area is slightly wider by a few grid points to account for edge cases in the database and for calculating gradients
+    \end{itemize}
+\end{itemize}
+
+\subsection{Data Cleaning}
+
+\subsection{Feature Engineering}
+
+\subsection{Feature Selection}
+
 \section{Explainable Artificial Intelligence}
 
 \acrfull{xai} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and interpretable. This is particularly important in domains where understanding the rationale behind predictions is crucial, such as healthcare, finance, and meteorology \citep{BarredoArrieta2019,Wiens2019,Zhang2025}. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. A summary of \acrshort{xai} taxonomy is given in Figure \ref{fig:xai-taxonomy}.
@@ -19,3 +42,6 @@ Inherently interpretable models are designed to be transparent by construction, 
 After its popularisation via \cite{Lundberg2017} and the accompanying \texttt{shap} \texttt{python} library, \acrfull{shap} has emerged as one of the most prominent frameworks for post-hoc explainability. This is achieved through the application of coalitional game theory where the algorithm approximates a fair distribution of "payout", in this case a fraction of the model's prediction, among the input features based on their individual contributions to the prediction \citep{Shapley1953}. Formally, the Shapley value for a feature is calculated via the average marginal contribution of that feature across all possible coalitions of features weighted by the probability of the coalition, where a coalition is a subset of features, and the marginal contribution of a feature to a coalition is the difference in the model's prediction when that feature is included versus when it is excluded. This process ensures that each feature's contribution is fairly evaluated by accounting for its interactions with other features. The result is a set of Shapley values for each feature and model output, which can then be used to interpret the model's predictions locally, by highlighting the most influential features for a single output, or globally, by aggregating the Shapley values across multiple predictions to identify overall feature importance.
 
 In practice, this algorithm experiences a \gls{combinatorialexplosion} as features increase, thus, various approximations and optimisations have been developed to make it feasible for larger datasets. For example, \cite{Lundberg2017} present a kernel-based method which operates on the assumption that not all coalitions are equally important in quantifying a features marginal contribution. The application of Shapley values for explaining \acrshort{ml} models was first proposed by \cite{trumbelj2011}, but \cite{Lundberg2017} key contribution was the introduction of an additive feature attribution model, which allows for efficient approximation using a linear model. This approach assumes that the prediction can be expressed as a sum of the feature contributions, making it easier to interpret and visualise. The \texttt{shap} library implements both model-specific and agnostic methods using this framework and provides various tools for visualising Shapley values and their impact on individual predictions and overall model performance.
+
+\subsection{Modelling Approach: XGBoost}
+
