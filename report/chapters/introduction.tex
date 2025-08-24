@@ -1,6 +1,8 @@
 \chapter{Introduction}
 \label{ch:intro}
 
+\section{Mesoscale Convective Systems (MSCs) in the Horn of Africa}
+
 \acrfullpl{mcs} have been shown to account for over 60\% of extreme rainfall in Ethiopia and Somalia \citep{Hill2023}. \explainindetail{actual human effects here, deaths, damages, etc} 
 
 Such large-scale storms often lead to intense flooding, which not only can affect the local population, but also countries as far as Egypt due to the Ethiopian Highlands being a watershed origin for countless rivers including the Blue Nile \citep{Legese2020,Zaroug2014}. 
@@ -20,6 +22,27 @@ The primary challenge in this regard is the traditional \acrfull{nwp} models do 
 In addition, the entire continent of Africa is considerably underrepresented in high-quality meteorological data and many national meteorological services lack critical resources to more effectively monitor and predict \acrshortpl{mcs} \citep{Dinku2019,Kinyondo2018,Meque2021}. This discrepancy also has downstream effects on global meteorology, as reanalysis datasets and digital twin systems rely heavily on data assimilation of observations and regional models for calibration and parametrisation \citep{Linsenmeier2023,Valmassoi2023}. Although the primary remedy would be increased investment and study, 
 
 this discrepancy presents an opportunity for otherwise unorthodox methods to make use of existing data to improve predictions and understanding of \acrshortpl{mcs}.
+
+\section{Explainable Artificial Intelligence for Convective Systems}
+
+% one paragraph
+Main surveys:
+\begin{itemize}
+    \item \href{https://www.sciencedirect.com/science/article/pii/S1352231024004722}{Interpretable machine learning for weather and climate prediction: A review}
+    \item \href{https://link.springer.com/chapter/10.1007/978-3-031-04083-2_16#Sec2}{Explainable Artificial Intelligence in Meteorology and Climate Science: Model Fine-Tuning, Calibrating Trust and Learning New Science}
+\end{itemize}
+\begin{itemize}
+    \item Layer-wise Relevance Propagation (LRP) in Tropical Cyclone Intensity and Size Estimation \insertref{\href{https://www.scopus.com/pages/publications/851092020842}{source}}.
+    \item Paleoclimate reconstruction of Indian monsoon: \insertref{\href{https://cp.copernicus.org/articles/21/1/2025/}{source}}.
+    \item Predicting rainfall extremes in Africa: \insertref{\href{https://www.sciencedirect.com/science/article/abs/pii/B9780443288678000046}{source}}.
+    \begin{itemize}
+        \item not explicitly XAI, but they did use interpretable models like xgboost
+    \end{itemize}
+\end{itemize}
+
+The main inspiration for the methodology employed in this thesis comes from \cite{Hunt2024}'s investigation of interpretable gradient-boosted decision-trees for uncovering dynamical relationships governing \gls{indianmonsoon} \acrfull{lps}. They first utilise a tracking algorithm to assemble a database of \acrshort{lps} storm tracks from \acrshort{era5} data. Using the storm centroids along each track, they extract a set of meteorological features from the surrounding \acrshort{era5} data as well as invariant but meaningful features like orographic elevation under the centroid. These features are then used to train a gradient-boosted decision tree model to predict specific storm characteristics, like mean precipitation or peak vorticity. The model is then interpreted using \acrshort{shap} values to not only identify the most important features, but also reveal how feature importance changes relative to geography. The authors posit several notable results including the observation that processes affecting intensification differ from those affecting peak intensity and also confirm existing research that mid-level winds are relevant for predicting storm speed and direction. This methodology is particularly compelling as it also offers a framework that could be adapted for other regions and storm types with the only pre-requisite being high quality storm track data. Such data does already exist in some cases (e.g. the European Windstorm Catalogue \citep{Roberts2014}), but \cite{Hunt2024} show that, for certain storm types, the tracks can be derived from reanalysis data.
+
+However, there are also many additional avenues for exploration, especially leveraging the explanatory power of \acrshort{shap} values. For example, \cite{Hunt2024} primarily focus on the model's ability to capture the relationships between features and storm characteristics, but do not explore the model's ability to predict storm tracks or propagation. While interpretable \acrshort{ml} techniques pale in comparison to traditional \acrfull{nwp} models, their insights may be able to aid with sub-grid parametrisation or facilitate the planning of new observational networks in data-scarce and computationally limited regions like Africa. Furthermore, while \cite{Hunt2024} do take great care to justify the inclusion of each feature and remove those that are highly correlated, they do not explore the possibility of direct comparison between models trained with different feature sets. This could be useful in disentangling the relative importance of meteorological and geographical features, which may often work in concert or direct opposition, such as wind angle and orography. Thus, this thesis aims to build upon their work by exploring these additional avenues and further investigating the potential of interpretable \acrshort{ml} techniques for understanding and predicting storm behaviour.
 
 \section{Research Objectives}
 
