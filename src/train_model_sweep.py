@@ -32,17 +32,17 @@ parser.add_argument(
     help="Comma-separated list of the target columns in the dataset",
 )
 parser.add_argument(
+    "--trials",
+    type=int,
+    default=config.WANDB_DEFAULT_SWEEP_TRIALS,
+    help="Number of runs for the W&B sweep",
+)
+parser.add_argument(
     "--wandb_mode",
     type=str,
     choices=["online", "offline", "disabled"],
     default="disabled",
     help="Mode for W&B logging",
-)
-parser.add_argument(
-    "--wandb_sweep_count",
-    type=int,
-    default=config.WANDB_DEFAULT_SWEEP_TRIALS,
-    help="Number of runs for the W&B sweep",
 )
 args = parser.parse_args()
 
@@ -66,13 +66,11 @@ for target_col in target_cols:
     if target_col not in config.TARGET_COLS:
         raise ValueError(f"Invalid target column: {target_col}")
 
-    run_output_dir, run_base_name = modelling.setup_run_metadata(target_col)
-
     modelling.wandb_sweep(
         processed_df,
         target_col,
         feature_cols=config.ALL_FEATURE_COLS,
-        trials=args.wandb_sweep_count,
-        run_base_name=run_base_name,
+        run_base_name=f"{target_col}_all",
+        trials=args.trials,
         wandb_mode=args.wandb_mode,
     )
