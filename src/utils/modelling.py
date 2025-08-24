@@ -28,18 +28,18 @@ import config
 import wandb
 
 
-def setup_run_metadata(target_col: str) -> str:
+def setup_run_metadata(exp_name: str) -> str:
     """
     Set up the run metadata for the experiment.
 
-    :param target_col: The target column for the experiment.
+    :param exp_name: The experiment name.
     :return: The run base name.
     """
     # set run name with current timestamp
     run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
 
     # create run base name
-    run_base_name = f"{target_col}_{run_timestamp_str}"
+    run_base_name = f"{exp_name}_{run_timestamp_str}"
 
     return run_base_name
 
@@ -325,7 +325,7 @@ def run_experiment(
     :param feature_cols: The feature columns for the model.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
-    run_base_name = setup_run_metadata(target_col)
+    run_base_name = setup_run_metadata(exp_name)
     df = (
         processed_df.groupby("storm_id").first()
         if first_points_only
