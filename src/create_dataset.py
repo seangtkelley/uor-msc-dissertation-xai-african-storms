@@ -158,25 +158,107 @@ if should_recalc("storm_max_area", processed_df.columns):
     ].transform("max")
 
 if should_recalc(
-    ["over_land", "acc_land_time", "storm_total_land_time", "mean_land_frac"],
+    [
+        "over_land",
+        "acc_land_time",
+        "storm_total_land_time",
+        "mean_land_frac",
+        "mean_land_skt",
+        "mean_sst",
+        "mean_swvl1",
+        "mean_swvl2",
+    ],
     processed_df.columns,
 ):
-    print("Calculating land mask features...")
-
+    print("Loading land mask dataset...")
     # load the land mask dataset
     lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
 
-    # calculate over land features
-    processed_df = processing.calc_over_land_features(processed_df, lsm)
+    if should_recalc(
+        [
+            "over_land",
+            "acc_land_time",
+            "storm_total_land_time",
+            "mean_land_frac",
+        ],
+        processed_df.columns,
+    ):
+        print("Calculating land mask features...")
+        # calculate over land features
+        processed_df = processing.calc_over_land_features(processed_df, lsm)
 
-    # calculate the land fraction
-    processed_df["mean_land_frac"] = np.nan
-    processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
-        lambda row: processing.calc_spatiotemporal_agg_at_point(
-            row["timestamp"], row["lon"], row["lat"], lsm, "lsm", invariant=True
-        ),
-        axis=1,
-    )
+        # calculate the land fraction
+        processed_df["mean_land_frac"] = np.nan
+        processed_df["mean_land_frac"] = processed_df.parallel_apply(  # type: ignore
+            lambda row: processing.calc_spatiotemporal_agg_at_point(
+                row["timestamp"],
+                row["lon"],
+                row["lat"],
+                lsm,
+                "lsm",
+                invariant=True,
+            ),
+            axis=1,
+        )
+
+    if should_recalc(
+        ["mean_land_skt", "mean_sst", "mean_swvl1", "mean_swvl2"],
+        processed_df.columns,
+    ):
+        # convert land sea mask dataset to boolean mask
+        land_mask = (
+            lsm["lsm"]
+            .isel(valid_time=0)
+            .squeeze()
+            .drop_vars("valid_time")
+            .round()
+            .astype(bool)
+        )
+
+        if should_recalc("mean_land_skt", processed_df.columns):
+            print("Calculating mean land skin temperature...")
+            processed_df = processing.calc_spatiotemporal_agg(
+                processed_df,
+                "skt_sfc_",
+                "skt",
+                "mean_land_skt",
+                mask=land_mask,
+                variable_bounds=config.EARTH_TEMP_BOUNDS,
+            )
+
+        if should_recalc("mean_sst", processed_df.columns):
+            print("Calculating mean sea surface temperature...")
+
+            processed_df = processing.calc_spatiotemporal_agg(
+                processed_df,
+                "sst_sfc_",
+                "sst",
+                "mean_sst",
+                mask=~land_mask,  # invert mask for sea surface temperature
+                variable_bounds=config.EARTH_TEMP_BOUNDS,
+            )
+
+        if should_recalc("mean_swvl1", processed_df.columns):
+            print("Calculating mean volumetric soil moisture layer 1...")
+
+            processed_df = processing.calc_spatiotemporal_agg(
+                processed_df,
+                "swvl1_d1_",
+                "swvl1",
+                "mean_swvl1",
+                mask=land_mask,
+            )
+
+        if should_recalc("mean_swvl2", processed_df.columns):
+            print("Calculating mean volumetric soil moisture layer 2...")
+
+            processed_df = processing.calc_spatiotemporal_agg(
+                processed_df,
+                "swvl2_d2_",
+                "swvl2",
+                "mean_swvl2",
+                mask=land_mask,
+            )
 
     # close dataset
     lsm.close()
@@ -253,58 +335,6 @@ if should_recalc("mean_prcp_400", processed_df.columns):
         unit_conv_func=lambda x: x * 1000.0,
     )
 
-if should_recalc("mean_land_skt", processed_df.columns):
-    print("Calculating mean land skin temperature...")
-
-    # load the land sea mask
-    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
-    land_mask = (
-        lsm["lsm"]
-        .isel(valid_time=0)
-        .squeeze()
-        .drop_vars("valid_time")
-        .round()
-        .astype(bool)
-    )
-
-    processed_df = processing.calc_spatiotemporal_agg(
-        processed_df,
-        "skt_sfc_",
-        "skt",
-        "mean_land_skt",
-        mask=land_mask,
-        variable_bounds=config.EARTH_TEMP_BOUNDS,
-    )
-
-    # close dataset
-    lsm.close()
-
-if should_recalc("mean_sst", processed_df.columns):
-    print("Calculating mean sea surface temperature...")
-
-    # load the land sea mask
-    lsm = xr.open_dataset(config.DATA_DIR / "std" / "lsm.nc")
-    land_mask = (
-        lsm["lsm"]
-        .isel(valid_time=0)
-        .squeeze()
-        .drop_vars("valid_time")
-        .round()
-        .astype(bool)
-    )
-
-    processed_df = processing.calc_spatiotemporal_agg(
-        processed_df,
-        "sst_sfc_",
-        "sst",
-        "mean_sst",
-        mask=~land_mask,  # invert mask for sea surface temperature
-        variable_bounds=config.EARTH_TEMP_BOUNDS,
-    )
-
-    # close dataset
-    lsm.close()
-
 if should_recalc("mean_skt", processed_df.columns):
     print("Calculating mean skin temperature...")
 
@@ -345,26 +375,6 @@ for level in pressure_levels:
             squeeze_dims=["pressure_level"],
             fillna_val=0.0,
         )
-
-if should_recalc("mean_swvl1", processed_df.columns):
-    print("Calculating mean volumetric soil moisture layer 1...")
-
-    processed_df = processing.calc_spatiotemporal_agg(
-        processed_df,
-        "swvl1_d1_",
-        "swvl1",
-        "mean_swvl1",
-    )
-
-if should_recalc("mean_swvl2", processed_df.columns):
-    print("Calculating mean volumetric soil moisture layer 2...")
-
-    processed_df = processing.calc_spatiotemporal_agg(
-        processed_df,
-        "swvl2_d2_",
-        "swvl2",
-        "mean_swvl2",
-    )
 
 for level in pressure_levels:
     if should_recalc(f"mean_q_{level}", processed_df.columns):
