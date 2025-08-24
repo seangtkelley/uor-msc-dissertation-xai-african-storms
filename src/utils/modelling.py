@@ -279,11 +279,21 @@ def wandb_sweep(
     :param run_base_name: The base name for the W&B run.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
+    # get prior run names if they exist
+    prior_runs = wandb.Api().runs(
+        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
+        filters={"displayName": {"$regex": f"^{run_base_name}"}},
+    )
+    prior_run_ids = (
+        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
+    )
+
     # init W&B sweep
     sweep_id = wandb.sweep(
         config.WANDB_SWEEP_CONFIG,
         entity=config.WANDB_ENTITY,
         project=config.WANDB_PROJECT,
+        prior_runs=prior_run_ids,
     )
 
     # separate features and target
