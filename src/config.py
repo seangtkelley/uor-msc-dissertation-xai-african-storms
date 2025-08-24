@@ -305,42 +305,42 @@ EXPERIMENT_CONFIG = {
         "target_col": "storm_bearing",
         "feature_cols": "era5",
     },
-    "point_intensification_all": {
+    "obs_intensification_all": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "all",
     },
-    "point_intensification_era5": {
+    "obs_intensification_era5": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "era5",
     },
-    "point_next_direction_all": {
+    "obs_next_direction_all": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "all",
     },
-    "point_next_direction_era5": {
+    "obs_next_direction_era5": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "era5",
     },
-    "point_next_distance_all": {
+    "obs_next_distance_all": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "all",
     },
-    "point_next_distance_era5": {
+    "obs_next_distance_era5": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "era5",
     },
-    "point_precipitation_all": {
+    "obs_precipitation_all": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "all",
     },
-    "point_precipitation_era5": {
+    "obs_precipitation_era5": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "era5",

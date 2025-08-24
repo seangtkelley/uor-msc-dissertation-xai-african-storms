@@ -11,17 +11,17 @@ PYTHON_PATH="$HOME/.conda/envs/uor-msc-dissertation-xai-african-storms/bin/pytho
 
 # names of experiments to run separated by new lines
 EXPERIMENTS="storm_max_intensity_all
-storm_max_intensity_era5
-storm_direction_all
-storm_direction_era5
-point_intensification_all
-point_intensification_era5
-point_next_direction_all
-point_next_direction_era5
-point_next_distance_all
-point_next_distance_era5
-point_precipitation_all
-point_precipitation_era5"
+storm_max_intensity_era5"
+# storm_direction_all
+# storm_direction_era5
+# obs_intensification_all
+# obs_intensification_era5
+# obs_next_direction_all
+# obs_next_direction_era5
+# obs_next_distance_all
+# obs_next_distance_era5
+# obs_precipitation_all
+# obs_precipitation_era5"
 
 EXPERIMENT_COUNT=$(echo "$EXPERIMENTS" | wc -l)
 
