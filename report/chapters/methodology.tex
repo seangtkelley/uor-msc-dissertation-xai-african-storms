@@ -18,17 +18,56 @@
     \end{itemize}
 \end{itemize}
 
-\subsection{Data Cleaning}
-
 \subsection{Feature Engineering}
+
+\begin{itemize}
+    \item cleaning
+    \item means over 400km
+    \item domain means
+    \item storm aggregate features
+\end{itemize}
 
 \subsection{Feature Selection}
 
-\section{Explainable Artificial Intelligence}
+\begin{itemize}
+    \item highly correlated features removed
+    \item data leakage prevention measures implemented
+    \begin{itemize}
+        \item related features
+        \item features with info from future
+    \end{itemize}
+\end{itemize}
+
+\section{Modelling Approach}
+
+\subsection{XGBoost}
+
+\begin{itemize}
+    \item general explanation of XGBoost
+    \item advantages of using XGBoost for this task
+\end{itemize}
+
+\subsection{Hyperparameter Tuning}
+
+\begin{itemize}
+    \item Weights \& Biases sweep with Bayesian optimization
+    \item cross-validation for training on each trial
+\end{itemize}
+
+\subsection{Performance Comparison}
+
+\begin{itemize}
+    \item compare performance metrics (e.g., accuracy, F1 score) across different models
+    \item analyse discrepancies in performance across different feature sets
+    \item analyse average performance across different regions and time periods? \todo{if no time, this is for future work section}
+\end{itemize}
+
+\section{Model Explainability}
+\todo{copied from background; will need to be adapted}
 
 \acrfull{xai} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and interpretable. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. A summary of \acrshort{xai} taxonomy is given in Figure \ref{fig:xai-taxonomy}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/static/xai-taxonomy.jpg}
     \caption{\acrshort{xai} Taxonomy \citep{Molnar2025}}
@@ -43,5 +82,12 @@ After its popularisation via \cite{Lundberg2017} and the accompanying \texttt{sh
 
 In practice, this algorithm experiences a \gls{combinatorialexplosion} as features increase, thus, various approximations and optimisations have been developed to make it feasible for larger datasets. For example, \cite{Lundberg2017} present a kernel-based method which operates on the assumption that not all coalitions are equally important in quantifying a features marginal contribution. The application of Shapley values for explaining \acrshort{ml} models was first proposed by \cite{trumbelj2011}, but \cite{Lundberg2017} key contribution was the introduction of an additive feature attribution model, which allows for efficient approximation using a linear model. This approach assumes that the prediction can be expressed as a sum of the feature contributions, making it easier to interpret and visualise. The \texttt{shap} library implements both model-specific and agnostic methods using this framework and provides various tools for visualising Shapley values and their impact on individual predictions and overall model performance.
 
-\subsection{Modelling Approach: XGBoost}
+\begin{itemize}
+    \item use shap values to identify key features driving model predictions
+\end{itemize}
 
+\subsection{Geographic and Temporal Distribution of Feature Importance}
+
+\begin{itemize}
+    \item find highest correlation (or other relation measure) of shap values to lon, lat, eat hours, and date angle to analyse feature importance across different regions and time periods
+\end{itemize}
