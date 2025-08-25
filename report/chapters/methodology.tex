@@ -109,12 +109,4 @@ After its popularisation via \cite{Lundberg2017} and the accompanying \texttt{sh
 
 In practice, this algorithm experiences a \gls{combinatorialexplosion} as features increase, thus, various approximations and optimisations have been developed to make it feasible for larger datasets. For example, \cite{Lundberg2017} present a kernel-based method which operates on the assumption that not all coalitions are equally important in quantifying a features marginal contribution. The application of Shapley values for explaining \acrshort{ml} models was first proposed by \cite{trumbelj2011}, but \cite{Lundberg2017} key contribution was the introduction of an additive feature attribution model, which allows for efficient approximation using a linear model. This approach assumes that the prediction can be expressed as a sum of the feature contributions, making it easier to interpret and visualise. The \texttt{shap} library implements both model-specific and agnostic methods using this framework and provides various tools for visualising Shapley values and their impact on individual predictions and overall model performance.
 
-\begin{itemize}
-    \item use shap values to identify key features driving model predictions
-\end{itemize}
-
-\subsection{Geographic and Temporal Distribution of Feature Importance}
-
-\begin{itemize}
-    \item find highest correlation (or other relation measure) of shap values to lon, lat, eat hours, and date angle to analyse feature importance across different regions and time periods
-\end{itemize}
+In this thesis, \acrshort{shap} is primarily used to as a global explanation method. The goal is to identify the most important features driving model predictions across the entire dataset. This is achieved by calculating the mean absolute Shapley value for each feature across all predictions, which provides a measure of overall feature importance. The results are visualised using summary plots to simultaneously convey both the magnitude and direction of each feature's impact on the model's predictions. In addition, the spatial and temporal distribution of feature importance will be analysed to identify any regional or temporal patterns in the model's behaviour. Potential candidate features will be identified by correlating Shapley values with observation coordinates and timestamps. Top candidates will be analysed by mapping their Shapley values across the study region and time period. Such analyses are aimed to uncover which features are most dependent on location and time, potentially revealing underlying physical relationships captured by the model.
