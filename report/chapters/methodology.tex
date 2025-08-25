@@ -52,14 +52,26 @@ In this thesis, \acrfull{xgb} is the modelling framework employed for this super
 
 Additionally, cross-validation is utilised during training on each trial to ensure that the model's performance is robust and not overly dependent on a specific subset of the data. Specifically, the dataset is first split into a training set and a test set to ensure that some data remains completely unseen throughout the training process. Then, within the training set, k-fold cross-validation is applied, where the dataset is divided into k subsets and the model is trained and validated k times, each time using a different subset as the validation set and the remaining subsets for training. Once all folds are complete, the best performing model is chosen as the result of the trial. This method provides a more reliable estimate of model performance on the given hyperparameters \insertref{cross val performance}\todo{better desc/wording}.
 
-The hyperparameters tuned are included in Table \ref{tab:wandb-sweep-config}.
+The specific hyperparameters tuned and the corresponding values or distributions used for the sweep are included in Table \ref{tab:wandb-sweep-config}. The remaining hyperparameters were kept at their default values as defined in the \acrshort{xgb} Python implementation \insertref{need a link to xgb docs here?}.
 
-\begin{figure}[ht]
+\begin{table}[!ht]
     \centering
-    \missingfigure{Table of hyperparameter tuning configuration.}
-    \caption{\acrshort{wandb} Sweep Configuration for \acrshort{xgb} Hyperparameter Tuning.}
+    \caption{\acrshort{wandb} Sweep Configuration for \acrshort{xgb} Hyperparameter Tuning. The names in this table refer to the hyperparameter names for the Scikit-Learn wrapper interface for \acrshort{xgb}. A full description of each hyperparameter can be found in the \href{https://xgboost.readthedocs.io/en/stable/python/python_api.html\#module-xgboost.sklearn}{XGBoost documentation}.}
     \label{tab:wandb-sweep-config}
-\end{figure}
+    \begin{tabular}{llr}     
+        \toprule
+        \textbf{Hyperparameter} & \textbf{Values / Distribution} \\ 
+        \midrule
+        Gamma ($\gamma$) & Uniform[0, 5] \\
+        Regularisation Alpha ($\alpha$) & Uniform[0, 5] \\
+        Regularisation Lambda ($\lambda$) & Uniform[0, 5] \\
+        Column Subsample by Tree & Uniform[0, 1.0] \\
+        Learning Rate & Uniform[0, 1.0] \\
+        Max Depth & \{3, 6, 9, 12\} \\
+        Number of Estimators & \{60, 120, 180\} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \subsection{Performance Comparison}
 
