@@ -48,9 +48,18 @@ In this thesis, \acrfull{xgb} is the modelling framework employed for this super
 
 \subsection{Hyperparameter Tuning}
 
-\acrshort{xgb} provides a myriad of hyperparameters that can be adjusted to optimise model performance. These include parameters controlling the learning rate, tree depth, number of trees, and regularisation terms, among others. The choice of hyperparameters can significantly impact the model's ability to generalise to unseen data. Therefore, a systematic approach to hyperparameter tuning is essential. In this thesis, hyperparameter tuning is conducted using \acrfull{wandb}, a popular web-based tool for tracking and visualising \acrshort{ml} experiments \insertref{wandb}. Specifically, a sweep with Bayesian optimisation is employed to efficiently explore the hyperparameter space and identify optimal configurations. Bayesian optimisation is particularly well-suited for this task as it builds a probabilistic model of the objective function and uses it to select the most promising hyperparameters to evaluate next \insertref{bayes opt}\todo{better desc/wording}. This approach balances exploration and exploitation, allowing for a more efficient search compared to grid or random search methods \insertref{probably same as last one}. The 
+\acrshort{xgb} provides a myriad of hyperparameters that can be adjusted to optimise model performance. These include parameters controlling the learning rate, tree depth, number of trees, and regularisation terms, among others. The choice of hyperparameters can significantly impact the model's ability to generalise to unseen data. Therefore, a systematic approach to hyperparameter tuning is essential. In this thesis, hyperparameter tuning is conducted using \acrfull{wandb}, a popular web-based tool for tracking and visualising \acrshort{ml} experiments \insertref{wandb}. Specifically, a sweep with Bayesian optimisation is employed to efficiently explore the hyperparameter space and identify optimal configurations. Bayesian optimisation is particularly well-suited for this task as it builds a probabilistic model of the objective function and uses it to select the most promising hyperparameters to evaluate next \insertref{bayes opt}\todo{better desc/wording}. This approach balances exploration and exploitation, allowing for a more efficient search compared to grid or random search methods \insertref{probably same as last one}.
 
 Additionally, cross-validation is utilised during training on each trial to ensure that the model's performance is robust and not overly dependent on a specific subset of the data. Specifically, the dataset is first split into a training set and a test set to ensure that some data remains completely unseen throughout the training process. Then, within the training set, k-fold cross-validation is applied, where the dataset is divided into k subsets and the model is trained and validated k times, each time using a different subset as the validation set and the remaining subsets for training. Once all folds are complete, the best performing model is chosen as the result of the trial. This method provides a more reliable estimate of model performance on the given hyperparameters \insertref{cross val performance}\todo{better desc/wording}.
+
+The hyperparameters tuned are included in Table \ref{tab:wandb-sweep-config}.
+
+\begin{figure}[ht]
+    \centering
+    \missingfigure{Table of hyperparameter tuning configuration.}
+    \caption{\acrshort{wandb} Sweep Configuration for \acrshort{xgb} Hyperparameter Tuning.}
+    \label{tab:wandb-sweep-config}
+\end{figure}
 
 \subsection{Performance Comparison}
 
