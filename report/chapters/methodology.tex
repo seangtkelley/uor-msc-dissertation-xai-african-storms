@@ -1,7 +1,9 @@
 \chapter{Methodology}
 \label{ch:method}
 
-\section{Data Collection and Preprocessing}
+This section details the methodology employed in this research. The approach is structured into several key components: data collection and processing, the modelling approach, and model explainability.
+
+\section{Data Collection and Processing}
 
 \subsection{Data Sources}
 
@@ -48,7 +50,11 @@ In this thesis, \acrfull{xgb} is the modelling framework employed for this super
 
 \subsection{Hyperparameter Tuning}
 
-\acrshort{xgb} provides a myriad of hyperparameters that can be adjusted to optimise model performance. These include parameters controlling the learning rate, tree depth, number of trees, and regularisation terms, among others. The choice of hyperparameters can significantly impact the model's ability to generalise to unseen data. Therefore, a systematic approach to hyperparameter tuning is essential. In this thesis, hyperparameter tuning is conducted using \acrfull{wandb}, a popular web-based tool for tracking and visualising \acrshort{ml} experiments \insertref{wandb}. Specifically, a sweep with Bayesian optimisation is employed to efficiently explore the hyperparameter space and identify optimal configurations. Bayesian optimisation is particularly well-suited for this task as it builds a probabilistic model of the objective function and uses it to select the most promising hyperparameters to evaluate next \insertref{bayes opt}\todo{better desc/wording}. This approach balances exploration and exploitation, allowing for a more efficient search compared to grid or random search methods \insertref{probably same as last one}.
+\acrshort{xgb} provides a myriad of hyperparameters that can be adjusted to optimise model performance. These include parameters controlling the learning rate, tree depth, number of trees, and regularisation terms, among others. The choice of hyperparameters can significantly impact the model's ability to generalise to unseen data. Therefore, a systematic approach to hyperparameter tuning is essential. 
+
+In this thesis, hyperparameter tuning is conducted using \acrfull{wandb}, a popular web-based tool for tracking and visualising \acrshort{ml} experiments \insertref{wandb}. Specifically, Bayesian optimisation is employed to efficiently explore the hyperparameter space and identify optimal configurations. Bayesian optimisation is particularly well-suited for this task as it builds a probabilistic model of the cost function and uses it to select the most promising hyperparameters to evaluate next \insertref{bayes opt}\todo{better desc/wording}. This approach balances exploration and exploitation, allowing for a more efficient search compared to grid or random search methods \insertref{probably same as last one}. 
+
+For regression tasks, many metrics can be used to evaluate model performance. In this thesis, \acrfull{rmse} is used because, by square rooting the mean of the squared errors, it provides a measure of error in the same units as the original predictions and is therefore more interpretable. Thus, Bayesian optimisation is set to minimise the validation \acrshort{rmse} during hyperparameter tuning. By default, \acrshort{wandb} sweeps will continue until manually stopped unless a maximum trial count is provided. For this thesis, a maximum trial count of 20 is used. \todo{this value might change}
 
 Additionally, cross-validation is utilised during training on each trial to ensure that the model's performance is robust and not overly dependent on a specific subset of the data. Specifically, the dataset is first split into a training set and a test set to ensure that some data remains completely unseen throughout the training process. Then, within the training set, k-fold cross-validation is applied, where the dataset is divided into k subsets and the model is trained and validated k times, each time using a different subset as the validation set and the remaining subsets for training. Once all folds are complete, the best performing model is chosen as the result of the trial. This method provides a more reliable estimate of model performance on the given hyperparameters \insertref{cross val performance}\todo{better desc/wording}.
 
@@ -74,6 +80,8 @@ The specific hyperparameters tuned and the corresponding values or distributions
 \end{table}
 
 \subsection{Performance Comparison}
+
+Once the 
 
 \begin{itemize}
     \item compare performance metrics test RMSE across different models
