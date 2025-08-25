@@ -40,13 +40,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if args.target_all and args.target_col_name is not None:
-    parser.error("--target_all cannot be used with --target_col_name")
-elif not args.target_all and args.target_col_name is None:
-    parser.error(
-        "--target_col_name must be specified if --target_all is not used"
-    )
-
 # load the processed dataset
 print("Loading processed dataset...")
 processed_df = pd.read_csv(
@@ -67,21 +60,17 @@ for target_col in target_cols:
     if target_col not in config.TARGET_COLS:
         raise ValueError(f"Invalid target column: {target_col}")
 
-    run_output_dir, run_base_name = modelling.setup_run_metadata(target_col)
-
     # init Weights & Biases
     wandb_run = modelling.init_wandb(
-        run_name_base=run_base_name,
+        run_name_base=f"{target_col}_all",
         wandb_mode=args.wandb_mode,
     )
 
     # separate features and target variable
-    X, y = modelling.separate_features_and_target(processed_df, target_col)
+    X, y = modelling.get_features_and_target(processed_df, target_col)
 
     # train the model
-    modelling.train_model(
-        X,
-        y,
-        wandb_run=wandb_run,
-        local_output_dir=run_output_dir,
-    )
+    modelling.train_model(X, y, wandb_run=wandb_run)
+
+    # finish the W&B run
+    wandb_run.finish()
