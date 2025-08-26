@@ -3,28 +3,48 @@
 
 This section details the methodology employed in this research. The approach is structured into several key components: data collection and processing, the modelling approach, and model explainability.
 
-\section{Data Collection and Processing}
+\section{Data}
 
-\subsection{Data Sources}
+\subsection{Database of East African Mesoscale Convective Systems (MCSs)}
 
-\subsubsection{Database of East African Mesoscale Convective Systems (MCSs)}
+In their paper, \cite{Hill2023} used a variant of the "simple-track"\footnote{\href{https://github.com/thmstein/simple-track}{https://github.com/thmstein/simple-track}} object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019. The tracking algorithm identifies contiguous areas of cloud top brightness temperature (BT)\todo{acronym, especially to help table below?} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each MCS, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
 
-\begin{itemize}
-    \item File: \texttt{East\_Africa\_tracked\_MCSs\_2014\_2019\_longer\_than\_3\_hours.csv}
-    \item Contains 27,982 storms longer than 3 hours, with all storm centroids along the track within (3--15N, 34--52E)
-\end{itemize}
+From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must be longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of (\degN{3} - \degN{15}, \degE{34} - \degE{52}). The 3-hour threshold was chosen because storms of this duration account for 92\% of MCS precipitation \citep{Hill2023}.
 
-\subsubsection{ERA5 Data}
+\subsection{ERA5 Data}
 
-\begin{itemize}
-    \item ERA5 data for 31--53E, 2--16N region for 2014--2019, totalling 27 GB
-    \item The ERA5 area is slightly wider by a few grid points to account for edge cases in the database and for calculating gradients
-\end{itemize}
+\acrfull{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering (\degN{2} - \degN{16}, \degE{31} - \degE{53}). This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation.
+
+\begin{table}[ht]
+    \centering
+    \caption{ERA5 Data File Patterns, Descriptions, and Units}
+    \label{tab:era5-file-patterns}
+    \begin{tabular}{p{0.25\linewidth} p{0.45\linewidth} p{0.2\linewidth}}
+        \toprule
+        File Pattern & Description & Units/Notes \\
+        \midrule
+        \texttt{cape\_0\_*.nc} & Convective available potential energy & \unit{\joule\per\kilogram} \\
+        \texttt{olr\_toa\_*.nc} & Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) & \unit{\watt\per\meter\squared} \\
+        \texttt{prcp\_tot\_*.nc} & Thickness of rainfall amount (hourly accumulations) & \unit{\meter} \\
+        \texttt{rhum\_*\_*.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} (used for theta e calculations) \\
+        \texttt{shum\_*\_*.nc} & Specific humidity at 200, 500, 850 \unit{\hecto\pascal} & \unit{\kilogram\per\kilogram} \\
+        \texttt{skt\_sfc\_*.nc} & Surface temperature on land & \unit{\kelvin} \\
+        \texttt{sst\_sfc\_*.nc} & Sea surface temperature & \unit{\kelvin} \\
+        \texttt{swvl1\_d1\_*.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
+        \texttt{swvl2\_d2\_*.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
+        \texttt{ta\_*\_*.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
+        \texttt{tcwv\_tot\_*.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (total column water vapour) \\
+        \texttt{thetae\_*\_*.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
+        \texttt{uwnd\_*\_*.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
+        \texttt{vwnd\_*\_*.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 
 \subsection{Feature Engineering and Selection}
 
-Table \ref{tab:features} describes the X features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the MCS centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire study domain (31--53E, 2--16N) and are also instantaneous unless otherwise specified. The 400 km radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the grid points corresponding to the storm centroids.
+Table \ref{tab:features} describes the X features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the MCS centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire domain of the \acrshort{era5} and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the grid points corresponding to the storm centroids.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.33\linewidth} p{0.42\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
@@ -51,8 +71,8 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{date\_angle} & Angle representation of current date within year & \unit{\degree} \\
     \texttt{eat\_hours} & Time step hour of day & \href{https://www.timeanddate.com/time/zones/eat}{Eastern Africa Time} (UTC+3) \\
     \texttt{storm\_total\_duration} & Total duration of MCS & \unit{\hour} \\
-    \texttt{lon} & Longitude of MCS centre & \unit{\degree} E \\
-    \texttt{lat} & Latitude of MCS centre & \unit{\degree} N \\
+    \texttt{lon} & Longitude of MCS centre & \unit{\degree}E \\
+    \texttt{lat} & Latitude of MCS centre & \unit{\degree}N \\
     \texttt{orography\_height} & Elevation of land surface at MCS centre & \unit{\meter} \\
     \texttt{anor} & Angle of sub-gridscale orography at MCS centre & radians from East \\
     \texttt{upslope\_bearing} & Compass bearing of upslope direction at MCS centre & \unit{\degree} from  N \\
@@ -93,9 +113,9 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} (wind is going upslope: \ang{0}, downslope: \ang{180}, cross-slope: \ang{90}, \ang{270}) & \unit{\degree} from \texttt{upslope\_bearing} \\
     \texttt{mean\_tcwv} & Total column water vapour (TCWV) & \unit{\kilogram\per\meter\squared} \\
     \texttt{domain\_mean\_tcwv} & Mean TCWV over the entire domain of ERA5 data & \unit{\kilogram\per\meter\squared} \\
-    \texttt{mean\_q\_850} & 850 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
-    \texttt{mean\_q\_500} & 500 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
-    \texttt{mean\_q\_200} & 200 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_q\_850} & \SI{850}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_q\_500} & \SI{500}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_q\_200} & \SI{200}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
     \texttt{mean\_cape} & Convective available potential energy (CAPE) & \unit{\joule\per\kilogram} \\
     \texttt{domain\_mean\_cape} & Mean CAPE over the entire domain of ERA5 data & \unit{\joule\per\kilogram} \\
     \texttt{olr\_90} & 90th percentile of negative outgoing longwave radiation (OLR) within 400 km & \unit{\watt\per\square\meter} \\
