@@ -62,7 +62,6 @@ The following are the minimum required settings needed to compile the `thesis.te
             "-1",
             "-merge",
             "chapters/introduction.tex",
-            "chapters/background.tex",
             "chapters/methodology.tex",
             "chapters/results.tex",
             "chapters/discussion.tex",

@@ -30,32 +30,10 @@ import config
 import wandb
 
 
-def setup_run_metadata(target_col: str) -> tuple[Path, str]:
-    """
-    Set up the run metadata for the experiment.
-
-    :param target_col: The target column for the experiment.
-    :return: A tuple containing the run output directory and the run base name.
-    """
-    # set run name with current timestamp
-    run_timestamp_str = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-
-    # create run output dir based on target column and timestamp
-    run_output_dir = config.MODEL_OUTPUT_DIR / target_col / run_timestamp_str
-
-    # ensure output path exists
-    run_output_dir.mkdir(parents=True, exist_ok=True)
-
-    # create run base name
-    run_base_name = f"{target_col}_{run_timestamp_str}"
-
-    return run_output_dir, run_base_name
-
-
-def separate_features_and_target(
+def get_features_and_target(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COLS,
+    feature_cols: Iterable[str] = config.ALL_FEATURE_COLS,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """
     Separate features and target variable from the processed DataFrame.
@@ -71,7 +49,9 @@ def separate_features_and_target(
         # remove target
         if col != target_col
         # remove excluded features for this target
-        and col not in config.TARGET_EXCLUDE_COLS.get(target_col, [])
+        and col not in config.TARGET_EXCLUDE_COLS_MAP.get(target_col, [])
+        # remove all target excluded features
+        and col not in config.ALL_TARGET_EXCLUDE_COLS
     ]
 
     # filter dataset
@@ -100,7 +80,6 @@ def train_model(
     X: pd.DataFrame,
     y: pd.Series,
     wandb_run: Optional[Run] = None,
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model using train/val/test splits.
@@ -108,7 +87,6 @@ def train_model(
     :param X: Features DataFrame.
     :param y: Target Series.
     :param wandb_run: Weights & Biases run object.
-    :param local_output_dir: Local output directory for saving models.
     """
     # if wandb_run is None, provide a no-op run
     if wandb_run is None:
@@ -152,23 +130,22 @@ def train_model(
     # log evaluation metric to Weights & Biases
     wandb_run.log({"test-rmse": test_rmse})
 
-    # save the model
-    model_path = local_output_dir / f"{wandb_run.name}_model.json"
+    # save the model to temp dir
+    temp_dir = Path(tempfile.gettempdir())
+    model_path = temp_dir / f"{wandb_run.name}_model.json"
     model.save_model(model_path)
-    print(f"Model saved to {model_path}")
 
     # upload the model to W&B
-    wandb_run.save(str(model_path), base_path=local_output_dir)
+    wandb_run.save(str(model_path), base_path=temp_dir)
 
-    # finish the Weights & Biases run
-    wandb_run.finish()
+    # update run config with test dataset index
+    wandb_run.config.update({"test_dataset_index": y_test.index.tolist()})
 
 
 def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
     wandb_run: Optional[Run] = None,
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Train an XGBoost model using cross-validation.
@@ -176,7 +153,6 @@ def train_model_cv(
     :param X: Features DataFrame.
     :param y: Target Series.
     :param wandb_run: Weights & Biases run object.
-    :param local_output_dir: Local output directory for saving models.
     """
     # if wandb_run is None, provide a no-op run
     if wandb_run is None:
@@ -186,7 +162,7 @@ def train_model_cv(
     # test set is ignored here as it's not needed for cross-validation
     # but with the random state, we can ensure reproducibility for later
     # testing of the best model without data leakage
-    X_train, _, y_train, _ = train_test_split(
+    X_train, _, y_train, y_test = train_test_split(
         X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE
     )
 
@@ -232,16 +208,16 @@ def train_model_cv(
     # log the best score across all cv folds to W&B for the sweep
     wandb_run.log({"val-rmse": best_cv_score})
 
-    # save the model to the output directory
-    model_path = local_output_dir / f"{wandb_run.name}_model.json"
-    best_cv_model.save_model(str(model_path))
-    print(f"Model saved to {model_path}")
+    # save the model to temp dir
+    temp_dir = Path(tempfile.gettempdir())
+    model_path = temp_dir / f"{wandb_run.name}_model.json"
+    best_cv_model.save_model(model_path)
 
     # upload the model to W&B
-    wandb_run.save(str(model_path), base_path=local_output_dir)
+    wandb_run.save(str(model_path), base_path=temp_dir)
 
-    # finish the W&B run
-    wandb_run.finish()
+    # update run config with test dataset index
+    wandb_run.config.update({"test_dataset_index": y_test.index.tolist()})
 
 
 def wandb_sweep_func(
@@ -249,7 +225,6 @@ def wandb_sweep_func(
     y: pd.Series,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Wrapper function for sweeping hyperparameters using Weights & Biases.
@@ -258,26 +233,27 @@ def wandb_sweep_func(
     :param y: Target Series.
     :param run_base_name: The base name for the W&B run.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
-    :param local_output_dir: Local output directory for saving models.
     """
     # init W&B run
-    run = init_wandb(
+    wandb_run = init_wandb(
         run_name_base=run_base_name,
         wandb_mode=wandb_mode,
     )
 
     # train the model
-    train_model_cv(X, y, wandb_run=run, local_output_dir=local_output_dir)
+    train_model_cv(X, y, wandb_run=wandb_run)
+
+    # finish the W&B run
+    wandb_run.finish()
 
 
 def wandb_sweep(
     processed_df: pd.DataFrame,
     target_col: str,
-    feature_cols: Iterable[str] = config.FEATURE_COLS,
+    feature_cols: Iterable[str],
+    run_base_name: str,
     trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
-    run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
-    local_output_dir: Path = config.MODEL_OUTPUT_DIR,
 ):
     """
     Perform a hyperparameter sweep using Weights & Biases.
@@ -285,20 +261,29 @@ def wandb_sweep(
     :param processed_df: The processed DataFrame containing features and target.
     :param target_col: The target column for the model.
     :param feature_cols: The feature columns for the model.
-    :param trials: The number of trials for the sweep.
     :param run_base_name: The base name for the W&B run.
+    :param trials: The number of trials for the sweep.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
-    :param local_output_dir: Local output directory for saving models.
     """
+    # get prior run names if they exist
+    prior_runs = wandb.Api().runs(
+        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
+        filters={"displayName": {"$regex": f"^{run_base_name}"}},
+    )
+    prior_run_ids = (
+        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
+    )
+
     # init W&B sweep
     sweep_id = wandb.sweep(
         config.WANDB_SWEEP_CONFIG,
         entity=config.WANDB_ENTITY,
         project=config.WANDB_PROJECT,
+        prior_runs=prior_run_ids,
     )
 
     # separate features and target
-    X, y = separate_features_and_target(
+    X, y = get_features_and_target(
         processed_df, target_col, feature_cols=feature_cols
     )
 
@@ -310,13 +295,60 @@ def wandb_sweep(
             y,
             run_base_name=run_base_name,
             wandb_mode=wandb_mode,
-            local_output_dir=local_output_dir,
         ),
         count=trials,
     )
 
     # clean up W&B sweep
     wandb.teardown()
+
+
+def run_experiment(
+    exp_name: str,
+    processed_df: pd.DataFrame,
+    first_points_only: bool,
+    target_col: str,
+    feature_cols: str | list[str],
+    trials: int,
+    wandb_mode: Literal["online", "offline", "disabled"],
+):
+    """
+    Run a W&B sweep for the given experiment.
+
+    :param exp_name: The name of the experiment.
+    :param processed_df: The processed DataFrame containing features and target.
+    :param first_points_only: Whether to use only the first points of each storm.
+    :param target_col: The target column for the model.
+    :param feature_cols: The feature columns for the model.
+    :param wandb_mode: The mode for W&B (online, offline, disabled).
+    """
+    # get data
+    df = (
+        processed_df.groupby("storm_id").first()
+        if first_points_only
+        else processed_df
+    )
+
+    # set feature columns
+    if isinstance(feature_cols, str):
+        if feature_cols == "all":
+            feature_cols = config.ALL_FEATURE_COLS
+        elif feature_cols == "era5":
+            feature_cols = config.ERA5_MET_FEATURE_COLS
+        else:
+            raise ValueError(f"Unknown feature column set: {feature_cols}")
+    elif isinstance(feature_cols, list):
+        feature_cols = feature_cols
+
+    # run W&B sweep
+    wandb_sweep(
+        processed_df=df,
+        target_col=target_col,
+        feature_cols=feature_cols,
+        run_base_name=exp_name,
+        trials=trials,
+        wandb_mode=wandb_mode,
+    )
 
 
 def get_best_model_from_sweep(
