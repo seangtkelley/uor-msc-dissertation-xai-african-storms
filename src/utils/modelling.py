@@ -252,7 +252,7 @@ def wandb_sweep(
     target_col: str,
     feature_cols: Iterable[str],
     run_base_name: str,
-    trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
+    trials: Optional[int],
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
 ):
     """
@@ -273,6 +273,12 @@ def wandb_sweep(
     prior_run_ids = (
         [run.id for run in prior_runs] if len(prior_runs) > 0 else None
     )
+
+    # if trials is None and prior runs exist, only run remaining trials
+    if trials is None:
+        if len(prior_runs) > 0:
+            remaining_trials = config.WANDB_MAX_SWEEP_TRIALS - len(prior_runs)
+            trials = remaining_trials if remaining_trials > 0 else 1
 
     # init W&B sweep
     sweep_id = wandb.sweep(
