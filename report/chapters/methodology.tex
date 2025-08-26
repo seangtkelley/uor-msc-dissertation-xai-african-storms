@@ -233,6 +233,8 @@ The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
     \bottomrule
     \endlastfoot
 
+    \multicolumn{3}{c}{\textit{Storm Aggregate Prediction Tasks}} \\
+    \midrule
     \texttt{storm\_max\_intensity\_all} & Predict storm minimum BT using all features and all observations & \texttt{storm\_min\_bt} \\
     \texttt{storm\_max\_intensity\_all \_first\_points} & Predict storm minimum BT using all features and first observation only & \texttt{storm\_min\_bt} \\
     \texttt{storm\_max\_intensity\_era5} & Predict storm minimum BT using ERA5 features and all observations & \texttt{storm\_min\_bt} \\
@@ -241,6 +243,9 @@ The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
     \texttt{storm\_direction\_all \_first\_points} & Predict storm bearing using all features and first observation only & \texttt{storm\_bearing} \\
     \texttt{storm\_direction\_era5} & Predict storm bearing using ERA5 features and all observations & \texttt{storm\_bearing} \\
     \texttt{storm\_direction\_era5 \_first\_points} & Predict storm bearing using ERA5 features and first observation only & \texttt{storm\_bearing} \\
+    \midrule
+    \multicolumn{3}{c}{\textit{Immediate Characteristic Prediction Tasks}} \\
+    \midrule
     \texttt{obs\_intensification\_all} & Predict rate of change of minimum BT using all features & \texttt{dmin\_bt\_dt} \\
     \texttt{obs\_intensification\_era5} & Predict rate of change of minimum BT using ERA5 features & \texttt{dmin\_bt\_dt} \\
     \texttt{obs\_next\_direction\_all} & Predict bearing to next observation using all features & \texttt{bearing\_to\_next} \\
