@@ -29,6 +29,7 @@ Table \ref{tab:features} describes the X features used for this thesis and their
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.33\linewidth} p{0.42\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
     \caption{Features Used in the Study} \\
+    \label{tab:features} \\
     \toprule
     \textbf{Feature name} & \textbf{Description} & \textbf{Units} \\
     \midrule
@@ -47,67 +48,67 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \bottomrule
     \endlastfoot
 
-    \texttt{date\_angle} & Angle representation of current date within year & $^\circ$ \\
-    \texttt{eat\_hours} & Time step hour of day & East Africa Time (UTC +3) \\
-    \texttt{storm\_total\_duration} & Total duration of MCS & hr \\
-    \texttt{lon} & Longitude of MCS centre & $^\circ$ E \\
-    \texttt{lat} & Latitude of MCS centre & $^\circ$ N \\
-    \texttt{orography\_height} & Elevation of land surface at MCS centre & m \\
+    \texttt{date\_angle} & Angle representation of current date within year & \unit{\degree} \\
+    \texttt{eat\_hours} & Time step hour of day & \href{https://www.timeanddate.com/time/zones/eat}{Eastern Africa Time} (UTC+3) \\
+    \texttt{storm\_total\_duration} & Total duration of MCS & \unit{\hour} \\
+    \texttt{lon} & Longitude of MCS centre & \unit{\degree} E \\
+    \texttt{lat} & Latitude of MCS centre & \unit{\degree} N \\
+    \texttt{orography\_height} & Elevation of land surface at MCS centre & \unit{\meter} \\
     \texttt{anor} & Angle of sub-gridscale orography at MCS centre & radians from East \\
-    \texttt{upslope\_bearing} & Compass bearing of upslope direction at MCS centre & $^\circ$ from North \\
-    \texttt{slope\_angle} & Angle of slope at MCS centre & $^\circ$ \\
-    \texttt{over\_land} & Flag for MCS centre (True if MCS centre is over land, else False) & boolean \\
-    \texttt{acc\_land\_time} & Accumulated time where \texttt{over\_land}=True & hr \\
-    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for MCS & hr \\
+    \texttt{upslope\_bearing} & Compass bearing of upslope direction at MCS centre & \unit{\degree} from  N \\
+    \texttt{slope\_angle} & Angle of slope at MCS centre & \unit{\degree} \\
+    \texttt{over\_land} & Flag for MCS centre (True if MCS centre is over land, else False) & \texttt{boolean} \\
+    \texttt{acc\_land\_time} & Accumulated time where \texttt{over\_land}=True & \unit{\hour} \\
+    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for MCS & \unit{\hour} \\
     \texttt{mean\_land\_frac} & Fraction of area within 400 km that is over land & ratio ($[0,1]$) \\
-    \texttt{zonal\_speed} & $x$-component of MCS centre propagation vector & km/hr \\
-    \texttt{meridional\_speed} & $y$-component of MCS centre propagation vector & km/hr \\
-    \texttt{area} & Area of the MCS & km$^2$ \\
-    \texttt{storm\_max\_area} & Max value of \texttt{area} over MCS & km$^2$ \\
-    \texttt{bearing\_from\_prev} & Compass bearing from previous observation & $^\circ$ from North \\
-    \texttt{bearing\_to\_next} & Compass bearing to next observation & $^\circ$ from North \\
-    \texttt{distance\_from\_prev} & Distance traversed from previous observation & km \\
-    \texttt{distance\_to\_next} & Distance to next observation & km \\
-    \texttt{distance\_traversed} & Cumulative sum of \texttt{distance\_from\_prev} & km \\
-    \texttt{storm\_bearing} & Compass bearing from first to last MCS centre & $^\circ$ from North \\
-    \texttt{storm\_distance\_traversed} & Total cumulative distance traversed by MCS centre & km \\
-    \texttt{storm\_straight\_line\_distance} & Distance from first to last MCS centre & km \\
-    \texttt{mean\_skt} & Surface temperature & K \\
-    \texttt{mean\_land\_skt} & Land surface temperature (NaN if entire area is ocean) & K \\
-    \texttt{mean\_sst} & Sea surface temperature (NaN if entire area is land) & K \\
-    \texttt{mean\_swvl1} & Volumetric soil moisture in the top layer ($<$7 cm; NaN over ocean) & m$^3$/m$^3$ \\
-    \texttt{mean\_swvl2} & Volumetric soil moisture in the second layer (7--28 cm; NaN over ocean) & m$^3$/m$^3$ \\
-    \texttt{mean\_u850} & 850 hPa zonal wind & m/s \\
-    \texttt{mean\_u500} & 500 hPa zonal wind & m/s \\
-    \texttt{mean\_u200} & 200 hPa zonal wind & m/s \\
-    \texttt{mean\_v850} & 850 hPa meridional wind & m/s \\
-    \texttt{mean\_v500} & 500 hPa meridional wind & m/s \\
-    \texttt{mean\_v200} & 200 hPa meridional wind & m/s \\
-    \texttt{domain\_mean\_u500} & Mean 500 hPa zonal wind over the entire domain of ERA5 data & m/s \\
-    \texttt{mean\_u\_shear\_850\_500} & Shear of zonal wind from 850 and 500 hPa & m/s \\
-    \texttt{mean\_v\_shear\_850\_500} & Shear of meridional wind from 850 and 500 hPa & m/s \\
-    \texttt{mean\_u\_shear\_850\_200} & Shear of zonal wind from 850 and 200 hPa & m/s \\
-    \texttt{mean\_v\_shear\_850\_200} & Shear of meridional wind from 850 and 200 hPa & m/s \\
-    \texttt{wind\_direction\_850} & Compass bearing from which the 850 hPa wind vector at MCS centre originates & $^\circ$ from North \\
-    \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) & $^\circ$ from \texttt{upslope\_bearing} \\
-    \texttt{mean\_tcwv} & Total column water vapour (TCWV) & kg/m$^2$ \\
-    \texttt{domain\_mean\_tcwv} & Mean TCWV over the entire domain of ERA5 data & kg/m$^2$ \\
-    \texttt{mean\_q\_850} & 850 hPa specific humidity & kg/kg \\
-    \texttt{mean\_q\_500} & 500 hPa specific humidity & kg/kg \\
-    \texttt{mean\_q\_200} & 200 hPa specific humidity & kg/kg \\
-    \texttt{mean\_cape} & Convective available potential energy (CAPE) & J/kg \\
-    \texttt{domain\_mean\_cape} & Mean CAPE over the entire domain of ERA5 data & J/kg \\
-    \texttt{olr\_90} & 90th percentile of negative outgoing longwave radiation (OLR) within 400 km & W/m$^2$ \\
-    \texttt{olr\_75} & 75th percentile of negative OLR within 400 km & W/m$^2$ \\
-    \texttt{olr\_50} & 50th percentile of negative OLR within 400 km & W/m$^2$ \\
-    \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & mm/hr \\
-    \texttt{min\_bt} & Minimum cloudtop brightness within MCS area & K \\
-    \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & K/6 hr \\
-    \texttt{mean\_bt} & Mean cloudtop brightness within MCS area & K \\
-    \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & K/6 hr \\
-    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached over MCS lifetime & K \\
-    \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & boolean \\
-    \texttt{mjo\_phase} & Phase of Madden--Julian oscillation (MJO) & integer range from 1 to 8 \\
+    \texttt{zonal\_speed} & $x$-component of MCS centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{meridional\_speed} & $y$-component of MCS centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{area} & Area of the MCS & \unit{\km\squared} \\
+    \texttt{storm\_max\_area} & Max value of \texttt{area} over MCS & \unit{\km\squared} \\
+    \texttt{bearing\_from\_prev} & Compass bearing from previous observation & \unit{\degree} from  N \\
+    \texttt{bearing\_to\_next} & Compass bearing to next observation & \unit{\degree} from  N \\
+    \texttt{distance\_from\_prev} & Distance traversed from previous observation & \unit{\km} \\
+    \texttt{distance\_to\_next} & Distance to next observation & \unit{\km} \\
+    \texttt{distance\_traversed} & Cumulative sum of \texttt{distance\_from\_prev} & \unit{\km} \\
+    \texttt{storm\_bearing} & Compass bearing from first to last MCS centre & \unit{\degree} from  N \\
+    \texttt{storm\_distance\_traversed} & Total cumulative distance traversed by MCS centre & \unit{\km} \\
+    \texttt{storm\_straight\_line\_distance} & Distance from first to last MCS centre & \unit{\km} \\
+    \texttt{mean\_skt} & Surface temperature & \unit{\kelvin} \\
+    \texttt{mean\_land\_skt} & Land surface temperature (NaN if entire area is ocean) & \unit{\kelvin} \\
+    \texttt{mean\_sst} & Sea surface temperature (NaN if entire area is land) & \unit{\kelvin} \\
+    \texttt{mean\_swvl1} & Volumetric soil moisture in the top layer ($<$7 cm; NaN over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
+    \texttt{mean\_swvl2} & Volumetric soil moisture in the second layer (7--28 cm; NaN over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
+    \texttt{mean\_u850} & \SI{850}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
+    \texttt{mean\_u500} & \SI{500}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
+    \texttt{mean\_u200} & \SI{200}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
+    \texttt{mean\_v850} & \SI{850}{\hecto\pascal} meridional wind & \unit{\meter\per\second} \\
+    \texttt{mean\_v500} & \SI{500}{\hecto\pascal} meridional wind & \unit{\meter\per\second} \\
+    \texttt{mean\_v200} & \SI{200}{\hecto\pascal} meridional wind & \unit{\meter\per\second} \\
+    \texttt{domain\_mean\_u500} & Mean \SI{500}{\hecto\pascal} zonal wind over the entire domain of ERA5 data & \unit{\meter\per\second} \\
+    \texttt{mean\_u\_shear\_850\_500} & Shear of zonal wind from \SI{850}{\hecto\pascal} to \SI{500}{\hecto\pascal} & \unit{\meter\per\second} \\
+    \texttt{mean\_v\_shear\_850\_500} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{500}{\hecto\pascal} & \unit{\meter\per\second} \\
+    \texttt{mean\_u\_shear\_850\_200} & Shear of zonal wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
+    \texttt{mean\_v\_shear\_850\_200} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
+    \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at MCS centre originates & \unit{\degree} from  N \\
+    \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} (wind is going upslope: \ang{0}, downslope: \ang{180}, cross-slope: \ang{90}, \ang{270}) & \unit{\degree} from \texttt{upslope\_bearing} \\
+    \texttt{mean\_tcwv} & Total column water vapour (TCWV) & \unit{\kilogram\per\meter\squared} \\
+    \texttt{domain\_mean\_tcwv} & Mean TCWV over the entire domain of ERA5 data & \unit{\kilogram\per\meter\squared} \\
+    \texttt{mean\_q\_850} & 850 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_q\_500} & 500 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_q\_200} & 200 hPa specific humidity & \unit{\kilogram\per\kilogram} \\
+    \texttt{mean\_cape} & Convective available potential energy (CAPE) & \unit{\joule\per\kilogram} \\
+    \texttt{domain\_mean\_cape} & Mean CAPE over the entire domain of ERA5 data & \unit{\joule\per\kilogram} \\
+    \texttt{olr\_90} & 90th percentile of negative outgoing longwave radiation (OLR) within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{olr\_75} & 75th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{olr\_50} & 50th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & \unit{\milli\meter} \\
+    \texttt{min\_bt} & Minimum cloudtop brightness within MCS area & \unit{\kelvin} \\
+    \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & \unit{\kelvin\per\hour} \\
+    \texttt{mean\_bt} & Mean cloudtop brightness within MCS area & \unit{\kelvin} \\
+    \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & \unit{\kelvin\per\hour} \\
+    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached over MCS lifetime & \unit{\kelvin} \\
+    \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & \texttt{boolean} \\
+    \texttt{mjo\_phase} & Phase of Madden--Julian oscillation (MJO) & $[1, 8] \cap \mathbb{Z}$ \\
     \texttt{mjo\_amplitude} & Amplitude of MJO & - \\
 \end{longtable}
 }
