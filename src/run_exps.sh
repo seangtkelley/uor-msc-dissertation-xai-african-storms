@@ -29,5 +29,7 @@ obs_precipitation_era5"
 
 EXPERIMENT_COUNT=$(echo "$EXPERIMENTS" | wc -l)
 
-# run run_exp.py in parallel for each experiment
-echo "$EXPERIMENTS" | parallel -j $EXPERIMENT_COUNT $PYTHON_PATH $DIR/run_exp.py --exp_name {}
+# run run_exp.py sequentially for each experiment
+for exp in $EXPERIMENTS; do
+    $PYTHON_PATH $DIR/run_exp.py --exp_name $exp
+done
