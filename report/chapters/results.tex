@@ -19,9 +19,9 @@ The results of the experiments conducted in this study are presented in this cha
     \label{fig:orography_storm_init_eat_hours_mode_mean}
 \end{figure}
 
-\section{Experimental Setup}
+\section{Experimental Results Overview}
 
-For all experiments listed below, two models were trained on two different feature sets: all available features and only ERA5 meteorological features. This approach allows for a comparison of model performance when utilising a focused subset of variables. While it is clear from the manual exploration above that storm location and orography will play a major role, it is possible that those features could confound the effects of other environmental factors like soil moisture or skin temperature. Thus, through this setup, we ensure that one model is exclusively learning from the meteorological conditions. If model performance differs significantly, this would imply that the geographic, topological, or temporal features contain unique information not captured by the meteorological features. Through a comparison of relative feature importance of the meteorological features, we can also gain insights into their interaction with the other features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only ERA5 features. This aspect of the setup aims to evaluate the predictive power of initial storm observations.
+This section provides an overview of the experimental results obtained from the various predictive tasks outlined in the methodology. The results are categorized based on the type of prediction: storm aggregate features and immediate characteristics at an observation.
 
 \section{Predict Storm Aggregate Features}
 
