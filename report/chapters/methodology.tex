@@ -179,7 +179,7 @@ The specific hyperparameters tuned and the corresponding values or distributions
     \end{tabular}
 \end{table}
 
-Once the sweeps are complete, the best model from each sweep are evaluated on the held-out test set to provide an unbiased estimate of their performance. The test \acrshort{rmse} values are then compared across different models and feature sets to assess relative performance. Furthermore, test \acrshort{rmse} over the dataset region and time period is analysed to identify any spatial or temporal patterns in model performance. \todo{if no time, this is for future work section}
+Once the sweeps are complete, the best model from each sweep are evaluated on the held-out test set to provide an unbiased estimate of their performance. The test \acrshort{rmse} values first compared with the standard deviation of the target variable in the test set to assess whether the model has successfully captured novel relationships beyond just the underlying distribution of the target. They are then compared across different models and feature sets to assess relative performance. Furthermore, test \acrshort{rmse} over the dataset region and time period is analysed to identify any spatial or temporal patterns in model performance. \todo{if no time, this is for future work section}
 
 \section{Model Explainability}
 \todo{copied from background; will need to be adapted}
