@@ -49,6 +49,10 @@ for exp_name, exp_config in config.EXPERIMENT_CONFIG.items():
 
     test_df = processed_df.iloc[test_idx]
 
+    # use first points only for all storm aggregate exps for fair comparison
+    if exp_name.startswith("storm_"):
+        test_df = test_df.groupby("storm_id").first()
+
     if exp_config["feature_cols"] == "all":
         feature_cols = config.ALL_FEATURE_COLS
     elif exp_config["feature_cols"] == "era5":
