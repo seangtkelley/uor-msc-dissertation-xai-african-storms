@@ -20,6 +20,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures" / "generated"
+EXPLORATION_FIGURES_DIR = REPO_ROOT / "figures" / "generated" / "exploration"
+EXPERIMENT_FIGURES_DIR = REPO_ROOT / "figures" / "generated" / "experiments"
 SRC_DIR = REPO_ROOT / "src"
 MODEL_OUTPUT_DIR = REPO_ROOT / "models"
 WANDB_LOG_DIR = REPO_ROOT / "wandb"
@@ -366,4 +368,39 @@ EXPERIMENT_CONFIG = {
         "target_col": "mean_prcp_400",
         "feature_cols": "era5",
     },
+}
+
+EXPERIMENT_GROUPS = {
+    "storm_max_intensity": [
+        "storm_max_intensity_all",
+        "storm_max_intensity_era5",
+    ],
+    "storm_max_intensity_first_points": [
+        "storm_max_intensity_all_first_points",
+        "storm_max_intensity_era5_first_points",
+    ],
+    "storm_direction": [
+        "storm_direction_all",
+        "storm_direction_era5",
+    ],
+    "storm_direction_first_points": [
+        "storm_direction_all_first_points",
+        "storm_direction_era5_first_points",
+    ],
+    "obs_intensification": [
+        "obs_intensification_all",
+        "obs_intensification_era5",
+    ],
+    "obs_next_direction": [
+        "obs_next_direction_all",
+        "obs_next_direction_era5",
+    ],
+    "obs_next_distance": [
+        "obs_next_distance_all",
+        "obs_next_distance_era5",
+    ],
+    "obs_precipitation": [
+        "obs_precipitation_all",
+        "obs_precipitation_era5",
+    ],
 }

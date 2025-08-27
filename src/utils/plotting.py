@@ -12,6 +12,7 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 
+from pathlib import Path
 from typing import Optional
 
 import cartopy.crs as ccrs
@@ -190,6 +191,7 @@ def add_all_map_features(
 
 def save_plot(
     filename: str,
+    directory: Path = config.FIGURES_DIR,
     dpi: int = 300,
     show: bool = False,
 ) -> None:
@@ -197,11 +199,12 @@ def save_plot(
     Save the current plot to a file and optionally show it.
 
     :param filename: Filename to save the plot to.
+    :param directory: Directory to save the plot in.
     :param dpi: Dots per inch for the saved figure.
     :param show: Whether to show the plot after saving.
     """
     plt.tight_layout()
-    plt.savefig(config.FIGURES_DIR / filename, dpi=dpi, bbox_inches="tight")
+    plt.savefig(directory / filename, dpi=dpi, bbox_inches="tight")
     if show:
         plt.show()
     plt.close()
