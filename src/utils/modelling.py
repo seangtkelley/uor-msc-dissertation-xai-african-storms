@@ -296,6 +296,20 @@ def wandb_sweep(
     wandb.teardown()
 
 
+def get_exp_runs(exp_name: str):
+    """
+    Get the W&B runs for a specific experiment.
+
+    :param exp_name: The name of the experiment.
+    :return: The W&B runs for the experiment.
+    """
+    wandb_api = wandb.Api()
+    return wandb_api.runs(
+        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
+        filters={"displayName": {"$regex": f"^{exp_name}_[a-fA-F0-9]{{8}}$"}},
+    )
+
+
 def run_experiment(
     exp_name: str,
     processed_df: pd.DataFrame,
@@ -316,10 +330,7 @@ def run_experiment(
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
     # get prior run names if they exist
-    prior_runs = wandb.Api().runs(
-        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
-        filters={"displayName": {"$regex": f"^{exp_name}_[a-fA-F0-9]{{8}}$"}},
-    )
+    prior_runs = get_exp_runs(exp_name)
     prior_run_ids = (
         [run.id for run in prior_runs] if len(prior_runs) > 0 else None
     )
@@ -367,48 +378,81 @@ def run_experiment(
     )
 
 
-def get_best_model_from_sweep(
-    wandb_api: wandb.Api, sweep_id: str
-) -> xgb.Booster:
+def get_best_run_from_exp(exp_name: str) -> Run:
     """
-    Get the best model from a W&B sweep.
+    Get the best run from an experiment.
 
-    :param wandb_api: The W&B API object.
-    :param sweep_id: The ID of the W&B sweep.
-    :return: The best model from the sweep.
+    :param exp_name: The name of the W&B experiment.
+    :return: The best run from the experiment.
     """
-    # get all runs from the sweep
-    sweep_runs = wandb_api.sweep(
-        f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}/{sweep_id}"
-    ).runs
+    # get all runs from the experiment
+    exp_runs = get_exp_runs(exp_name)
 
     # find the best run (lowest validation loss)
     best_run = min(
-        sweep_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
+        exp_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
     )
 
+    return best_run
+
+
+def get_model_from_run(wandb_run: Run) -> xgb.Booster:
+    """
+    Get the model from a W&B run.
+
+    :param wandb_run: The W&B run object.
+    :return: The model from the run.
+    """
     bst = xgb.Booster()
-    run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{best_run.id}*"))
+    run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{wandb_run.id}*"))
     model_filepath = None
     try:
-        if len(run_dir_search) == 1:
+        if len(run_dir_search) != 1:
             raise ValueError("Multiple run directories found.")
 
         print("Loading model from local run directory...")
 
         # load the model
-        model_filepath = Path(run_dir_search[0]) / f"{best_run.name}_model.json"
+        model_filepath = (
+            Path(run_dir_search[0]) / "files" / f"{wandb_run.name}_model.json"
+        )
 
         # check the file exists
         if not model_filepath.exists():
             raise FileNotFoundError(f"Model file not found: {model_filepath}")
 
     except Exception as e:
-        print("Downloading model from W&B...")
-        # download the best model to a temp directory
-        temp_dir = tempfile.gettempdir()
-        model_filepath = Path(temp_dir) / f"{best_run.name}_model.json"
-        best_run.download(str(model_filepath), base_path=temp_dir)
+        # setup dir for download
+        manual_downloads_dir = config.WANDB_LOG_DIR / "manual_downloads"
+        manual_downloads_dir.mkdir(parents=True, exist_ok=True)
+
+        model_filename = f"{wandb_run.name}_model.json"
+        model_filepath = Path(manual_downloads_dir) / model_filename
+
+        if not model_filepath.exists():
+            print("Downloading model from W&B...")
+
+            # search run files for model json
+            model_files = [
+                f
+                for f in wandb_run.files()  # type:ignore
+                if f.name.endswith("_model.json")
+            ]
+
+            if len(model_files) == 0:
+                raise FileNotFoundError(
+                    f"No model files found for run: {wandb_run.id}"
+                )
+            elif len(model_files) > 1:
+                print(
+                    f"Multiple model files found for run: {wandb_run.id}. Using the first one."
+                )
+
+            # download model file
+            download_filepath = model_files[0].download(exist_ok=True)
+
+            # move to expected location
+            Path(download_filepath.name).rename(model_filepath)
 
     finally:
         if model_filepath is not None:
