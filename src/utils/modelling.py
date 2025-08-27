@@ -346,6 +346,8 @@ def run_experiment(
                     f"No remaining trials to run for {exp_name}. Found {len(prior_runs)} prior runs."
                 )
                 return
+        else:
+            trials = config.WANDB_MAX_SWEEP_TRIALS
 
     # get data
     df = (
