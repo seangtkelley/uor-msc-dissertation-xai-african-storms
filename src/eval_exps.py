@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import shap
 from dotenv import load_dotenv
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
@@ -34,7 +35,7 @@ processed_df = pd.read_csv(
 
 for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
 
-    fig, axs = plt.subplots(1, len(exp_names), figsize=(12, 6 * len(exp_names)))
+    fig, axs = plt.subplots(2, len(exp_names), figsize=(12, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -84,7 +85,7 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
         test_std = np.std(y_test)
 
         # plot predictions vs actual using matplotlib
-        axs[i].scatter(y_pred, y_test, s=10)
+        axs[0, i].scatter(y_pred, y_test, s=10)
 
         # Regression line and R value using sklearn
         lr = LinearRegression()
@@ -95,7 +96,7 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
         )
 
         # plot regression line
-        axs[i].plot(
+        axs[0, i].plot(
             np.unique(y_pred),
             reg_line,
             label=f"Regression line (R²={r_squared:.2f})",
@@ -103,10 +104,28 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
             linestyle="--",
         )
 
-        axs[i].set_title(f"Model Verification for {exp_name}")
-        axs[i].set_xlabel("Predicted Value (K)")
-        axs[i].set_ylabel("Actual Value (K)")
-        axs[i].legend()
+        axs[0, i].set_title(f"Model Verification for {exp_name}")
+        axs[0, i].set_xlabel("Predicted Value (K)")
+        axs[0, i].set_ylabel("Actual Value (K)")
+        axs[0, i].legend()
+
+        # sample X_test for faster shap value calc
+        X_test_sample = X_test.sample(
+            frac=0.05, random_state=config.RANDOM_STATE
+        )
+
+        # get shap values for test set
+        explainer = shap.Explainer(best_model)
+        shap_values = explainer(X_test_sample)
+
+        # plot SHAP summary plot
+        plt.sca(axs[1, i])
+        shap.summary_plot(
+            shap_values,
+            X_test_sample,
+            show=False,
+        )
+        axs[1, i].set_title(f"SHAP Summary Plot for {exp_name}")
 
     plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
 
