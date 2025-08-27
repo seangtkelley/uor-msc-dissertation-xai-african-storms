@@ -20,7 +20,6 @@ parser.add_argument(
 parser.add_argument(
     "--trials",
     type=int,
-    default=config.WANDB_MAX_SWEEP_TRIALS,
     help="Number of trials for hyperparameter sweep",
 )
 parser.add_argument(

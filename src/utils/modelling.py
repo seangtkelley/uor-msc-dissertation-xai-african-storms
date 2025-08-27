@@ -253,6 +253,7 @@ def wandb_sweep(
     feature_cols: Iterable[str],
     run_base_name: str,
     trials: Optional[int],
+    prior_run_ids: Optional[list[str]] = None,
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
 ):
     """
@@ -263,30 +264,9 @@ def wandb_sweep(
     :param feature_cols: The feature columns for the model.
     :param run_base_name: The base name for the W&B run.
     :param trials: The number of trials for the sweep.
+    :param prior_run_ids: The IDs of prior runs to use for the sweep.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
-    # get prior run names if they exist
-    prior_runs = wandb.Api().runs(
-        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
-        filters={
-            "displayName": {"$regex": f"^{run_base_name}_[a-fA-F0-9]{{8}}$"}
-        },
-    )
-    prior_run_ids = (
-        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
-    )
-
-    # if trials is None and prior runs exist, only run remaining trials
-    if trials is None:
-        if len(prior_runs) > 0:
-            remaining_trials = config.WANDB_MAX_SWEEP_TRIALS - len(prior_runs)
-
-            if remaining_trials > 0:
-                trials = remaining_trials
-            else:
-                print(f"No remaining trials to run for {run_base_name}.")
-                return
-
     # init W&B sweep
     sweep_id = wandb.sweep(
         config.WANDB_SWEEP_CONFIG,
@@ -322,7 +302,7 @@ def run_experiment(
     first_points_only: bool,
     target_col: str,
     feature_cols: str | list[str],
-    trials: int,
+    trials: Optional[int],
     wandb_mode: Literal["online", "offline", "disabled"],
 ):
     """
@@ -335,6 +315,28 @@ def run_experiment(
     :param feature_cols: The feature columns for the model.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
+    # get prior run names if they exist
+    prior_runs = wandb.Api().runs(
+        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
+        filters={"displayName": {"$regex": f"^{exp_name}_[a-fA-F0-9]{{8}}$"}},
+    )
+    prior_run_ids = (
+        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
+    )
+
+    # if trials is None and prior runs exist, only run remaining trials
+    if trials is None:
+        if len(prior_runs) > 0:
+            remaining_trials = config.WANDB_MAX_SWEEP_TRIALS - len(prior_runs)
+
+            if remaining_trials > 0:
+                trials = remaining_trials
+            else:
+                print(
+                    f"No remaining trials to run for {exp_name}. Found {len(prior_runs)} prior runs."
+                )
+                return
+
     # get data
     df = (
         processed_df.groupby("storm_id").first()
@@ -360,6 +362,7 @@ def run_experiment(
         feature_cols=feature_cols,
         run_base_name=exp_name,
         trials=trials,
+        prior_run_ids=prior_run_ids,
         wandb_mode=wandb_mode,
     )
 
