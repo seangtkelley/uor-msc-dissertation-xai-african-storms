@@ -268,7 +268,9 @@ def wandb_sweep(
     # get prior run names if they exist
     prior_runs = wandb.Api().runs(
         path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
-        filters={"displayName": {"$regex": f"^{run_base_name}"}},
+        filters={
+            "displayName": {"$regex": f"^{run_base_name}_[a-fA-F0-9]{{8}}$"}
+        },
     )
     prior_run_ids = (
         [run.id for run in prior_runs] if len(prior_runs) > 0 else None
@@ -278,7 +280,12 @@ def wandb_sweep(
     if trials is None:
         if len(prior_runs) > 0:
             remaining_trials = config.WANDB_MAX_SWEEP_TRIALS - len(prior_runs)
-            trials = remaining_trials if remaining_trials > 0 else 1
+
+            if remaining_trials > 0:
+                trials = remaining_trials
+            else:
+                print(f"No remaining trials to run for {run_base_name}.")
+                return
 
     # init W&B sweep
     sweep_id = wandb.sweep(
