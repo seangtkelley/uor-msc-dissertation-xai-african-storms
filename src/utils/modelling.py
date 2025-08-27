@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Iterable, Literal, Optional
 
 import pandas as pd
-import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 from wandb.integration.xgboost import WandbCallback
@@ -396,14 +395,14 @@ def get_best_run_from_exp(exp_name: str) -> Run:
     return best_run
 
 
-def get_model_from_run(wandb_run: Run) -> xgb.Booster:
+def get_model_from_run(wandb_run: Run) -> XGBRegressor:
     """
     Get the model from a W&B run.
 
     :param wandb_run: The W&B run object.
     :return: The model from the run.
     """
-    bst = xgb.Booster()
+    model = XGBRegressor()
     run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{wandb_run.id}*"))
     model_filepath = None
     try:
@@ -457,8 +456,8 @@ def get_model_from_run(wandb_run: Run) -> xgb.Booster:
     finally:
         if model_filepath is not None:
             # load the model
-            bst.load_model(model_filepath)
+            model.load_model(model_filepath)
         else:
             raise RuntimeError("Failed to locate or download the model file.")
 
-    return bst
+    return model
