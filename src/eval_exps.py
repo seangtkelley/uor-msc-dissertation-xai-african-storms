@@ -44,11 +44,8 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
         # get exp config
         exp_config = config.EXPERIMENT_CONFIG[exp_name]
 
-        # get best run from all sweeps
-        best_run = modelling.get_best_run_from_exp(exp_name)
-
-        # get best model from best run
-        best_model = modelling.get_model_from_run(best_run)
+        # get best model from best run of the exp
+        best_model = modelling.get_best_model_from_exp(exp_name)
 
         # get test dataset index from best run config
         test_idx = best_run.config.get("test_dataset_index")

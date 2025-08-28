@@ -16,6 +16,7 @@ import uuid
 from glob import glob
 from pathlib import Path
 from typing import Iterable, Literal, Optional
+import json
 
 import pandas as pd
 from sklearn.metrics import root_mean_squared_error
@@ -463,3 +464,43 @@ def get_model_from_run(wandb_run: Run) -> XGBRegressor:
             raise RuntimeError("Failed to locate or download the model file.")
 
     return model
+
+def get_best_model_from_exp(exp_name: str) -> XGBRegressor:
+    """
+    Get the best model for the experiment. Try to load the model fully locally
+    using cache and local W&B logs before contacting W&B API.
+    
+    :param exp_name: The name of the W&B experiment
+    :return: The best model
+    """
+    exp_best_run_id_cache = config.WANDB_LOG_DIR / "exp_best_run_id_cache.json"
+
+    if not exp_best_run_id_cache.exists():
+        # init the cache
+        with open(exp_best_run_id_cache, "r") as f:
+            f.write("{}")
+
+    # load run id from cache
+    file_json = {}
+    with open(exp_best_run_id_cache, "r") as f:
+        file_json = json.load(f)
+
+        cache_info = file_json.get(exp_name, None)
+
+    if cache_info is not None:
+        # load offline run info
+        best_run = Run(id=cache_info["id"], name=cache_info["name"])
+    else:
+        # get best run from all sweeps
+        best_run = modelling.get_best_run_from_exp(exp_name)
+
+        # write the run info to the cache
+        file_json[exp_name] = {
+            "id": best_run.id,
+            "name": best_run.name
+        }
+        with open(exp_best_run_id_cache, "w") as f:
+            f.write(file_json)
+
+    # get best model from best run
+    return modelling.get_model_from_run(best_run)
