@@ -264,6 +264,12 @@ def calc_storm_distances_and_bearings(
         fwd_azimuths % 360  # normalize to [0, 360)
     )
 
+    # fill in storm distances and bearings by forward filling
+    processed_df["storm_straight_line_distance"] = processed_df[
+        "storm_straight_line_distance"
+    ].ffill()
+    processed_df["storm_bearing"] = processed_df["storm_bearing"].ffill()
+
     # fill in first point for each storm with 0 distance_from_prev
     # same but opposite for distance_to_next
     processed_df.loc[storm_inits.index, "distance_from_prev"] = 0
@@ -278,12 +284,6 @@ def calc_storm_distances_and_bearings(
     processed_df.loc[storm_ends.index, "bearing_to_next"] = processed_df.loc[
         storm_ends.index, "storm_bearing"
     ]
-
-    # fill in missing values for storm distances and bearings by forward filling
-    processed_df["storm_straight_line_distance"] = processed_df[
-        "storm_straight_line_distance"
-    ].ffill()
-    processed_df["storm_bearing"] = processed_df["storm_bearing"].ffill()
 
     # calc distance traversed via cumulative sum of distance_from_prev
     processed_df["distance_traversed"] = (
