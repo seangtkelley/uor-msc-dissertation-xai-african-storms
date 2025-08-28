@@ -73,7 +73,7 @@ Recommended for complete python environment isolation.
 |--------------|-------------|-------------|
 | `geop.nc` | Geopotential | m²/s² (divide by 9.81 m/s to get orography) |
 | `lsm.nc`  |  land-sea mask | Boolean |
-| `anor.nc` | Angle of sub-gridscale orography | radians from East | 
+| `anor.nc` | Angle of sub-gridscale orography | radians from E | 
 
 #### Hourly data stored in yearly files:
 
@@ -112,7 +112,7 @@ Notes:
 | `lon` | Longitude of MCS centre | ° E |
 | `lat` | Latitude of MCS centre | ° N |
 | `orography_height` | Elevation of land surface at MCS centre | m |
-| `anor` | Angle of sub-gridscale orography at MCS centre | radians from East |
+| `anor` | Angle of sub-gridscale orography at MCS centre | radians from E |
 | `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from N |
 | `slope_angle` | Angle of slope at MCS centre | ° |
 | `over_land` | Flag for MCS centre (True if MCS centre is over land, else False) | boolean |
