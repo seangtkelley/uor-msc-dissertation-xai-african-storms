@@ -23,20 +23,20 @@ From this comprehensive storm database, a subset of approximately 30,000 was sel
         \toprule
         File Pattern & Description & Units/Notes \\
         \midrule
-        \texttt{cape\_0\_*.nc} & Convective available potential energy & \unit{\joule\per\kilogram} \\
-        \texttt{olr\_toa\_*.nc} & Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) & \unit{\watt\per\meter\squared} \\
-        \texttt{prcp\_tot\_*.nc} & Thickness of rainfall amount (hourly accumulations) & \unit{\meter} \\
-        \texttt{rhum\_*\_*.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} (used for theta e calculations) \\
-        \texttt{shum\_*\_*.nc} & Specific humidity at 200, 500, 850 \unit{\hecto\pascal} & \unit{\kilogram\per\kilogram} \\
-        \texttt{skt\_sfc\_*.nc} & Surface temperature on land & \unit{\kelvin} \\
-        \texttt{sst\_sfc\_*.nc} & Sea surface temperature & \unit{\kelvin} \\
-        \texttt{swvl1\_d1\_*.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
-        \texttt{swvl2\_d2\_*.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
-        \texttt{ta\_*\_*.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
-        \texttt{tcwv\_tot\_*.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (total column water vapour) \\
-        \texttt{thetae\_*\_*.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
-        \texttt{uwnd\_*\_*.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
-        \texttt{vwnd\_*\_*.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
+        \texttt{cape\_0\_YEAR.nc} & Convective available potential energy & \unit{\joule\per\kilogram} \\
+        \texttt{olr\_toa\_YEAR.nc} & Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) & \unit{\watt\per\meter\squared} \\
+        \texttt{prcp\_tot\_YEAR.nc} & Thickness of rainfall amount (hourly accumulations) & \unit{\meter} \\
+        \texttt{rhum\_PRESSURE\_YEAR.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} (used for theta e calculations) \\
+        \texttt{shum\_PRESSURE\_YEAR.nc} & Specific humidity at 200, 500, 850 \unit{\hecto\pascal} & \unit{\kilogram\per\kilogram} \\
+        \texttt{skt\_sfc\_YEAR.nc} & Surface temperature on land & \unit{\kelvin} \\
+        \texttt{sst\_sfc\_YEAR.nc} & Sea surface temperature & \unit{\kelvin} \\
+        \texttt{swvl1\_d1\_YEAR.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
+        \texttt{swvl2\_d2\_YEAR.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
+        \texttt{ta\_PRESSURE\_YEAR.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
+        \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (total column water vapour) \\
+        \texttt{thetae\_PRESSURE\_YEAR.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
+        \texttt{uwnd\_PRESSURE\_YEAR.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
+        \texttt{vwnd\_PRESSURE\_YEAR.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
         \bottomrule
     \end{tabular}
 \end{table}
