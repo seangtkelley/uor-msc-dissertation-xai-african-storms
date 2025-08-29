@@ -77,7 +77,7 @@ for exp_group_name, exp_names in exp_groups.items():
     fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
     fig_dir.mkdir(parents=True, exist_ok=True)
 
-    fig = plt.figure(figsize=(16, 6 * len(exp_names)))
+    summary_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -131,7 +131,7 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test target standard deviation: {test_std:.4f}")
 
         # plot predictions vs actual using matplotlib
-        ax_pred = fig.add_subplot(2, len(exp_names), i + 1)
+        ax_pred = summary_fig.add_subplot(2, len(exp_names), i + 1)
         ax_pred.scatter(y_pred, y_test, s=10)
 
         # Regression line and R value using sklearn
@@ -198,7 +198,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 pickle.dump(explanation, f)
 
         # plot SHAP summary plot
-        ax_shap = fig.add_subplot(2, len(exp_names), len(exp_names) + i + 1)
+        ax_shap = summary_fig.add_subplot(
+            2, len(exp_names), len(exp_names) + i + 1
+        )
         shap.plots.beeswarm(
             explanation,
             show=False,
