@@ -191,7 +191,7 @@ def add_all_map_features(
 
 def save_plot(
     filename: str,
-    directory: Path = config.FIGURES_DIR,
+    directory: Path = config.EXPLORATION_FIGURES_DIR,
     dpi: int = 300,
     show: bool = False,
 ) -> None:
