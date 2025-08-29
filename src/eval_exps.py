@@ -12,6 +12,8 @@ __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
 
+import argparse
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -28,13 +30,31 @@ load_dotenv()
 
 sns.set_theme(style="darkgrid")
 
+# parse cli arguments
+parser = argparse.ArgumentParser(description="Evaluate experiment groups")
+parser.add_argument(
+    "--exp_group_names",
+    type=str,
+    help="Experiments to evaluate, separated by commas. If not specified, all will be evaluated.",
+)
+args = parser.parse_args()
+
 # load the processed dataset
 print("Loading processed dataset...")
 processed_df = pd.read_csv(
     config.PROCESSED_DATASET_PATH, parse_dates=["timestamp"]
 )
 
-for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
+# select experiment groups to evaluate
+if args.exp_group_names is not None:
+    exp_group_names = args.exp_group_names.split(",")
+    exp_groups = {
+        name: config.EXPERIMENT_GROUPS[name] for name in exp_group_names
+    }
+else:
+    exp_groups = config.EXPERIMENT_GROUPS
+
+for exp_group_name, exp_names in exp_groups.items():
 
     fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
@@ -143,4 +163,5 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
 
     plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
 
+    break
     break
