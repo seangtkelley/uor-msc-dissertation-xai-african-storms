@@ -258,12 +258,12 @@ for exp_group_name, exp_names in exp_groups.items():
         n_top_features = 5
         combined_corr = corr_with_lon.add(corr_with_lat, fill_value=0)
         combined_corr = combined_corr.drop(["lon", "lat"], errors="ignore")
-        top_corr_features = (
+        top_geo_corr_features = (
             combined_corr.sort_values(ascending=False)
             .head(n_top_features)
             .index
         )
-        for feature in top_corr_features:
+        for feature in top_geo_corr_features:
             n_bins = 50
             binned2d_mean = (
                 merge_df.groupby(
@@ -318,5 +318,24 @@ for exp_group_name, exp_names in exp_groups.items():
 
             plt.title(f"Mean SHAP Value of {feature} over Map for {exp_name}")
             plotting.save_plot(f"{exp_name}_shap_{feature}_map.png", fig_dir)
+
+            # for n_top_features abs corr with eat_hours, bar plot with mean per hour
+            top_temp_corr_features = (
+                corr_matrix["eat_hours"]
+                .abs()
+                .sort_values(ascending=False)
+                .iloc[1 : n_top_features + 1]
+                .index
+            )
+            for feature in top_temp_corr_features:
+                mean_per_hour = merge_df.groupby("eat_hours")[feature].mean()
+                plt.figure(figsize=(10, 6))
+                mean_per_hour.plot(kind="bar")
+                plt.title(f"Mean SHAP Value of {feature} by Hour")
+                plt.xlabel("Hour (UTC+3)")
+                plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
+                plotting.save_plot(
+                    f"{exp_name}_shap_{feature}_by_hour.png", fig_dir
+                )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
