@@ -305,7 +305,8 @@ def calc_storm_distances_and_bearings(
 def calc_temporal_rate_of_change(
     processed_df: pd.DataFrame,
     col_name: str,
-    time_interval: Optional[pd.Timedelta] = None,
+    seconds_per_interval: int = 3600,
+    smoothing_window: Optional[pd.Timedelta] = None,
     new_col_name: Optional[str] = None,
 ) -> pd.DataFrame:
     """
@@ -313,7 +314,8 @@ def calc_temporal_rate_of_change(
 
     :param processed_df: DataFrame containing storm data.
     :param col_name: Name of the column to calculate the rate of change for.
-    :param time_interval: Time interval over which to smooth the rate of change. If None, no smoothing is applied.
+    :param seconds_per_interval: Number of seconds over which to calculate the rate of change.
+    :param smoothing_window: Optional time window for smoothing the rate of change.
     :param new_col_name: Optional name for the new column to store the rate of change.
                          If None, defaults to "d{col_name}_dt".
     :return: A DataFrame with the calculated rate of change added as a new column.
@@ -325,18 +327,19 @@ def calc_temporal_rate_of_change(
     # calculate the rate of change of the specified column
     processed_df[new_col_name] = processed_df[col_name].diff() / (
         processed_df["timestamp"].diff().dt.total_seconds()
+        / seconds_per_interval
     )
 
     # fill the rate of change column with 0 for the first point in each storm
     storm_inits_idx = processed_df.groupby("storm_id").head(1).index
     processed_df.loc[storm_inits_idx, new_col_name] = 0
 
-    if time_interval is not None:
+    if smoothing_window is not None:
         # calculate a rolling mean of the rate of change over the specified time interval for each storm group
         processed_df[new_col_name] = (
             processed_df.set_index("timestamp")
             .groupby("storm_id")[new_col_name]
-            .rolling(time_interval)
+            .rolling(smoothing_window)
             .mean()
             .values
         )
