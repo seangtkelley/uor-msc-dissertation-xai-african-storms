@@ -319,23 +319,40 @@ for exp_group_name, exp_names in exp_groups.items():
             plt.title(f"Mean SHAP Value of {feature} over Map for {exp_name}")
             plotting.save_plot(f"{exp_name}_shap_{feature}_map.png", fig_dir)
 
-            # for n_top_features abs corr with eat_hours, bar plot with mean per hour
-            top_temp_corr_features = (
-                corr_matrix["eat_hours"]
-                .abs()
-                .sort_values(ascending=False)
-                .iloc[1 : n_top_features + 1]
-                .index
+        # for n_top_features abs corr with eat_hours, bar plot with mean per hour
+        top_temp_corr_features = (
+            corr_matrix["eat_hours"]
+            .abs()
+            .sort_values(ascending=False)
+            .iloc[1 : n_top_features + 1]
+            .index
+        )
+        for feature in top_temp_corr_features:
+            mean_per_hour = (
+                merge_df.groupby("eat_hours")[feature].mean().reset_index()
             )
-            for feature in top_temp_corr_features:
-                mean_per_hour = merge_df.groupby("eat_hours")[feature].mean()
-                plt.figure(figsize=(10, 6))
-                mean_per_hour.plot(kind="bar")
-                plt.title(f"Mean SHAP Value of {feature} by Hour")
-                plt.xlabel("Hour (UTC+3)")
-                plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-                plotting.save_plot(
-                    f"{exp_name}_shap_{feature}_by_hour.png", fig_dir
-                )
+            plt.figure(figsize=(10, 6))
+            ax = sns.barplot(
+                data=mean_per_hour,
+                x="eat_hours",
+                y=feature,
+                hue=feature,
+                palette=shap.plots.colors.red_blue,
+                legend=False,
+            )
+            plt.title(f"Mean SHAP Value of {feature} by Hour")
+            plt.xlabel("Hour (UTC+3)")
+            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
+            ax.set_xticks(range(24 * 4))
+            ax.set_xticklabels(
+                [
+                    f"{h//4}:{(h%4)*15:02d}" if h % 4 == 0 else ""
+                    for h in range(24 * 4)
+                ],
+                rotation=45,
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_by_hour.png", fig_dir
+            )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
