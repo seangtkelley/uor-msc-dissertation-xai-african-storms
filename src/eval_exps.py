@@ -233,19 +233,6 @@ for exp_group_name, exp_names in exp_groups.items():
         # calculate correlation
         corr_matrix = merge_df.corr()
 
-        # alternative that might be necessary with tons of shap values
-        # corr_matrix = pd.DataFrame()
-        # for geo_temp_col in geo_temp_cols:
-        #     if corr_matrix.empty:
-        #         corr_matrix = shap_df.corrwith(
-        #             X_test_sample[geo_temp_col]
-        #         ).to_frame(geo_temp_col)
-        #     else:
-        #         corr_matrix[geo_temp_col] = shap_df.corrwith(
-        #             X_test_sample[geo_temp_col]
-        #         )
-        #     corr = shap_df.corrwith(X_test_sample[geo_temp_col])
-
         # plot heat map of correlations
         plt.figure(figsize=(10, int(0.3 * len(corr_matrix))))
         sns.heatmap(
