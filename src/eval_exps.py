@@ -73,7 +73,11 @@ else:
 print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
-    fig = plt.figure(figsize=(16, 6 * len(exp_names)))
+    # init exp group fig directory
+    fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
+    fig_dir.mkdir(parents=True, exist_ok=True)
+
+    summary_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -127,7 +131,7 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test target standard deviation: {test_std:.4f}")
 
         # plot predictions vs actual using matplotlib
-        ax_pred = fig.add_subplot(2, len(exp_names), i + 1)
+        ax_pred = summary_fig.add_subplot(2, len(exp_names), i + 1)
         ax_pred.scatter(y_pred, y_test, s=10)
 
         # Regression line and R value using sklearn
@@ -167,7 +171,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     frac=args.shap_sample, random_state=config.RANDOM_STATE
                 )
 
-            # cast bool to int
+            # cast bool to int as SHAP TreeExplainer requires numeric inputs
             X_test_sample = X_test_sample.astype(
                 {
                     col: int
@@ -193,7 +197,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 pickle.dump(explanation, f)
 
         # plot SHAP summary plot
-        ax_shap = fig.add_subplot(2, len(exp_names), len(exp_names) + i + 1)
+        ax_shap = summary_fig.add_subplot(
+            2, len(exp_names), len(exp_names) + i + 1
+        )
         shap.plots.beeswarm(
             explanation,
             show=False,
@@ -256,12 +262,6 @@ for exp_group_name, exp_names in exp_groups.items():
         plt.title(
             f"Heatmap of {exp_name} SHAP Value Correlations with Geo-Temporal Features"
         )
-        plotting.save_plot(
-            f"{exp_name}_shap_correlation_heatmap.png",
-            config.EXPERIMENT_FIGURES_DIR,
-        )
+        plotting.save_plot(f"{exp_name}_shap_correlation_heatmap.png", fig_dir)
 
-    plotting.save_plot(
-        f"{exp_group_name}_summary.png",
-        config.EXPERIMENT_FIGURES_DIR,
-    )
+    plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)

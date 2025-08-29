@@ -395,7 +395,7 @@ def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
     if not exp_best_run_id_cache.exists():
         # init the cache
         with open(exp_best_run_id_cache, "w") as f:
-            f.write("")
+            f.write("{}")
 
     # load run info from cache
     file_json = {}
@@ -449,7 +449,9 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
     model_filepath = None
     try:
         if len(run_dir_search) != 1:
-            raise ValueError("Multiple run directories found.")
+            raise ValueError(
+                f"Expected exactly one run directory but found {len(run_dir_search)} for run {wandb_run.id}."
+            )
 
         print("Loading model from local run directory...")
 
