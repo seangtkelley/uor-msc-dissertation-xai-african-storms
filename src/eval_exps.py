@@ -151,6 +151,8 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_pred.set_ylabel(f"Actual Value ({exp_config['target_units']})")
         ax_pred.legend()
 
+        # by default, use entire test set
+        X_test_sample = X_test
         if args.load_shap:
             # load shap values from pickled file
             shap_values_path = (
@@ -164,9 +166,6 @@ for exp_group_name, exp_names in exp_groups.items():
                 X_test_sample = X_test.sample(
                     frac=args.shap_sample, random_state=config.RANDOM_STATE
                 )
-            else:
-                # use entire test set
-                X_test_sample = X_test
 
             # cast bool to int
             X_test_sample = X_test_sample.astype(
@@ -206,6 +205,61 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_title(f"SHAP Beeswarm Plot for {exp_name}")
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
+
+        # convert shap values to dataframe
+        shap_df = pd.DataFrame(
+            explanation.values,
+            columns=X_test_sample.columns,
+            index=X_test_sample.index,
+        )
+
+        # merge shap values dataframe with geo_temp_cols from X_test dataframe
+        geo_temp_cols = ["lon", "lat", "eat_hours", "date_angle"]
+        merge_df = test_df.loc[X_test_sample.index, geo_temp_cols].merge(
+            shap_df[
+                [col for col in shap_df.columns if col not in geo_temp_cols]
+            ],
+            left_index=True,
+            right_index=True,
+        )
+
+        # calculate correlation
+        corr_matrix = merge_df.corr()
+
+        # alternative that might be necessary with tons of shap values
+        # corr_matrix = pd.DataFrame()
+        # for geo_temp_col in geo_temp_cols:
+        #     if corr_matrix.empty:
+        #         corr_matrix = shap_df.corrwith(
+        #             X_test_sample[geo_temp_col]
+        #         ).to_frame(geo_temp_col)
+        #     else:
+        #         corr_matrix[geo_temp_col] = shap_df.corrwith(
+        #             X_test_sample[geo_temp_col]
+        #         )
+        #     corr = shap_df.corrwith(X_test_sample[geo_temp_col])
+
+        # plot heat map of correlations
+        plt.figure(figsize=(10, int(0.5 * len(corr_matrix))))
+        sns.heatmap(
+            corr_matrix.loc[
+                ~corr_matrix.index.isin(geo_temp_cols), geo_temp_cols
+            ],
+            annot=True,
+            fmt=".2f",
+            cmap="coolwarm",
+            center=0,
+            cbar_kws={"label": "Correlation"},
+            vmin=-1,
+            vmax=1,
+        )
+        plt.title(
+            f"Heatmap of {exp_name} SHAP Value Correlations with Geo-Temporal Features"
+        )
+        plotting.save_plot(
+            f"{exp_name}_shap_correlation_heatmap.png",
+            config.EXPERIMENT_FIGURES_DIR,
+        )
 
     plotting.save_plot(
         f"{exp_group_name}_summary.png",
