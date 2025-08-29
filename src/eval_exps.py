@@ -240,7 +240,7 @@ for exp_group_name, exp_names in exp_groups.items():
         #     corr = shap_df.corrwith(X_test_sample[geo_temp_col])
 
         # plot heat map of correlations
-        plt.figure(figsize=(10, int(0.5 * len(corr_matrix))))
+        plt.figure(figsize=(10, int(0.3 * len(corr_matrix))))
         sns.heatmap(
             corr_matrix.loc[
                 ~corr_matrix.index.isin(geo_temp_cols), geo_temp_cols
