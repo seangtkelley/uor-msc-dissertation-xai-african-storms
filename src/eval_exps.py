@@ -121,6 +121,10 @@ for exp_group_name, exp_names in exp_groups.items():
         # calculate standard deviation of test target
         test_std = np.std(y_test)
 
+        # print RMSE and standard deviation
+        print(f"Test RMSE: {test_rmse:.4f}")
+        print(f"Test target standard deviation: {test_std:.4f}")
+
         # plot predictions vs actual using matplotlib
         ax_pred = fig.add_subplot(2, len(exp_names), i + 1)
         ax_pred.scatter(y_pred, y_test, s=10)
