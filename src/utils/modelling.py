@@ -395,7 +395,7 @@ def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
     if not exp_best_run_id_cache.exists():
         # init the cache
         with open(exp_best_run_id_cache, "w") as f:
-            f.write("")
+            f.write("{}")
 
     # load run info from cache
     file_json = {}
