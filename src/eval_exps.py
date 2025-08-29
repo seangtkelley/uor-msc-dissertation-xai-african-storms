@@ -250,15 +250,18 @@ for exp_group_name, exp_names in exp_groups.items():
         )
         plotting.save_plot(f"{exp_name}_shap_correlation_heatmap.png", fig_dir)
 
-        # for the top 2 correlated feature with "lon", plot the mean shap value over a map
+        # get absolute correlations with lon and lat
+        corr_with_lon = corr_matrix["lon"].abs()
+        corr_with_lat = corr_matrix["lat"].abs()
+
+        # combine and get top features (excluding lon and lat themselves)
         n_top_features = 5
+        combined_corr = corr_with_lon.add(corr_with_lat, fill_value=0)
+        combined_corr = combined_corr.drop(["lon", "lat"], errors="ignore")
         top_corr_features = (
-            corr_matrix["lon"]
-            .abs()
-            .sort_values(ascending=False)
-            .index[
-                1 : n_top_features + 1
-            ]  # skip first row as that is autocorrelation
+            combined_corr.sort_values(ascending=False)
+            .head(n_top_features)
+            .index
         )
         for feature in top_corr_features:
             n_bins = 50
