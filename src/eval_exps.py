@@ -15,6 +15,7 @@ __status__ = "Development"
 import argparse
 import pickle
 
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -263,5 +264,71 @@ for exp_group_name, exp_names in exp_groups.items():
             f"Heatmap of {exp_name} SHAP Value Correlations with Geo-Temporal Features"
         )
         plotting.save_plot(f"{exp_name}_shap_correlation_heatmap.png", fig_dir)
+
+        # for the top 2 correlated feature with "lon", plot the mean shap value over a map
+        n_top_features = 5
+        top_corr_features = (
+            corr_matrix["lon"]
+            .abs()
+            .sort_values(ascending=False)
+            .index[
+                1 : n_top_features + 1
+            ]  # skip first row as that is autocorrelation
+        )
+        for feature in top_corr_features:
+            n_bins = 50
+            binned2d_mean = (
+                merge_df.groupby(
+                    [
+                        pd.cut(merge_df["lat"], bins=n_bins),
+                        pd.cut(merge_df["lon"], bins=n_bins),
+                    ],
+                    observed=False,
+                )[feature]
+                .mean()
+                .reset_index(name=f"{feature}_mean")
+            )
+
+            binned2d_mean["center_lat"] = (
+                binned2d_mean["lat"].apply(lambda x: x.mid).astype(float)
+            )
+            binned2d_mean["center_lon"] = (
+                binned2d_mean["lon"].apply(lambda x: x.mid).astype(float)
+            )
+
+            mean_grid = (
+                binned2d_mean[f"{feature}_mean"]
+                .to_numpy()
+                .reshape(
+                    n_bins,
+                    n_bins,
+                )
+            )
+
+            print(f"Plotting mean SHAP value of {feature} over map...")
+            plt.figure(figsize=(10, 6))
+            ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
+
+            pcolormesh = ax.pcolormesh(
+                binned2d_mean["center_lon"].unique(),
+                binned2d_mean["center_lat"].unique(),
+                mean_grid,
+                cmap=shap.plots.colors.red_blue,
+                transform=ccrs.PlateCarree(),
+            )
+            cbar = plt.colorbar(
+                pcolormesh,
+                ax=ax,
+                orientation="horizontal",
+                pad=0.1,
+                aspect=40,
+                shrink=0.63,
+            )
+            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+            plotting.add_borders(ax)
+            plotting.add_gridlines(ax)
+
+            plt.title(f"Mean SHAP Value of {feature} over Map for {exp_name}")
+            plotting.save_plot(f"{exp_name}_shap_{feature}_map.png", fig_dir)
 
     plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
