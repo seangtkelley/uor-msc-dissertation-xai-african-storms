@@ -13,6 +13,7 @@ __status__ = "Development"
 
 
 import argparse
+import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,6 +37,21 @@ parser.add_argument(
     "--exp_group_names",
     type=str,
     help="Experiments to evaluate, separated by commas. If not specified, all will be evaluated.",
+)
+parser.add_argument(
+    "--shap_sample",
+    type=float,
+    help="Proportion of test samples to use for SHAP value calculation",
+)
+parser.add_argument(
+    "--save_shap",
+    action="store_true",
+    help="Save SHAP values to file",
+)
+parser.add_argument(
+    "--load_shap",
+    action="store_true",
+    help="Load SHAP values from file",
 )
 args = parser.parse_args()
 
@@ -130,22 +146,47 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_pred.set_ylabel(f"Actual Value ({exp_config['target_units']})")
         ax_pred.legend()
 
-        # sample X_test for faster shap value calc
-        X_test_sample = X_test.sample(
-            frac=0.2, random_state=config.RANDOM_STATE
-        )
+        if args.load_shap:
+            # load shap values from pickled file
+            shap_values_path = (
+                config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+            )
+            with open(shap_values_path, "rb") as f:
+                explanation = pickle.load(f)
+        else:
+            if args.shap_sample is not None and args.shap_sample < 1.0:
+                # sample X_test for faster shap value calc
+                X_test_sample = X_test.sample(
+                    frac=args.shap_sample, random_state=config.RANDOM_STATE
+                )
+            else:
+                # use entire test set
+                X_test_sample = X_test
 
-        # cast bool to int
-        X_test_sample = X_test_sample.astype(
-            {
-                col: int
-                for col in X_test_sample.select_dtypes(include="bool").columns
-            }
-        )
+            # cast bool to int
+            X_test_sample = X_test_sample.astype(
+                {
+                    col: int
+                    for col in X_test_sample.select_dtypes(
+                        include="bool"
+                    ).columns
+                }
+            )
 
-        # get shap values for test set
-        explainer = shap.TreeExplainer(best_model, X_test_sample)
-        explanation = explainer(X_test_sample)
+            # get shap values for test set
+            explainer = shap.TreeExplainer(best_model, X_test_sample)
+            explanation = explainer(X_test_sample)
+
+        if args.save_shap and not args.load_shap:
+            # ensure shap values directory exists
+            config.SHAP_VALUES_DIR.mkdir(parents=True, exist_ok=True)
+
+            # save shap values to pickled file
+            shap_values_path = (
+                config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+            )
+            with open(shap_values_path, "wb") as f:
+                pickle.dump(explanation, f)
 
         # plot SHAP summary plot
         ax_shap = fig.add_subplot(2, len(exp_names), len(exp_names) + i + 1)
@@ -163,5 +204,4 @@ for exp_group_name, exp_names in exp_groups.items():
 
     plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
 
-    break
     break
