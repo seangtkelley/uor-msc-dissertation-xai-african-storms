@@ -320,14 +320,14 @@ for exp_group_name, exp_names in exp_groups.items():
             plotting.save_plot(f"{exp_name}_shap_{feature}_map.png", fig_dir)
 
         # for n_top_features abs corr with eat_hours, bar plot with mean per hour
-        top_temp_corr_features = (
+        top_hour_corr_features = (
             corr_matrix["eat_hours"]
             .abs()
             .sort_values(ascending=False)
             .iloc[1 : n_top_features + 1]
             .index
         )
-        for feature in top_temp_corr_features:
+        for feature in top_hour_corr_features:
             mean_per_hour = (
                 merge_df.groupby("eat_hours")[feature].mean().reset_index()
             )
@@ -353,6 +353,49 @@ for exp_group_name, exp_names in exp_groups.items():
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_by_hour.png", fig_dir
+            )
+
+        top_date_corr_features = (
+            corr_matrix["date_angle"]
+            .abs()
+            .sort_values(ascending=False)
+            .iloc[1 : n_top_features + 1]
+            .index
+        )
+        merge_df["timestamp"] = test_df.loc[X_test_sample.index, "timestamp"]
+        for feature in top_date_corr_features:
+            mean_per_day = (
+                merge_df.groupby(merge_df["timestamp"].dt.dayofyear)[feature]
+                .mean()
+                .reset_index()
+            )
+            plt.figure(figsize=(10, 6))
+            ax = sns.barplot(
+                data=mean_per_day,
+                x="timestamp",
+                y=feature,
+                hue=feature,
+                palette=shap.plots.colors.red_blue,
+                legend=False,
+            )
+
+            plt.title(f"Mean SHAP Value of {feature} over Year")
+            plt.xlabel("Day of Year")
+            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
+            # month_starts = (
+            #     merge_df["timestamp"]
+            #     .drop_duplicates()
+            #     .dt.to_period("M")
+            #     .drop_duplicates()
+            #     .index
+            # )
+            # month_labels = mean_per_day.loc[
+            #     month_starts, "timestamp"
+            # ].dt.strftime("%b")
+            # ax.set_xticks(month_starts)
+            # ax.set_xticklabels(month_labels, rotation=45)
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_over_year.png", fig_dir
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
