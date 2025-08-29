@@ -106,8 +106,8 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
             linestyle="--",
         )
         ax_pred.set_title(f"Model Verification for {exp_name}")
-        ax_pred.set_xlabel("Predicted Value (K)")
-        ax_pred.set_ylabel("Actual Value (K)")
+        ax_pred.set_xlabel(f"Predicted Value ({exp_config['target_units']})")
+        ax_pred.set_ylabel(f"Actual Value ({exp_config['target_units']})")
         ax_pred.legend()
 
         # sample X_test for faster shap value calc
@@ -137,7 +137,8 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
             group_remaining_features=False,
             max_display=12,
         )
-        ax_shap.set_title(f"SHAP Summary Plot for {exp_name}")
+        ax_shap.set_title(f"SHAP Beeswarm Plot for {exp_name}")
+        ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
     plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
