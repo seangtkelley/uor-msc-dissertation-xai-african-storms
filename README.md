@@ -122,7 +122,7 @@ Notes:
 | `zonal_speed` | $x$-component of MCS centre propagation vector | km/h |
 | `meridional_speed` | $y$-component of MCS centre propagation vector | km/h |
 | `area` | Area of the MCS | km² |
-| `storm_max_area` | Max value of `area` over MCS | km² |
+| `storm_max_area` | Max value of `area` for MCS | km² |
 | `bearing_from_prev` | Compass bearing from previous observation | ° from N |
 | `bearing_to_next` | Compass bearing to next observation | ° from N |
 | `distance_from_prev` | Distance traversed from previous observation | km |
@@ -164,7 +164,7 @@ Notes:
 | `dmin_bt_dt` | Rate of change of `min_bt` | K/h |
 | `mean_bt` | Mean cloudtop brightness within MCS area | K |
 | `dmean_bt_dt` | Rate of change of `mean_bt` | K/h |
-| `storm_min_bt` | Minimum value of `min_bt` reached over MCS lifetime | K |
+| `storm_min_bt` | Minimum value of `min_bt` reached for MCS | K |
 | `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean |
 | `mjo_phase` | Phase of Madden–Julian oscillation (MJO) | integer range from 1 to 8 |
 | `mjo_amplitude` | Amplitude of MJO | - |

@@ -7,9 +7,9 @@ This section details the methodology employed in this research. The approach is 
 
 \subsection{Database of East African Mesoscale Convective Systems (MCSs)}
 
-In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of cloud top brightness temperature (BT)\todo{acronym, especially to help table below?} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each MCS, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
+In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of cloud top brightness temperature (BT)\todo{acronym, especially to help table below?} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
 
-From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must be longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of (\degN{3} - \degN{15}, \degE{34} - \degE{52}). The 3-hour threshold was chosen because storms of this duration account for 92\% of MCS precipitation \citep{Hill2023}.
+From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must be longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of (\degN{3} - \degN{15}, \degE{34} - \degE{52}). The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs} precipitation \citep{Hill2023}.
 
 \subsection{ERA5 Data}
 
@@ -44,7 +44,7 @@ From this comprehensive storm database, a subset of approximately 30,000 was sel
 
 \subsection{Feature Engineering and Selection}
 
-Table \ref{tab:features} describes the X features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the MCS centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire domain of the \acrshort{era5} and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the grid points corresponding to the storm centroids.
+Table \ref{tab:features} describes the X features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire domain of the \acrshort{era5} and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the grid points corresponding to the storm centroids.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\linewidth} p{0.50\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
@@ -70,29 +70,29 @@ Table \ref{tab:features} describes the X features used for this thesis and their
 
     \texttt{date\_angle} & Angle representation of current date within year & \unit{\degree} \\
     \texttt{eat\_hours} & Time step hour of day & \href{https://www.timeanddate.com/time/zones/eat}{Eastern Africa Time} (UTC+3) \\
-    \texttt{storm\_total\_duration} & Total duration of MCS & \unit{\hour} \\
-    \texttt{lon} & Longitude of MCS centre & \unit{\degree}E \\
-    \texttt{lat} & Latitude of MCS centre & \unit{\degree}N \\
-    \texttt{orography\_height} & Elevation of land surface at MCS centre & \unit{\meter} \\
-    \texttt{anor} & Angle of sub-gridscale orography at MCS centre & radians from E \\
-    \texttt{upslope\_bearing} & Compass bearing of upslope direction at MCS centre & \unit{\degree} from  N \\
-    \texttt{slope\_angle} & Angle of slope at MCS centre & \unit{\degree} \\
-    \texttt{over\_land} & Flag for MCS centre (True if MCS centre is over land, else False) & \texttt{boolean} \\
+    \texttt{storm\_total\_duration} & Total duration of \acrshort{mcs} & \unit{\hour} \\
+    \texttt{lon} & Longitude of \acrshort{mcs} centre & \unit{\degree}E \\
+    \texttt{lat} & Latitude of \acrshort{mcs} centre & \unit{\degree}N \\
+    \texttt{orography\_height} & Elevation of land surface at \acrshort{mcs} centre & \unit{\meter} \\
+    \texttt{anor} & Angle of sub-gridscale orography at \acrshort{mcs} centre & radians from E \\
+    \texttt{upslope\_bearing} & Compass bearing of upslope direction at \acrshort{mcs} centre & \unit{\degree} from  N \\
+    \texttt{slope\_angle} & Angle of slope at \acrshort{mcs} centre & \unit{\degree} \\
+    \texttt{over\_land} & Flag for \acrshort{mcs} centre (True if \acrshort{mcs} centre is over land, else False) & \texttt{boolean} \\
     \texttt{acc\_land\_time} & Accumulated time where \texttt{over\_land}=True & \unit{\hour} \\
-    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for MCS & \unit{\hour} \\
+    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for \acrshort{mcs} & \unit{\hour} \\
     \texttt{mean\_land\_frac} & Fraction of area within 400 km that is over land & ratio ($[0,1]$) \\
-    \texttt{zonal\_speed} & $x$-component of MCS centre propagation vector & \unit{\km\per\hour} \\
-    \texttt{meridional\_speed} & $y$-component of MCS centre propagation vector & \unit{\km\per\hour} \\
-    \texttt{area} & Area of the MCS & \unit{\km\squared} \\
-    \texttt{storm\_max\_area} & Max value of \texttt{area} over MCS & \unit{\km\squared} \\
+    \texttt{zonal\_speed} & $x$-component of \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{meridional\_speed} & $y$-component of \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{area} & Area of the \acrshort{mcs} & \unit{\km\squared} \\
+    \texttt{storm\_max\_area} & Max value of \texttt{area} for \acrshort{mcs} & \unit{\km\squared} \\
     \texttt{bearing\_from\_prev} & Compass bearing from previous observation & \unit{\degree} from  N \\
     \texttt{bearing\_to\_next} & Compass bearing to next observation & \unit{\degree} from  N \\
     \texttt{distance\_from\_prev} & Distance traversed from previous observation & \unit{\km} \\
     \texttt{distance\_to\_next} & Distance to next observation & \unit{\km} \\
     \texttt{distance\_traversed} & Cumulative sum of \texttt{distance\_from\_prev} & \unit{\km} \\
-    \texttt{storm\_bearing} & Compass bearing from first to last MCS centre & \unit{\degree} from  N \\
-    \texttt{storm\_distance \_traversed} & Total cumulative distance traversed by MCS centre & \unit{\km} \\
-    \texttt{storm\_straight \_line\_distance} & Distance from first to last MCS centre & \unit{\km} \\
+    \texttt{storm\_bearing} & Compass bearing from first to last \acrshort{mcs} centre & \unit{\degree} from  N \\
+    \texttt{storm\_distance \_traversed} & Total cumulative distance traversed by \acrshort{mcs} centre & \unit{\km} \\
+    \texttt{storm\_straight \_line\_distance} & Distance from first to last \acrshort{mcs} centre & \unit{\km} \\
     \texttt{mean\_skt} & Surface temperature & \unit{\kelvin} \\
     \texttt{mean\_land\_skt} & Land surface temperature (\acrshort{nan} if entire area is ocean) & \unit{\kelvin} \\
     \texttt{mean\_sst} & Sea surface temperature (\acrshort{nan} if entire area is land) & \unit{\kelvin} \\
@@ -109,7 +109,7 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{mean\_v\_shear\_850\_500} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{500}{\hecto\pascal} & \unit{\meter\per\second} \\
     \texttt{mean\_u\_shear\_850\_200} & Shear of zonal wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
     \texttt{mean\_v\_shear\_850\_200} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
-    \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at MCS centre originates & \unit{\degree} from  N \\
+    \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at \acrshort{mcs} centre originates & \unit{\degree} from  N \\
     \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} (wind is going upslope: \ang{0}, downslope: \ang{180}, cross-slope: \ang{90}, \ang{270}) & \unit{\degree} from \texttt{upslope\_bearing} \\
     \texttt{mean\_tcwv} & Total column water vapour (TCWV) & \unit{\kilogram\per\meter\squared} \\
     \texttt{domain\_mean\_tcwv} & Mean TCWV over the entire domain of ERA5 data & \unit{\kilogram\per\meter\squared} \\
@@ -122,11 +122,11 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{olr\_75} & 75th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{olr\_50} & 50th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & \unit{\milli\meter} \\
-    \texttt{min\_bt} & Minimum cloudtop brightness within MCS area & \unit{\kelvin} \\
+    \texttt{min\_bt} & Minimum cloudtop brightness within \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & \unit{\kelvin\per\hour} \\
-    \texttt{mean\_bt} & Mean cloudtop brightness within MCS area & \unit{\kelvin} \\
+    \texttt{mean\_bt} & Mean cloudtop brightness within \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & \unit{\kelvin\per\hour} \\
-    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached over MCS lifetime & \unit{\kelvin} \\
+    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached for \acrshort{mcs} & \unit{\kelvin} \\
     \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & \texttt{boolean} \\
     \texttt{mjo\_phase} & Phase of Madden--Julian oscillation (MJO) & $[1, 8] \cap \mathbb{Z}$ \\
     \texttt{mjo\_amplitude} & Amplitude of MJO & - \\
