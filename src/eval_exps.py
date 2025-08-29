@@ -70,6 +70,7 @@ if args.exp_group_names is not None:
 else:
     exp_groups = config.EXPERIMENT_GROUPS
 
+print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
     fig = plt.figure(figsize=(16, 6 * len(exp_names)))
