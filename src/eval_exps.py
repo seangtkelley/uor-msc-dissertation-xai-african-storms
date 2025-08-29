@@ -73,6 +73,10 @@ else:
 print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
+    # init exp group fig directory
+    fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
+    fig_dir.mkdir(parents=True, exist_ok=True)
+
     fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
@@ -207,7 +211,4 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
-    plotting.save_plot(
-        f"{exp_group_name}_summary.png",
-        config.EXPERIMENT_FIGURES_DIR,
-    )
+    plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
