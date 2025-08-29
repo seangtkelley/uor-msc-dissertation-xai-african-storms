@@ -449,7 +449,9 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
     model_filepath = None
     try:
         if len(run_dir_search) != 1:
-            raise ValueError("Multiple run directories found.")
+            raise ValueError(
+                f"Expected exactly one run directory but found {len(run_dir_search)} for run {wandb_run.id}."
+            )
 
         print("Loading model from local run directory...")
 
