@@ -393,7 +393,40 @@ for exp_group_name, exp_names in exp_groups.items():
                 ]
             )
             plotting.save_plot(
-                f"{exp_name}_shap_{feature}_over_year.png", fig_dir
+                f"{exp_name}_shap_{feature}_by_day_over_year.png", fig_dir
+            )
+
+            mean_per_week = (
+                merge_df.groupby(merge_df["timestamp"].dt.isocalendar().week)[
+                    feature
+                ]
+                .mean()
+                .reset_index()
+            )
+
+            plt.figure(figsize=(10, 6))
+            ax = sns.barplot(
+                data=mean_per_week,
+                x="week",
+                y=feature,
+                hue=feature,
+                palette=shap.plots.colors.red_blue,
+                legend=False,
+            )
+
+            plt.title(f"Mean SHAP Value of {feature} over Year")
+            plt.xlabel("Week of Year")
+            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
+            weeksinyear = mean_per_week["week"].nunique()
+            ax.set_xticks(range(1, weeksinyear + 1))
+            ax.set_xticklabels(
+                [
+                    str(week) if week % 4 == 0 else ""
+                    for week in range(1, weeksinyear + 1)
+                ]
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_by_week_over_year.png", fig_dir
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
