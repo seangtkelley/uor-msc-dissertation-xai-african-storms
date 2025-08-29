@@ -384,20 +384,52 @@ def run_experiment(
     )
 
 
-def get_best_run_from_exp(exp_name: str) -> Run:
+def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
     """
     Get the best run from an experiment.
 
     :param exp_name: The name of the W&B experiment.
     :return: The best run from the experiment.
     """
-    # get all runs from the experiment
-    exp_runs = get_exp_runs(exp_name)
+    exp_best_run_id_cache = config.WANDB_LOG_DIR / "exp_best_run_id_cache.json"
+    if not exp_best_run_id_cache.exists():
+        # init the cache
+        with open(exp_best_run_id_cache, "w") as f:
+            f.write("")
 
-    # find the best run (lowest validation loss)
-    best_run = min(
-        exp_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
-    )
+    # load run info from cache
+    file_json = {}
+    with open(exp_best_run_id_cache, "r") as f:
+        file_json = json.load(f)
+
+        cache_info = file_json.get(exp_name, None)
+
+    if cache_info is not None:
+        # load offline run info
+        best_run = SimpleNamespace(
+            {
+                "id": cache_info["id"],
+                "name": cache_info["name"],
+                "config": cache_info["config"],
+            }
+        )
+    else:
+        # get all runs from the experiment
+        exp_runs = get_exp_runs(exp_name)
+
+        # find the best run (lowest validation loss)
+        best_run = min(
+            exp_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
+        )
+
+        # write the run info to the cache
+        file_json[exp_name] = {
+            "id": best_run.id,
+            "name": best_run.name,
+            "config": best_run.config,
+        }
+        with open(exp_best_run_id_cache, "w") as f:
+            f.write(json.dumps(file_json))
 
     return best_run
 
@@ -469,46 +501,3 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
             raise RuntimeError("Failed to locate or download the model file.")
 
     return model
-
-
-def get_best_model_from_exp(exp_name: str) -> XGBRegressor:
-    """
-    Get the best model for the experiment. Try to load the model fully locally
-    using cache and local W&B logs before contacting W&B API.
-
-    :param exp_name: The name of the W&B experiment
-    :return: The best model
-    """
-    exp_best_run_id_cache = config.WANDB_LOG_DIR / "exp_best_run_id_cache.json"
-
-    if not exp_best_run_id_cache.exists():
-        # init the cache
-        with open(exp_best_run_id_cache, "w") as f:
-            f.write("")
-
-    # load run id from cache
-    file_json = {}
-    with open(exp_best_run_id_cache, "r") as f:
-        file_json = json.load(f)
-
-        cache_info = file_json.get(exp_name, None)
-
-    if cache_info is not None:
-        # load offline run info
-        best_run = SimpleNamespace(
-            {
-                "id": cache_info["id"],
-                "name": cache_info["name"],
-            }
-        )
-    else:
-        # get best run from all sweeps
-        best_run = get_best_run_from_exp(exp_name)
-
-        # write the run info to the cache
-        file_json[exp_name] = {"id": best_run.id, "name": best_run.name}
-        with open(exp_best_run_id_cache, "w") as f:
-            f.write(json.dumps(file_json))
-
-    # get best model from best run
-    return get_model_from_run(best_run)

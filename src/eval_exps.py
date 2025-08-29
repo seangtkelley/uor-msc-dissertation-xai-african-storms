@@ -35,7 +35,7 @@ processed_df = pd.read_csv(
 
 for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
 
-    fig, axs = plt.subplots(2, len(exp_names), figsize=(12, 6 * len(exp_names)))
+    fig, axs = plt.subplots(2, len(exp_names), figsize=(24, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -44,8 +44,11 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
         # get exp config
         exp_config = config.EXPERIMENT_CONFIG[exp_name]
 
-        # get best model from best run of the exp
-        best_model = modelling.get_best_model_from_exp(exp_name)
+        # get best run from all sweeps
+        best_run = modelling.get_best_run_from_exp(exp_name)
+
+        # get the model from best run
+        best_model = modelling.get_model_from_run(best_run)
 
         # get test dataset index from best run config
         test_idx = best_run.config.get("test_dataset_index")
@@ -108,7 +111,7 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
 
         # sample X_test for faster shap value calc
         X_test_sample = X_test.sample(
-            frac=0.05, random_state=config.RANDOM_STATE
+            frac=0.2, random_state=config.RANDOM_STATE
         )
 
         # get shap values for test set
