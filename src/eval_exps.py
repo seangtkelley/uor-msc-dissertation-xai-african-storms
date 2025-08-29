@@ -202,6 +202,7 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
-    plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
-
-    break
+    plotting.save_plot(
+        f"{exp_group_name}_summary.png",
+        config.EXPERIMENT_FIGURES_DIR,
+    )
