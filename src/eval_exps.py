@@ -369,6 +369,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 .mean()
                 .reset_index()
             )
+
             plt.figure(figsize=(10, 6))
             ax = sns.barplot(
                 data=mean_per_day,
@@ -377,23 +378,20 @@ for exp_group_name, exp_names in exp_groups.items():
                 hue=feature,
                 palette=shap.plots.colors.red_blue,
                 legend=False,
+                edgecolor="none",
             )
 
             plt.title(f"Mean SHAP Value of {feature} over Year")
             plt.xlabel("Day of Year")
             plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-            # month_starts = (
-            #     merge_df["timestamp"]
-            #     .drop_duplicates()
-            #     .dt.to_period("M")
-            #     .drop_duplicates()
-            #     .index
-            # )
-            # month_labels = mean_per_day.loc[
-            #     month_starts, "timestamp"
-            # ].dt.strftime("%b")
-            # ax.set_xticks(month_starts)
-            # ax.set_xticklabels(month_labels, rotation=45)
+            daysinyear = mean_per_day["timestamp"].nunique()
+            ax.set_xticks(range(1, daysinyear + 1))
+            ax.set_xticklabels(
+                [
+                    str(day) if day % 30 == 0 else ""
+                    for day in range(1, daysinyear + 1)
+                ]
+            )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_over_year.png", fig_dir
             )
