@@ -126,6 +126,7 @@ for exp_group_name, exp_names in config.EXPERIMENT_GROUPS.items():
             show=False,
         )
         axs[1, i].set_title(f"SHAP Summary Plot for {exp_name}")
+        axs[1, i].tick_params(axis="y", labelsize=4)
 
     plotting.save_plot(f"{exp_group_name}.png", config.EXPERIMENT_FIGURES_DIR)
 

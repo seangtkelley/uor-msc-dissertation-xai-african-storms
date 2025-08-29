@@ -405,6 +405,7 @@ def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
         cache_info = file_json.get(exp_name, None)
 
     if cache_info is not None:
+        print("Loading best run info from offline cache...")
         # load offline run info
         best_run = SimpleNamespace(
             {
@@ -414,6 +415,7 @@ def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
             }
         )
     else:
+        print("Loading best run info from W&B API...")
         # get all runs from the experiment
         exp_runs = get_exp_runs(exp_name)
 
