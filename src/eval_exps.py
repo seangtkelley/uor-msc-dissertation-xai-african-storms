@@ -172,7 +172,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 # use entire test set
                 X_test_sample = X_test
 
-            # cast bool to int
+            # cast bool to int as SHAP TreeExplainer requires numeric inputs
             X_test_sample = X_test_sample.astype(
                 {
                     col: int
