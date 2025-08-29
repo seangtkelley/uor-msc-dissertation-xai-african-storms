@@ -288,97 +288,97 @@ WANDB_MAX_SWEEP_TRIALS = 20
 #                       EXPERIMENT CONFIGURATION
 # ==============================================================================
 EXPERIMENT_CONFIG = {
-    "storm_max_intensity_all": {  # 20 runs
+    "storm_max_intensity_all": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
         "target_units": "K",
     },
-    "storm_max_intensity_all_first_points": {  # 20 runs
+    "storm_max_intensity_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
         "target_units": "K",
     },
-    "storm_max_intensity_era5": {  # 20 runs
+    "storm_max_intensity_era5": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
         "target_units": "K",
     },
-    "storm_max_intensity_era5_first_points": {  # 20 runs
+    "storm_max_intensity_era5_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
         "target_units": "K",
     },
-    "storm_direction_all": {  # 20 runs
+    "storm_direction_all": {
         "first_points_only": False,
         "target_col": "storm_bearing",
         "feature_cols": "all",
         "target_units": "degrees",
     },
-    "storm_direction_all_first_points": {  # 22 runs
+    "storm_direction_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_bearing",
         "feature_cols": "all",
         "target_units": "degrees",
     },
-    "storm_direction_era5": {  # 20 runs
+    "storm_direction_era5": {
         "first_points_only": False,
         "target_col": "storm_bearing",
         "feature_cols": "era5",
         "target_units": "degrees",
     },
-    "storm_direction_era5_first_points": {  # 34 runs
+    "storm_direction_era5_first_points": {
         "first_points_only": True,
         "target_col": "storm_bearing",
         "feature_cols": "era5",
         "target_units": "degrees",
     },
-    "obs_intensification_all": {  # 20 runs
+    "obs_intensification_all": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "all",
         "target_units": "K/h",
     },
-    "obs_intensification_era5": {  # 20 runs
+    "obs_intensification_era5": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "era5",
         "target_units": "K/h",
     },
-    "obs_next_direction_all": {  # 20 runs
+    "obs_next_direction_all": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "all",
         "target_units": "degrees",
     },
-    "obs_next_direction_era5": {  # 20 runs
+    "obs_next_direction_era5": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "era5",
         "target_units": "degrees",
     },
-    "obs_next_distance_all": {  # 20 runs
+    "obs_next_distance_all": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "all",
         "target_units": "km",
     },
-    "obs_next_distance_era5": {  # 20 runs
+    "obs_next_distance_era5": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "era5",
         "target_units": "km",
     },
-    "obs_precipitation_all": {  # 20 runs
+    "obs_precipitation_all": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "all",
         "target_units": "mm/h",
     },
-    "obs_precipitation_era5": {  # 20 runs
+    "obs_precipitation_era5": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "era5",
