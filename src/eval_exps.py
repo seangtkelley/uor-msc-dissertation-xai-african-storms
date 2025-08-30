@@ -316,6 +316,8 @@ for exp_group_name, exp_names in exp_groups.items():
                 mean_grid,
                 cmap=shap.plots.colors.red_blue,
                 transform=ccrs.PlateCarree(),
+                vmin=-max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
+                vmax=max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
             )
             cbar = plt.colorbar(
                 pcolormesh,
