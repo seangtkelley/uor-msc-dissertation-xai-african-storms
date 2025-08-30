@@ -21,7 +21,6 @@ import seaborn as sns
 import shap
 from dotenv import load_dotenv
 from matplotlib.colors import TwoSlopeNorm
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 
 import config
@@ -144,30 +143,13 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
 
-        # plot predictions vs actual using matplotlib
-        ax_pred = exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1)
-        ax_pred.scatter(y_pred, y_test, s=10)
-
-        # Regression line and R value using sklearn
-        lr = LinearRegression()
-        lr.fit(y_pred.reshape(-1, 1), y_test.to_numpy().reshape(-1, 1))
-        reg_line = lr.predict(np.unique(y_pred).reshape(-1, 1))
-        r_squared = lr.score(
-            y_pred.reshape(-1, 1), y_test.to_numpy().reshape(-1, 1)
+        modelling.plot_model_verification(
+            exp_name,
+            exp_config["target_units"],
+            y_test.to_numpy(),
+            y_pred,
+            ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
         )
-
-        # plot regression line
-        ax_pred.plot(
-            np.unique(y_pred),
-            reg_line,
-            label=f"Regression line (R²={r_squared:.2f})",
-            color="black",
-            linestyle="--",
-        )
-        ax_pred.set_title(f"Model Verification for {exp_name}")
-        ax_pred.set_xlabel(f"Predicted Value ({exp_config['target_units']})")
-        ax_pred.set_ylabel(f"Actual Value ({exp_config['target_units']})")
-        ax_pred.legend()
 
         # by default, use entire test set
         X_test_sample = X_test

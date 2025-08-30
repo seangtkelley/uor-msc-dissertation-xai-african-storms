@@ -19,7 +19,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Iterable, Literal, Optional
 
+import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 from wandb.integration.xgboost import WandbCallback
@@ -506,3 +510,46 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
             raise RuntimeError("Failed to locate or download the model file.")
 
     return model
+
+
+def plot_model_verification(
+    exp_name: str,
+    target_units: str,
+    y_test: np.ndarray,
+    y_pred: np.ndarray,
+    ax: Optional[Axes],
+) -> None:
+    """
+    Plot model verification results: scatter plot of predictions vs actuals,
+    with regression line and corresponding R-squared value.
+
+    :param exp_name: Name of the experiment.
+    :param target_units: Units of the target variable.
+    :param y_test: Array of actual target values.
+    :param y_pred: Array of predicted target values.
+    :param ax: Matplotlib Axes object to plot on. If None, uses current axes.
+    """
+    if ax is None:
+        ax = plt.gca()
+
+    # plot predictions vs actual using matplotlib
+    ax.scatter(y_pred, y_test, s=10)
+
+    # Regression line and R value using sklearn
+    lr = LinearRegression()
+    lr.fit(y_pred.reshape(-1, 1), y_test.reshape(-1, 1))
+    reg_line = lr.predict(np.unique(y_pred).reshape(-1, 1))
+    r_squared = lr.score(y_pred.reshape(-1, 1), y_test.reshape(-1, 1))
+
+    # plot regression line
+    ax.plot(
+        np.unique(y_pred),
+        reg_line,
+        label=f"Regression line (R²={r_squared:.2f})",
+        color="black",
+        linestyle="--",
+    )
+    ax.set_title(f"Model Verification for {exp_name}")
+    ax.set_xlabel(f"Predicted Value ({target_units})")
+    ax.set_ylabel(f"Actual Value ({target_units})")
+    ax.legend()
