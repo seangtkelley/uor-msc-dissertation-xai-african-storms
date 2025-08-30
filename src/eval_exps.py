@@ -113,7 +113,8 @@ for exp_group_name, exp_names in exp_groups.items():
 
         # use first points only for all storm aggregate exps for fair comparison
         if exp_name.startswith("storm_"):
-            test_df = test_df.groupby("storm_id").first()
+            # using head(1) instead of first() to preserve original index
+            test_df = test_df.groupby("storm_id").head(1)
 
         # determine feature columns based on experiment config
         if exp_config["feature_cols"] == "all":

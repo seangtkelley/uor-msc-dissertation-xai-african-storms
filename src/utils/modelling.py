@@ -356,7 +356,8 @@ def run_experiment(
 
     # get data
     df = (
-        processed_df.groupby("storm_id").first()
+        # using head(1) instead of first() to preserve original index
+        processed_df.groupby("storm_id").head(1)
         if first_points_only
         else processed_df
     )
