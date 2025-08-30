@@ -22,6 +22,7 @@ import pandas as pd
 import seaborn as sns
 import shap
 from dotenv import load_dotenv
+from matplotlib.colors import TwoSlopeNorm
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 
@@ -348,13 +349,20 @@ for exp_group_name, exp_names in exp_groups.items():
             mean_per_hour = (
                 merge_df.groupby("eat_hours")[feature].mean().reset_index()
             )
+
+            centers = mean_per_hour[feature]
+            m = np.max(np.abs(centers))  # Symmetric range around zero
+            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
+            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
+            colors = [cmap(norm(val)) for val in centers]
+
             plt.figure(figsize=(10, 6))
             ax = sns.barplot(
                 data=mean_per_hour,
                 x="eat_hours",
                 y=feature,
-                hue=feature,
-                palette=config.SHAP_MAP_CMAP,
+                hue="eat_hours",
+                palette=colors,
                 legend=False,
             )
             plt.title(f"Mean SHAP Value of {feature} by Hour")
@@ -388,13 +396,19 @@ for exp_group_name, exp_names in exp_groups.items():
                 .reset_index()
             )
 
+            centers = mean_per_day[feature]
+            m = np.max(np.abs(centers))  # Symmetric range around zero
+            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
+            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
+            colors = [cmap(norm(val)) for val in centers]
+
             plt.figure(figsize=(10, 6))
             ax = sns.barplot(
                 data=mean_per_day,
                 x="timestamp",
                 y=feature,
-                hue=feature,
-                palette=config.SHAP_MAP_CMAP,
+                hue="timestamp",
+                palette=colors,
                 legend=False,
                 edgecolor="none",
             )
@@ -423,13 +437,19 @@ for exp_group_name, exp_names in exp_groups.items():
                 .reset_index()
             )
 
+            centers = mean_per_week[feature]
+            m = np.max(np.abs(centers))  # Symmetric range around zero
+            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
+            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
+            colors = [cmap(norm(val)) for val in centers]
+
             plt.figure(figsize=(10, 6))
             ax = sns.barplot(
                 data=mean_per_week,
                 x="week",
                 y=feature,
-                hue=feature,
-                palette=config.SHAP_MAP_CMAP,
+                hue="week",
+                palette=colors,
                 legend=False,
             )
 
