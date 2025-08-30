@@ -75,10 +75,21 @@ print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
     # init exp group fig directory
-    fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
-    fig_dir.mkdir(parents=True, exist_ok=True)
+    exp_group_fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
+    exp_group_fig_dir.mkdir(parents=True, exist_ok=True)
 
-    summary_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
+    # init dirs for geographic and temporal correlation plots
+    exp_group_geo_corr_fig_dir = (
+        config.EXPERIMENT_FIGURES_DIR / exp_group_name / "geographic_corr"
+    )
+    exp_group_geo_corr_fig_dir.mkdir(parents=True, exist_ok=True)
+    exp_group_temp_corr_fig_dir = (
+        config.EXPERIMENT_FIGURES_DIR / exp_group_name / "temporal_corr"
+    )
+    exp_group_temp_corr_fig_dir.mkdir(parents=True, exist_ok=True)
+
+    # init exp group summary fig
+    exp_group_sum_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -132,7 +143,7 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test target standard deviation: {test_std:.4f}")
 
         # plot predictions vs actual using matplotlib
-        ax_pred = summary_fig.add_subplot(2, len(exp_names), i + 1)
+        ax_pred = exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1)
         ax_pred.scatter(y_pred, y_test, s=10)
 
         # Regression line and R value using sklearn
@@ -198,7 +209,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     pickle.dump(explanation, f)
 
         # plot SHAP summary plot
-        ax_shap = summary_fig.add_subplot(
+        ax_shap = exp_group_sum_fig.add_subplot(
             2, len(exp_names), len(exp_names) + i + 1
         )
         shap.plots.beeswarm(
@@ -248,7 +259,10 @@ for exp_group_name, exp_names in exp_groups.items():
         plt.title(
             f"Heatmap of {exp_name} SHAP Value Correlations with Geo-Temporal Features"
         )
-        plotting.save_plot(f"{exp_name}_shap_correlation_heatmap.png", fig_dir)
+        plotting.save_plot(
+            f"{exp_name}_shap_correlation_heatmap.png",
+            exp_group_fig_dir,
+        )
 
         # get absolute correlations with lon and lat
         corr_with_lon = corr_matrix["lon"].abs()
@@ -293,7 +307,6 @@ for exp_group_name, exp_names in exp_groups.items():
                 )
             )
 
-            print(f"Plotting mean SHAP value of {feature} over map...")
             plt.figure(figsize=(10, 6))
             ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
 
@@ -317,7 +330,9 @@ for exp_group_name, exp_names in exp_groups.items():
             plotting.add_gridlines(ax)
 
             plt.title(f"Mean SHAP Value of {feature} over Map for {exp_name}")
-            plotting.save_plot(f"{exp_name}_shap_{feature}_map.png", fig_dir)
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map.png", exp_group_geo_corr_fig_dir
+            )
 
         # for n_top_features abs corr with eat_hours, bar plot with mean per hour
         top_hour_corr_features = (
@@ -352,7 +367,8 @@ for exp_group_name, exp_names in exp_groups.items():
                 rotation=45,
             )
             plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_hour.png", fig_dir
+                f"{exp_name}_shap_{feature}_by_hour.png",
+                exp_group_temp_corr_fig_dir,
             )
 
         top_date_corr_features = (
@@ -393,7 +409,8 @@ for exp_group_name, exp_names in exp_groups.items():
                 ]
             )
             plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_day_over_year.png", fig_dir
+                f"{exp_name}_shap_{feature}_by_day_over_year.png",
+                exp_group_temp_corr_fig_dir,
             )
 
             mean_per_week = (
@@ -426,7 +443,8 @@ for exp_group_name, exp_names in exp_groups.items():
                 ]
             )
             plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_week_over_year.png", fig_dir
+                f"{exp_name}_shap_{feature}_by_week_over_year.png",
+                exp_group_temp_corr_fig_dir,
             )
 
-    plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
+    plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)
