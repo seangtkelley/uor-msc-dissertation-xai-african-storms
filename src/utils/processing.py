@@ -881,7 +881,7 @@ def calc_2d_agg(
     df: pd.DataFrame,
     col: str,
     n_bins: int = 50,
-    agg_func: Callable = np.nanmean,
+    agg_func: Callable | str = "mean",
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Calculate 2D aggregated data for the given DataFrame.
