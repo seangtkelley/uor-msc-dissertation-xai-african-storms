@@ -13,7 +13,7 @@ __status__ = "Development"
 
 import pickle
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -103,6 +103,9 @@ def plot_shap_over_time(
     ax: Optional[Axes] = None,
     edgecolor: Optional[str] = None,
     xtick_interval: Optional[int] = None,
+    xtick_offset: int = 1,
+    xtick_convert: Callable[[int], str] = str,
+    xtick_rotation: int = 0,
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
@@ -137,9 +140,14 @@ def plot_shap_over_time(
         ax.set_xticks(range(1, intervals + 1))
         ax.set_xticklabels(
             [
-                str(interval) if interval % xtick_interval == 0 else ""
-                for interval in range(1, intervals + 1)
-            ]
+                (
+                    xtick_convert(interval)
+                    if interval % xtick_interval == 0
+                    else ""
+                )
+                for interval in range(xtick_offset, intervals + xtick_offset)
+            ],
+            rotation=xtick_rotation,
         )
 
     if title is not None:
