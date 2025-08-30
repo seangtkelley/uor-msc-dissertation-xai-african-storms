@@ -13,7 +13,6 @@ __status__ = "Development"
 
 
 import argparse
-import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +25,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 
 import config
-from utils import modelling, plotting, processing
+from utils import explaining, modelling, plotting, processing
 
 load_dotenv()
 
@@ -47,11 +46,13 @@ parser.add_argument(
 parser.add_argument(
     "--save_shap",
     action="store_true",
+    default=False,
     help="Save SHAP values to file",
 )
 parser.add_argument(
     "--load_shap",
     action="store_true",
+    default=False,
     help="Load SHAP values from file",
 )
 args = parser.parse_args()
@@ -171,43 +172,18 @@ for exp_group_name, exp_names in exp_groups.items():
         # by default, use entire test set
         X_test_sample = X_test
         if args.load_shap:
-            # load shap values from pickled file
-            shap_values_path = (
-                config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+            X_test_sample, explanation = explaining.load_shap_for_exp(
+                exp_name, processed_df
             )
-            with open(shap_values_path, "rb") as f:
-                explanation = pickle.load(f)
         else:
-            if args.shap_sample is not None and args.shap_sample < 1.0:
-                # sample X_test for faster shap value calc
-                X_test_sample = X_test.sample(
-                    frac=args.shap_sample, random_state=config.RANDOM_STATE
-                )
-
-            # cast bool to int as SHAP TreeExplainer requires numeric inputs
-            X_test_sample = X_test_sample.astype(
-                {
-                    col: int
-                    for col in X_test_sample.select_dtypes(
-                        include="bool"
-                    ).columns
-                }
+            X_test_sample, explanation = explaining.calc_shap_values(
+                best_model, X_test, sample_frac=args.shap_sample
             )
-
-            # get shap values for test sample
-            explainer = shap.TreeExplainer(best_model, X_test_sample)
-            explanation = explainer(X_test_sample)
 
             if args.save_shap:
-                # ensure shap values directory exists
-                config.SHAP_VALUES_DIR.mkdir(parents=True, exist_ok=True)
-
-                # save shap values to pickled file
-                shap_values_path = (
-                    config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+                explaining.save_shap_for_exp(
+                    exp_name, X_test_sample, explanation
                 )
-                with open(shap_values_path, "wb") as f:
-                    pickle.dump(explanation, f)
 
         # plot SHAP summary plot
         ax_shap = exp_group_sum_fig.add_subplot(
@@ -282,7 +258,6 @@ for exp_group_name, exp_names in exp_groups.items():
             agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
                 merge_df, feature
             )
-
             plotting.plot_2d_agg_map(
                 agg_lon,
                 agg_lat,
