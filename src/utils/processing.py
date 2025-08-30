@@ -875,3 +875,56 @@ def calc_kde(lons, lats) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     Z /= Z.max()
 
     return X, Y, Z
+
+
+def calc_2d_agg(
+    df: pd.DataFrame,
+    col: str,
+    n_bins: int = 50,
+    agg_func: Callable = np.nanmean,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Calculate 2D aggregated data for the given DataFrame.
+
+    :param df: DataFrame containing the data with columns 'lat' and 'lon'.
+    :param col: Column name to aggregate.
+    :param n_bins: Number of bins for latitude and longitude.
+    :param agg_func: Aggregation function to apply to each bin.
+    :return: Tuple containing the aggregated grid and the grid points.
+    """
+    # aggregate data into 2D bins and calculate mean for each bin
+    binned2d_agg = (
+        df.groupby(
+            [
+                pd.cut(df["lat"], bins=n_bins),
+                pd.cut(df["lon"], bins=n_bins),
+            ],
+            observed=False,
+        )[col]
+        .agg(agg_func)
+        .reset_index(name=f"{col}_agg")
+    )
+
+    # calculate bin centres
+    binned2d_agg["center_lat"] = (
+        binned2d_agg["lat"].apply(lambda x: x.mid).astype(float)
+    )
+    binned2d_agg["center_lon"] = (
+        binned2d_agg["lon"].apply(lambda x: x.mid).astype(float)
+    )
+
+    # reshape dataframe into 2D grid
+    agg_grid = (
+        binned2d_agg[f"{col}_agg"]
+        .to_numpy()
+        .reshape(
+            n_bins,
+            n_bins,
+        )
+    )
+
+    return (
+        binned2d_agg["center_lon"].unique(),
+        binned2d_agg["center_lat"].unique(),
+        agg_grid,
+    )

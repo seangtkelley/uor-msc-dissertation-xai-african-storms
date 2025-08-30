@@ -163,81 +163,29 @@ plotting.save_plot("anor_storm_init_end_kde.png")
 
 # %%
 print("Binning storm initial locations by latitude and longitude.")
-n_bins = 50
-storm_init_2dbinned_eat_hour = storm_inits.groupby(
-    [
-        pd.cut(storm_inits["lat"], bins=n_bins),
-        pd.cut(storm_inits["lon"], bins=n_bins),
-    ],
-    observed=False,
-)["eat_hours"]
-
-# find the mode and mean at each binned location
-storm_init_eat_hour_mode_by_loc = storm_init_2dbinned_eat_hour.agg(
-    lambda x: pd.Series.mode(x).iloc[0]
-).reset_index(name="eat_hours_mode")
-storm_init_eat_hour_mode_by_loc = storm_init_eat_hour_mode_by_loc.merge(
-    storm_init_2dbinned_eat_hour.agg(circmean, high=24).reset_index(
-        name="eat_hours_mean"
-    ),
-    on=["lat", "lon"],
-    how="inner",
+eat_mode_lon, eat_mode_lat, eat_mode_grid = processing.calc_2d_agg(
+    storm_inits, "eat_hours", agg_func=lambda x: pd.Series.mode(x).iloc[0]
 )
-
-# convert the latitude and longitude bins to their midpoints
-storm_init_eat_hour_mode_by_loc["center_lat"] = (
-    storm_init_eat_hour_mode_by_loc["lat"].apply(lambda x: x.mid).astype(float)
-)
-storm_init_eat_hour_mode_by_loc["center_lon"] = (
-    storm_init_eat_hour_mode_by_loc["lon"].apply(lambda x: x.mid).astype(float)
-)
-
-# %%
-print(
-    "Displaying first few rows of binned storm initial EAT hour mode and mean."
-)
-storm_init_eat_hour_mode_by_loc.head()
-
-# %%
-print("Reshaping EAT hour mode and mean to 2D grids for plotting.")
-eat_mode_grid = (
-    storm_init_eat_hour_mode_by_loc["eat_hours_mode"]
-    .to_numpy()
-    .reshape(
-        n_bins,
-        n_bins,
-    )
-)
-eat_mean_grid = (
-    storm_init_eat_hour_mode_by_loc["eat_hours_mean"]
-    .to_numpy()
-    .reshape(
-        n_bins,
-        n_bins,
-    )
+eat_mean_lon, eat_mean_lat, eat_mean_grid = processing.calc_2d_agg(
+    storm_inits,
+    "eat_hours",
+    # use circular mean as distance between 23:59h and 00:00h is only 1 minute, not 24 hours
+    agg_func=lambda x: circmean(x, high=24),
 )
 
 # %%
 print("Plotting storm initial locations with mode of EAT hours.")
-plt.figure(figsize=(10, 6))
-ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
-
-pcolormesh = ax.pcolormesh(
-    storm_init_eat_hour_mode_by_loc["center_lon"].unique(),
-    storm_init_eat_hour_mode_by_loc["center_lat"].unique(),
+plotting.plot_2d_agg_map(
+    eat_mode_lon,
+    eat_mode_lat,
     eat_mode_grid,
     cmap="twilight_shifted",
-    transform=ccrs.PlateCarree(),
+    cbar_aspect=40,
+    cbar_shrink=0.63,
+    cbar_label="Time of Day (EAT UTC+3)",
+    title="Storm Initial Locations with Mode of EAT Hours",
+    filename="storm_init_eat_hours_mode_by_loc.png",
 )
-cbar = plt.colorbar(
-    pcolormesh, ax=ax, orientation="horizontal", pad=0.1, aspect=40, shrink=0.63
-)
-cbar.set_label("Time of Day (EAT UTC+3)")
-plotting.add_borders(ax)
-plotting.add_gridlines(ax)
-
-plt.title("Storm Initial Locations with Mode of EAT Hours")
-plotting.save_plot("storm_init_eat_hours_mode_by_loc.png")
 
 # %%
 print("Plotting orography, storm initial EAT hour mode, and mean.")
@@ -252,36 +200,28 @@ plotting.add_all_map_features(axs[0])
 axs[0].set_title("Orography (Geopotential Height)")
 
 # plot eat hours mode
-pcolormesh = axs[1].pcolormesh(
-    storm_init_eat_hour_mode_by_loc["center_lon"].unique(),
-    storm_init_eat_hour_mode_by_loc["center_lat"].unique(),
+plotting.plot_2d_agg_map(
+    eat_mode_lon,
+    eat_mode_lat,
     eat_mode_grid,
+    ax=axs[1],
     cmap="twilight_shifted",
-    transform=ccrs.PlateCarree(),
+    cbar_aspect=50,
+    cbar_label="Time of Day (EAT UTC+3)",
+    title="Storm Init EAT Hours Mode",
 )
-cbar = plt.colorbar(
-    pcolormesh, ax=axs[1], orientation="horizontal", pad=0.1, aspect=50
-)
-cbar.set_label("Time of Day (EAT UTC+3)")
-axs[1].set_title("Storm Init EAT Hours Mode")
-plotting.add_borders(axs[1])
-plotting.add_gridlines(axs[1])
 
 # plot eat hours mean
-pcolormesh = axs[2].pcolormesh(
-    storm_init_eat_hour_mode_by_loc["center_lon"].unique(),
-    storm_init_eat_hour_mode_by_loc["center_lat"].unique(),
+plotting.plot_2d_agg_map(
+    eat_mean_lon,
+    eat_mean_lat,
     eat_mean_grid,
+    ax=axs[2],
     cmap="twilight_shifted",
-    transform=ccrs.PlateCarree(),
+    cbar_aspect=50,
+    cbar_label="Time of Day (EAT UTC+3)",
+    title="Storm Init EAT Hours Mean",
 )
-cbar = plt.colorbar(
-    pcolormesh, ax=axs[2], orientation="horizontal", pad=0.1, aspect=50
-)
-cbar.set_label("Time of Day (EAT UTC+3)")
-axs[2].set_title("Storm Init EAT Hours Mean")
-plotting.add_borders(axs[2])
-plotting.add_gridlines(axs[2])
 
 plotting.save_plot("orography_storm_init_eat_hours_mode_mean.png")
 
@@ -498,7 +438,8 @@ fig.update_layout(
 )
 
 fig.write_image(
-    config.FIGURES_DIR / "storm_cardinal_directions_distribution.png"
+    config.EXPLORATION_FIGURES_DIR
+    / "storm_cardinal_directions_distribution.png"
 )
 
 # %%
@@ -645,18 +586,17 @@ sns.heatmap(
 plotting.save_plot("feature_correlation_heatmap.png")
 
 # %%
-print("Plotting heatmap of orography, anor, and storm duration correlations.")
-sns.heatmap(
-    df[["orography_height", "anor", "storm_total_duration"]].corr(),
-    annot=True,
-    cmap="coolwarm",
-)
-plotting.save_plot("orography_anor_correlation_heatmap.png")
+# print("Plotting heatmap of orography, anor, and storm duration correlations.")
+# plt.figure(figsize=(40, 30))
+# sns.heatmap(
+#     df[["orography_height", "anor", "storm_total_duration"]].corr(),
+#     annot=True,
+#     cmap="coolwarm",
+# )
+# plotting.save_plot("orography_anor_correlation_heatmap.png")
 
 # %%
-print(
-    "Commented out: plotting mutual information heatmap for all numeric features."
-)
+# print("Plotting mutual information heatmap for all numeric features.")
 # sns.heatmap(
 #     df.select_dtypes(include=[np.number]).corr(
 #         method=lambda x, y: mutual_info_regression(
@@ -669,9 +609,7 @@ print(
 # plotting.save_plot("mutual_info_heatmap.png")
 
 # %%
-print(
-    "Commented out: plotting mutual information heatmap for orography, anor, and duration."
-)
+# print("Plotting mutual information heatmap for orography, anor, and duration.")
 # sns.heatmap(
 #     df[["orography_height", "anor", "storm_total_duration"]].corr(
 #         method=lambda x, y: mutual_info_regression(

@@ -15,7 +15,6 @@ __status__ = "Development"
 import argparse
 import pickle
 
-import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -27,7 +26,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 
 import config
-from utils import modelling, plotting
+from utils import modelling, plotting, processing
 
 load_dotenv()
 
@@ -280,62 +279,22 @@ for exp_group_name, exp_names in exp_groups.items():
             .index
         )
         for feature in top_geo_corr_features:
-            n_bins = 50
-            binned2d_mean = (
-                merge_df.groupby(
-                    [
-                        pd.cut(merge_df["lat"], bins=n_bins),
-                        pd.cut(merge_df["lon"], bins=n_bins),
-                    ],
-                    observed=False,
-                )[feature]
-                .mean()
-                .reset_index(name=f"{feature}_mean")
+            agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                merge_df, feature
             )
 
-            binned2d_mean["center_lat"] = (
-                binned2d_mean["lat"].apply(lambda x: x.mid).astype(float)
-            )
-            binned2d_mean["center_lon"] = (
-                binned2d_mean["lon"].apply(lambda x: x.mid).astype(float)
-            )
-
-            mean_grid = (
-                binned2d_mean[f"{feature}_mean"]
-                .to_numpy()
-                .reshape(
-                    n_bins,
-                    n_bins,
-                )
-            )
-
-            plt.figure(figsize=(10, 6))
-            ax = plotting.init_map(extent=config.STORM_DATA_EXTENT)
-
-            pcolormesh = ax.pcolormesh(
-                binned2d_mean["center_lon"].unique(),
-                binned2d_mean["center_lat"].unique(),
-                mean_grid,
+            plotting.plot_2d_agg_map(
+                agg_lon,
+                agg_lat,
+                agg_grid,
                 cmap=config.SHAP_MAP_CMAP,
-                transform=ccrs.PlateCarree(),
-                vmin=-max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
-                vmax=max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
-            )
-            cbar = plt.colorbar(
-                pcolormesh,
-                ax=ax,
-                orientation="horizontal",
-                pad=0.1,
-                aspect=40,
-                shrink=0.63,
-            )
-            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
-            plotting.add_borders(ax)
-            plotting.add_gridlines(ax)
-
-            plt.title(f"Mean SHAP Value of {feature} over Map for {exp_name}")
-            plotting.save_plot(
-                f"{exp_name}_shap_{feature}_map.png", exp_group_geo_corr_fig_dir
+                sym_cmap_centre=0.0,
+                cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
+                cbar_aspect=40,
+                cbar_shrink=0.63,
+                title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
+                filename=f"{exp_name}_shap_{feature}_map.png",
+                save_dir=exp_group_geo_corr_fig_dir,
             )
 
         # for n_top_features abs corr with eat_hours, bar plot with mean per hour
