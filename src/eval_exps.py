@@ -182,20 +182,20 @@ for exp_group_name, exp_names in exp_groups.items():
                 }
             )
 
-            # get shap values for test set
+            # get shap values for test sample
             explainer = shap.TreeExplainer(best_model, X_test_sample)
             explanation = explainer(X_test_sample)
 
-        if args.save_shap and not args.load_shap:
-            # ensure shap values directory exists
-            config.SHAP_VALUES_DIR.mkdir(parents=True, exist_ok=True)
+            if args.save_shap:
+                # ensure shap values directory exists
+                config.SHAP_VALUES_DIR.mkdir(parents=True, exist_ok=True)
 
-            # save shap values to pickled file
-            shap_values_path = (
-                config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
-            )
-            with open(shap_values_path, "wb") as f:
-                pickle.dump(explanation, f)
+                # save shap values to pickled file
+                shap_values_path = (
+                    config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+                )
+                with open(shap_values_path, "wb") as f:
+                    pickle.dump(explanation, f)
 
         # plot SHAP summary plot
         ax_shap = summary_fig.add_subplot(
