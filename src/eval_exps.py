@@ -250,7 +250,7 @@ for exp_group_name, exp_names in exp_groups.items():
             corr_matrix[geo_temp_cols],
             annot=True,
             fmt=".2f",
-            cmap="coolwarm",
+            cmap=config.CORR_HEATMAP_CMAP,
             center=0,
             cbar_kws={"label": "Correlation"},
             vmin=-1,
@@ -314,7 +314,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 binned2d_mean["center_lon"].unique(),
                 binned2d_mean["center_lat"].unique(),
                 mean_grid,
-                cmap=shap.plots.colors.red_blue,
+                cmap=config.SHAP_MAP_CMAP,
                 transform=ccrs.PlateCarree(),
                 vmin=-max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
                 vmax=max(abs(np.nanmin(mean_grid)), np.nanmax(mean_grid)),
@@ -354,7 +354,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 x="eat_hours",
                 y=feature,
                 hue=feature,
-                palette=shap.plots.colors.red_blue,
+                palette=config.SHAP_MAP_CMAP,
                 legend=False,
             )
             plt.title(f"Mean SHAP Value of {feature} by Hour")
@@ -394,7 +394,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 x="timestamp",
                 y=feature,
                 hue=feature,
-                palette=shap.plots.colors.red_blue,
+                palette=config.SHAP_MAP_CMAP,
                 legend=False,
                 edgecolor="none",
             )
@@ -429,7 +429,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 x="week",
                 y=feature,
                 hue=feature,
-                palette=shap.plots.colors.red_blue,
+                palette=config.SHAP_MAP_CMAP,
                 legend=False,
             )
 
