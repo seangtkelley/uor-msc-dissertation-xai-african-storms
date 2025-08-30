@@ -235,3 +235,5 @@ models/**/*.json
 # ignore wandb files
 wandb/
 
+# ignore calculated shap values
+shap_values/*.pkl

@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""run_exp.py: Script to run experiments with different configurations"""
+
+__author__ = "Sean Kelley"
+__copyright__ = "Copyright 2025, University of Reading"
+__credits__ = ["Sean Kelley"]
+__license__ = "MIT"
+__version__ = "0.1.0"
+__maintainer__ = "Sean Kelley"
+__email__ = "s.g.t.kelley@student.reading.ac.uk"
+__status__ = "Development"
+
 import argparse
 
 import pandas as pd
@@ -20,7 +33,6 @@ parser.add_argument(
 parser.add_argument(
     "--trials",
     type=int,
-    default=config.WANDB_DEFAULT_SWEEP_TRIALS,
     help="Number of trials for hyperparameter sweep",
 )
 parser.add_argument(

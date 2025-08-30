@@ -320,14 +320,14 @@ if should_recalc("dmin_bt_dt", processed_df.columns):
     print("Calculating the rate of change of minimum cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
-        processed_df, "min_bt", pd.Timedelta(days=1)
+        processed_df, "min_bt", smoothing_window=pd.Timedelta(days=1)
     )
 
 if should_recalc("dmean_bt_dt", processed_df.columns):
     print("Calculating the rate of change of mean cloudtop brightness...")
 
     processed_df = processing.calc_temporal_rate_of_change(
-        processed_df, "mean_bt", pd.Timedelta(days=1)
+        processed_df, "mean_bt", smoothing_window=pd.Timedelta(days=1)
     )
 
 if should_recalc("mean_prcp_400", processed_df.columns):

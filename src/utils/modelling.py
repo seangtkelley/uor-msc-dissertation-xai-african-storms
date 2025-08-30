@@ -11,9 +11,12 @@ __maintainer__ = "Sean Kelley"
 __email__ = "s.g.t.kelley@student.reading.ac.uk"
 __status__ = "Development"
 
+import json
 import tempfile
 import uuid
+from glob import glob
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Iterable, Literal, Optional
 
 import pandas as pd
@@ -250,7 +253,8 @@ def wandb_sweep(
     target_col: str,
     feature_cols: Iterable[str],
     run_base_name: str,
-    trials: int = config.WANDB_DEFAULT_SWEEP_TRIALS,
+    trials: Optional[int],
+    prior_run_ids: Optional[list[str]] = None,
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
 ):
     """
@@ -261,17 +265,9 @@ def wandb_sweep(
     :param feature_cols: The feature columns for the model.
     :param run_base_name: The base name for the W&B run.
     :param trials: The number of trials for the sweep.
+    :param prior_run_ids: The IDs of prior runs to use for the sweep.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
-    # get prior run names if they exist
-    prior_runs = wandb.Api().runs(
-        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
-        filters={"displayName": {"$regex": f"^{run_base_name}"}},
-    )
-    prior_run_ids = (
-        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
-    )
-
     # init W&B sweep
     sweep_id = wandb.sweep(
         config.WANDB_SWEEP_CONFIG,
@@ -301,13 +297,27 @@ def wandb_sweep(
     wandb.teardown()
 
 
+def get_exp_runs(exp_name: str):
+    """
+    Get the W&B runs for a specific experiment.
+
+    :param exp_name: The name of the experiment.
+    :return: The W&B runs for the experiment.
+    """
+    wandb_api = wandb.Api()
+    return wandb_api.runs(
+        path=f"{config.WANDB_ENTITY}/{config.WANDB_PROJECT}",
+        filters={"displayName": {"$regex": f"^{exp_name}_[a-fA-F0-9]{{8}}$"}},
+    )
+
+
 def run_experiment(
     exp_name: str,
     processed_df: pd.DataFrame,
     first_points_only: bool,
     target_col: str,
     feature_cols: str | list[str],
-    trials: int,
+    trials: Optional[int],
     wandb_mode: Literal["online", "offline", "disabled"],
 ):
     """
@@ -320,6 +330,30 @@ def run_experiment(
     :param feature_cols: The feature columns for the model.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
+    # get prior run names if they exist
+    prior_runs = get_exp_runs(exp_name)
+    prior_run_ids = (
+        [run.id for run in prior_runs] if len(prior_runs) > 0 else None
+    )
+
+    # if trials is None and prior runs exist, only run remaining trials
+    if trials is None:
+        if len(prior_runs) > 0:
+            remaining_trials = config.WANDB_MAX_SWEEP_TRIALS - len(prior_runs)
+
+            if remaining_trials > 0:
+                print(
+                    f"Running {remaining_trials} remaining trials for {exp_name}."
+                )
+                trials = remaining_trials
+            else:
+                print(
+                    f"No remaining trials to run for {exp_name}. Found {len(prior_runs)} prior runs."
+                )
+                return
+        else:
+            trials = config.WANDB_MAX_SWEEP_TRIALS
+
     # get data
     df = (
         processed_df.groupby("storm_id").first()
@@ -345,5 +379,129 @@ def run_experiment(
         feature_cols=feature_cols,
         run_base_name=exp_name,
         trials=trials,
+        prior_run_ids=prior_run_ids,
         wandb_mode=wandb_mode,
     )
+
+
+def get_best_run_from_exp(exp_name: str) -> SimpleNamespace | Run:
+    """
+    Get the best run from an experiment.
+
+    :param exp_name: The name of the W&B experiment.
+    :return: The best run from the experiment.
+    """
+    exp_best_run_id_cache = config.WANDB_LOG_DIR / "exp_best_run_id_cache.json"
+    if not exp_best_run_id_cache.exists():
+        # init the cache
+        with open(exp_best_run_id_cache, "w") as f:
+            f.write("{}")
+
+    # load run info from cache
+    file_json = {}
+    with open(exp_best_run_id_cache, "r") as f:
+        file_json = json.load(f)
+
+        cache_info = file_json.get(exp_name, None)
+
+    if cache_info is not None:
+        print("Loading best run info from offline cache...")
+        # load offline run info
+        best_run = SimpleNamespace(
+            {
+                "id": cache_info["id"],
+                "name": cache_info["name"],
+                "config": cache_info["config"],
+            }
+        )
+    else:
+        print("Loading best run info from W&B API...")
+        # get all runs from the experiment
+        exp_runs = get_exp_runs(exp_name)
+
+        # find the best run (lowest validation loss)
+        best_run = min(
+            exp_runs, key=lambda run: run.summary.get("val-rmse", float("inf"))
+        )
+
+        # write the run info to the cache
+        file_json[exp_name] = {
+            "id": best_run.id,
+            "name": best_run.name,
+            "config": best_run.config,
+        }
+        with open(exp_best_run_id_cache, "w") as f:
+            f.write(json.dumps(file_json))
+
+    return best_run
+
+
+def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
+    """
+    Get the model from a W&B run. Try to load the model fully locally
+    using cache and local W&B logs before contacting W&B API.
+
+    :param wandb_run: Either a SimpleNamespace which provides `id` and `name` attributes or a W&B run object.
+    :return: The model from the run.
+    """
+    model = XGBRegressor()
+    run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{wandb_run.id}*"))
+    model_filepath = None
+    try:
+        if len(run_dir_search) != 1:
+            raise ValueError(
+                f"Expected exactly one run directory but found {len(run_dir_search)} for run {wandb_run.id}."
+            )
+
+        print("Loading model from local run directory...")
+
+        # load the model
+        model_filepath = (
+            Path(run_dir_search[0]) / "files" / f"{wandb_run.name}_model.json"
+        )
+
+        # check the file exists
+        if not model_filepath.exists():
+            raise FileNotFoundError(f"Model file not found: {model_filepath}")
+
+    except Exception as e:
+        # setup dir for download
+        manual_downloads_dir = config.WANDB_LOG_DIR / "manual_downloads"
+        manual_downloads_dir.mkdir(parents=True, exist_ok=True)
+
+        model_filename = f"{wandb_run.name}_model.json"
+        model_filepath = Path(manual_downloads_dir) / model_filename
+
+        if not model_filepath.exists():
+            print("Downloading model from W&B...")
+
+            # search run files for model json
+            model_files = [
+                f
+                for f in wandb_run.files()  # type:ignore
+                if f.name.endswith("_model.json")
+            ]
+
+            if len(model_files) == 0:
+                raise FileNotFoundError(
+                    f"No model files found for run: {wandb_run.id}"
+                )
+            elif len(model_files) > 1:
+                print(
+                    f"Multiple model files found for run: {wandb_run.id}. Using the first one."
+                )
+
+            # download model file
+            download_filepath = model_files[0].download(exist_ok=True)
+
+            # move to expected location
+            Path(download_filepath.name).rename(model_filepath)
+
+    finally:
+        if model_filepath is not None:
+            # load the model
+            model.load_model(model_filepath)
+        else:
+            raise RuntimeError("Failed to locate or download the model file.")
+
+    return model

@@ -34,7 +34,7 @@ parser.add_argument(
 parser.add_argument(
     "--trials",
     type=int,
-    default=config.WANDB_DEFAULT_SWEEP_TRIALS,
+    default=config.WANDB_MAX_SWEEP_TRIALS,
     help="Number of runs for the W&B sweep",
 )
 parser.add_argument(

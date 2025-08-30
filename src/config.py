@@ -20,8 +20,11 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 FIGURES_DIR = REPO_ROOT / "figures" / "generated"
+EXPLORATION_FIGURES_DIR = REPO_ROOT / "figures" / "generated" / "exploration"
+EXPERIMENT_FIGURES_DIR = REPO_ROOT / "figures" / "generated" / "experiments"
 SRC_DIR = REPO_ROOT / "src"
-MODEL_OUTPUT_DIR = REPO_ROOT / "models"
+WANDB_LOG_DIR = REPO_ROOT / "wandb"
+SHAP_VALUES_DIR = REPO_ROOT / "shap_values"
 
 RAW_STORM_DB_PATH = (
     DATA_DIR / "East_Africa_tracked_MCSs_2014_2019_longer_than_3_hours.csv"
@@ -278,7 +281,7 @@ WANDB_SWEEP_CONFIG = {
     },
 }
 
-WANDB_DEFAULT_SWEEP_TRIALS = 20
+WANDB_MAX_SWEEP_TRIALS = 20
 
 
 # ==============================================================================
@@ -289,80 +292,131 @@ EXPERIMENT_CONFIG = {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
+        "target_units": "K",
     },
     "storm_max_intensity_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
+        "target_units": "K",
     },
     "storm_max_intensity_era5": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
+        "target_units": "K",
     },
     "storm_max_intensity_era5_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
+        "target_units": "K",
     },
     "storm_direction_all": {
         "first_points_only": False,
         "target_col": "storm_bearing",
         "feature_cols": "all",
+        "target_units": "degrees",
     },
     "storm_direction_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_bearing",
         "feature_cols": "all",
+        "target_units": "degrees",
     },
     "storm_direction_era5": {
         "first_points_only": False,
         "target_col": "storm_bearing",
         "feature_cols": "era5",
+        "target_units": "degrees",
     },
     "storm_direction_era5_first_points": {
         "first_points_only": True,
         "target_col": "storm_bearing",
         "feature_cols": "era5",
+        "target_units": "degrees",
     },
     "obs_intensification_all": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "all",
+        "target_units": "K/h",
     },
     "obs_intensification_era5": {
         "first_points_only": False,
         "target_col": "dmin_bt_dt",
         "feature_cols": "era5",
+        "target_units": "K/h",
     },
     "obs_next_direction_all": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "all",
+        "target_units": "degrees",
     },
     "obs_next_direction_era5": {
         "first_points_only": False,
         "target_col": "bearing_to_next",
         "feature_cols": "era5",
+        "target_units": "degrees",
     },
     "obs_next_distance_all": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "all",
+        "target_units": "km",
     },
     "obs_next_distance_era5": {
         "first_points_only": False,
         "target_col": "distance_to_next",
         "feature_cols": "era5",
+        "target_units": "km",
     },
     "obs_precipitation_all": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "all",
+        "target_units": "mm/h",
     },
     "obs_precipitation_era5": {
         "first_points_only": False,
         "target_col": "mean_prcp_400",
         "feature_cols": "era5",
+        "target_units": "mm/h",
     },
+}
+
+EXPERIMENT_GROUPS = {
+    "storm_max_intensity": [
+        "storm_max_intensity_all",
+        "storm_max_intensity_era5",
+    ],
+    "storm_max_intensity_first_points": [
+        "storm_max_intensity_all_first_points",
+        "storm_max_intensity_era5_first_points",
+    ],
+    "storm_direction": [
+        "storm_direction_all",
+        "storm_direction_era5",
+    ],
+    "storm_direction_first_points": [
+        "storm_direction_all_first_points",
+        "storm_direction_era5_first_points",
+    ],
+    "obs_intensification": [
+        "obs_intensification_all",
+        "obs_intensification_era5",
+    ],
+    "obs_next_direction": [
+        "obs_next_direction_all",
+        "obs_next_direction_era5",
+    ],
+    "obs_next_distance": [
+        "obs_next_distance_all",
+        "obs_next_distance_era5",
+    ],
+    "obs_precipitation": [
+        "obs_precipitation_all",
+        "obs_precipitation_era5",
+    ],
 }
