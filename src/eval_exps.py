@@ -20,7 +20,6 @@ import pandas as pd
 import seaborn as sns
 import shap
 from dotenv import load_dotenv
-from matplotlib.colors import TwoSlopeNorm
 from sklearn.metrics import root_mean_squared_error
 
 import config
@@ -143,6 +142,7 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
 
+        # plot model verification
         modelling.plot_model_verification(
             exp_name,
             exp_config["target_units"],
@@ -155,7 +155,7 @@ for exp_group_name, exp_names in exp_groups.items():
         X_test_sample = X_test
         if args.load_shap:
             X_test_sample, explanation = explaining.load_shap_for_exp(
-                exp_name, processed_df
+                exp_name, X_test
             )
         else:
             X_test_sample, explanation = explaining.calc_shap_values(
@@ -267,35 +267,16 @@ for exp_group_name, exp_names in exp_groups.items():
                 merge_df.groupby("eat_hours")[feature].mean().reset_index()
             )
 
-            centers = mean_per_hour[feature]
-            m = np.max(np.abs(centers))  # Symmetric range around zero
-            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
-            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
-            colors = [cmap(norm(val)) for val in centers]
-
-            plt.figure(figsize=(10, 6))
-            ax = sns.barplot(
-                data=mean_per_hour,
-                x="eat_hours",
-                y=feature,
-                hue="eat_hours",
-                palette=colors,
-                legend=False,
-            )
-            plt.title(f"Mean SHAP Value of {feature} by Hour")
-            plt.xlabel("Hour (UTC+3)")
-            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-            ax.set_xticks(range(24 * 4))
-            ax.set_xticklabels(
-                [
-                    f"{h//4}:{(h%4)*15:02d}" if h % 4 == 0 else ""
-                    for h in range(24 * 4)
-                ],
-                rotation=45,
-            )
-            plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_hour.png",
-                exp_group_temp_corr_fig_dir,
+            explaining.plot_shap_over_time(
+                mean_per_hour,
+                agg_x="eat_hours",
+                agg_y=feature,
+                xtick_interval=4,
+                title=f"Mean SHAP Value of {feature} by Hour",
+                xlabel="Hour (UTC+3)",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_hour.png",
+                save_dir=exp_group_temp_corr_fig_dir,
             )
 
         top_date_corr_features = (
@@ -313,37 +294,17 @@ for exp_group_name, exp_names in exp_groups.items():
                 .reset_index()
             )
 
-            centers = mean_per_day[feature]
-            m = np.max(np.abs(centers))  # Symmetric range around zero
-            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
-            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
-            colors = [cmap(norm(val)) for val in centers]
-
-            plt.figure(figsize=(10, 6))
-            ax = sns.barplot(
-                data=mean_per_day,
-                x="timestamp",
-                y=feature,
-                hue="timestamp",
-                palette=colors,
-                legend=False,
+            explaining.plot_shap_over_time(
+                mean_per_day,
+                agg_x="timestamp",
+                agg_y=feature,
                 edgecolor="none",
-            )
-
-            plt.title(f"Mean SHAP Value of {feature} over Year")
-            plt.xlabel("Day of Year")
-            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-            daysinyear = mean_per_day["timestamp"].nunique()
-            ax.set_xticks(range(1, daysinyear + 1))
-            ax.set_xticklabels(
-                [
-                    str(day) if day % 30 == 0 else ""
-                    for day in range(1, daysinyear + 1)
-                ]
-            )
-            plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_day_over_year.png",
-                exp_group_temp_corr_fig_dir,
+                xtick_interval=30,
+                title=f"Mean SHAP Value of {feature} over Year",
+                xlabel="Day of Year",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_day_over_year.png",
+                save_dir=exp_group_temp_corr_fig_dir,
             )
 
             mean_per_week = (
@@ -354,36 +315,16 @@ for exp_group_name, exp_names in exp_groups.items():
                 .reset_index()
             )
 
-            centers = mean_per_week[feature]
-            m = np.max(np.abs(centers))  # Symmetric range around zero
-            norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
-            cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
-            colors = [cmap(norm(val)) for val in centers]
-
-            plt.figure(figsize=(10, 6))
-            ax = sns.barplot(
-                data=mean_per_week,
-                x="week",
-                y=feature,
-                hue="week",
-                palette=colors,
-                legend=False,
-            )
-
-            plt.title(f"Mean SHAP Value of {feature} over Year")
-            plt.xlabel("Week of Year")
-            plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-            weeksinyear = mean_per_week["week"].nunique()
-            ax.set_xticks(range(1, weeksinyear + 1))
-            ax.set_xticklabels(
-                [
-                    str(week) if week % 4 == 0 else ""
-                    for week in range(1, weeksinyear + 1)
-                ]
-            )
-            plotting.save_plot(
-                f"{exp_name}_shap_{feature}_by_week_over_year.png",
-                exp_group_temp_corr_fig_dir,
+            explaining.plot_shap_over_time(
+                mean_per_week,
+                agg_x="week",
+                agg_y=feature,
+                xtick_interval=4,
+                title=f"Mean SHAP Value of {feature} over Year",
+                xlabel="Week of Year",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
+                save_dir=exp_group_temp_corr_fig_dir,
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)

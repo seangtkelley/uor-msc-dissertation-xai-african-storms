@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import shap
+from matplotlib.axes import Axes
 from matplotlib.colors import TwoSlopeNorm
 
 import config
@@ -96,34 +97,59 @@ def calc_shap_values(
 
 
 def plot_shap_over_time(
-    temp_agg, feature, exp_name, exp_config, exp_group_temp_corr_fig_dir
+    temp_agg_df: pd.DataFrame,
+    agg_x: str,
+    agg_y: str,
+    ax: Optional[Axes] = None,
+    edgecolor: Optional[str] = None,
+    xtick_interval: Optional[int] = None,
+    title: Optional[str] = None,
+    xlabel: Optional[str] = None,
+    ylabel: Optional[str] = None,
+    filename: Optional[str] = None,
+    save_dir: Optional[Path] = None,
 ):
-    centers = temp_agg[feature]
-    m = np.max(np.abs(centers))  # Symmetric range around zero
+    # create custom color palette centred at zero
+    m = np.max(np.abs(temp_agg_df[agg_y]))
     norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
     cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
-    colors = [cmap(norm(val)) for val in centers]
+    colors = [cmap(norm(val)) for val in temp_agg_df[agg_y]]
 
-    plt.figure(figsize=(10, 6))
+    # init plot if not axis provided
+    if ax is None:
+        plt.figure(figsize=(10, 6))
+
+    # plot bars with custom colors
     ax = sns.barplot(
-        data=temp_agg,
-        x="timestamp",
-        y=feature,
-        hue="timestamp",
+        data=temp_agg_df,
+        x=agg_x,
+        y=agg_y,
+        hue=agg_x,
         palette=colors,
         legend=False,
-        edgecolor="none",
+        edgecolor=edgecolor,
+        ax=ax,
     )
 
-    plt.title(f"Mean SHAP Value of {feature} over Year")
-    plt.xlabel("Day of Year")
-    plt.ylabel(f"Mean SHAP Value ({exp_config['target_units']})")
-    daysinyear = temp_agg["timestamp"].nunique()
-    ax.set_xticks(range(1, daysinyear + 1))
-    ax.set_xticklabels(
-        [str(day) if day % 30 == 0 else "" for day in range(1, daysinyear + 1)]
-    )
-    plotting.save_plot(
-        f"{exp_name}_shap_{feature}_by_day_over_year.png",
-        exp_group_temp_corr_fig_dir,
-    )
+    if xtick_interval is not None:
+        # reduce xticks to every nth interval
+        intervals = temp_agg_df[agg_x].nunique()
+        ax.set_xticks(range(1, intervals + 1))
+        ax.set_xticklabels(
+            [
+                str(interval) if interval % xtick_interval == 0 else ""
+                for interval in range(1, intervals + 1)
+            ]
+        )
+
+    if title is not None:
+        plt.title(title)
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+
+    if filename is not None and save_dir is not None:
+        plotting.save_plot(filename, save_dir)
+    else:
+        plt.show()
