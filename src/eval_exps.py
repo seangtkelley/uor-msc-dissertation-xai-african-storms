@@ -13,7 +13,6 @@ __status__ = "Development"
 
 
 import argparse
-import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,11 +20,10 @@ import pandas as pd
 import seaborn as sns
 import shap
 from dotenv import load_dotenv
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 
 import config
-from utils import modelling, plotting
+from utils import explaining, modelling, plotting, processing
 
 load_dotenv()
 
@@ -46,11 +44,13 @@ parser.add_argument(
 parser.add_argument(
     "--save_shap",
     action="store_true",
+    default=False,
     help="Save SHAP values to file",
 )
 parser.add_argument(
     "--load_shap",
     action="store_true",
+    default=False,
     help="Load SHAP values from file",
 )
 args = parser.parse_args()
@@ -74,10 +74,21 @@ print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
     # init exp group fig directory
-    fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
-    fig_dir.mkdir(parents=True, exist_ok=True)
+    exp_group_fig_dir = config.EXPERIMENT_FIGURES_DIR / exp_group_name
+    exp_group_fig_dir.mkdir(parents=True, exist_ok=True)
 
-    summary_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
+    # init dirs for geographic and temporal correlation plots
+    exp_group_geo_corr_fig_dir = (
+        config.EXPERIMENT_FIGURES_DIR / exp_group_name / "geographic_corr"
+    )
+    exp_group_geo_corr_fig_dir.mkdir(parents=True, exist_ok=True)
+    exp_group_temp_corr_fig_dir = (
+        config.EXPERIMENT_FIGURES_DIR / exp_group_name / "temporal_corr"
+    )
+    exp_group_temp_corr_fig_dir.mkdir(parents=True, exist_ok=True)
+
+    # init exp group summary fig
+    exp_group_sum_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
@@ -100,7 +111,8 @@ for exp_group_name, exp_names in exp_groups.items():
 
         # use first points only for all storm aggregate exps for fair comparison
         if exp_name.startswith("storm_"):
-            test_df = test_df.groupby("storm_id").first()
+            # using head(1) instead of first() to preserve original index
+            test_df = test_df.groupby("storm_id").head(1)
 
         # determine feature columns based on experiment config
         if exp_config["feature_cols"] == "all":
@@ -130,75 +142,33 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
 
-        # plot predictions vs actual using matplotlib
-        ax_pred = summary_fig.add_subplot(2, len(exp_names), i + 1)
-        ax_pred.scatter(y_pred, y_test, s=10)
-
-        # Regression line and R value using sklearn
-        lr = LinearRegression()
-        lr.fit(y_pred.reshape(-1, 1), y_test.to_numpy().reshape(-1, 1))
-        reg_line = lr.predict(np.unique(y_pred).reshape(-1, 1))
-        r_squared = lr.score(
-            y_pred.reshape(-1, 1), y_test.to_numpy().reshape(-1, 1)
+        # plot model verification
+        modelling.plot_model_verification(
+            exp_name,
+            exp_config["target_units"],
+            y_test.to_numpy(),
+            y_pred,
+            ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
         )
 
-        # plot regression line
-        ax_pred.plot(
-            np.unique(y_pred),
-            reg_line,
-            label=f"Regression line (R²={r_squared:.2f})",
-            color="black",
-            linestyle="--",
-        )
-        ax_pred.set_title(f"Model Verification for {exp_name}")
-        ax_pred.set_xlabel(f"Predicted Value ({exp_config['target_units']})")
-        ax_pred.set_ylabel(f"Actual Value ({exp_config['target_units']})")
-        ax_pred.legend()
-
+        # by default, use entire test set
+        X_test_sample = X_test
         if args.load_shap:
-            # load shap values from pickled file
-            shap_values_path = (
-                config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+            X_test_sample, explanation = explaining.load_shap_for_exp(
+                exp_name, X_test
             )
-            with open(shap_values_path, "rb") as f:
-                explanation = pickle.load(f)
         else:
-            if args.shap_sample is not None and args.shap_sample < 1.0:
-                # sample X_test for faster shap value calc
-                X_test_sample = X_test.sample(
-                    frac=args.shap_sample, random_state=config.RANDOM_STATE
-                )
-            else:
-                # use entire test set
-                X_test_sample = X_test
-
-            # cast bool to int as SHAP TreeExplainer requires numeric inputs
-            X_test_sample = X_test_sample.astype(
-                {
-                    col: int
-                    for col in X_test_sample.select_dtypes(
-                        include="bool"
-                    ).columns
-                }
+            X_test_sample, explanation = explaining.calc_shap_values(
+                best_model, X_test, sample_frac=args.shap_sample
             )
-
-            # get shap values for test sample
-            explainer = shap.TreeExplainer(best_model, X_test_sample)
-            explanation = explainer(X_test_sample)
 
             if args.save_shap:
-                # ensure shap values directory exists
-                config.SHAP_VALUES_DIR.mkdir(parents=True, exist_ok=True)
-
-                # save shap values to pickled file
-                shap_values_path = (
-                    config.SHAP_VALUES_DIR / f"{exp_name}_shap_explanation.pkl"
+                explaining.save_shap_for_exp(
+                    exp_name, X_test_sample, explanation
                 )
-                with open(shap_values_path, "wb") as f:
-                    pickle.dump(explanation, f)
 
         # plot SHAP summary plot
-        ax_shap = summary_fig.add_subplot(
+        ax_shap = exp_group_sum_fig.add_subplot(
             2, len(exp_names), len(exp_names) + i + 1
         )
         shap.plots.beeswarm(
@@ -213,4 +183,154 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
-    plotting.save_plot(f"{exp_group_name}_summary.png", fig_dir)
+        # convert shap values to dataframe
+        shap_df = pd.DataFrame(
+            explanation.values,
+            columns=X_test_sample.columns,
+            index=X_test_sample.index,
+        )
+
+        # merge shap values dataframe with geo_temp_cols from X_test dataframe
+        geo_temp_cols = ["lon", "lat", "eat_hours", "date_angle"]
+        merge_df = test_df.loc[X_test_sample.index, geo_temp_cols].merge(
+            shap_df[
+                [col for col in shap_df.columns if col not in geo_temp_cols]
+            ],
+            left_index=True,
+            right_index=True,
+        )
+
+        # calculate correlation
+        corr_matrix = merge_df.corr()
+
+        # plot heat map of correlations
+        plt.figure(figsize=(10, int(0.3 * len(corr_matrix))))
+        sns.heatmap(
+            corr_matrix[geo_temp_cols],
+            annot=True,
+            fmt=".2f",
+            cmap=config.CORR_HEATMAP_CMAP,
+            center=0,
+            cbar_kws={"label": "Correlation"},
+            vmin=-1,
+            vmax=1,
+        )
+        plt.title(
+            f"Heatmap of {exp_name} SHAP Value Correlations with Geo-Temporal Features"
+        )
+        plotting.save_plot(
+            f"{exp_name}_shap_correlation_heatmap.png",
+            exp_group_fig_dir,
+        )
+
+        # get absolute correlations with lon and lat
+        corr_with_lon = corr_matrix["lon"].abs()
+        corr_with_lat = corr_matrix["lat"].abs()
+
+        # combine and get top features (excluding lon and lat themselves)
+        n_top_features = 5
+        combined_corr = corr_with_lon.add(corr_with_lat, fill_value=0)
+        combined_corr = combined_corr.drop(["lon", "lat"], errors="ignore")
+        top_geo_corr_features = (
+            combined_corr.sort_values(ascending=False)
+            .head(n_top_features)
+            .index
+        )
+        for feature in top_geo_corr_features:
+            agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                merge_df, feature
+            )
+            plotting.plot_2d_agg_map(
+                agg_lon,
+                agg_lat,
+                agg_grid,
+                cmap=config.SHAP_MAP_CMAP,
+                sym_cmap_centre=0.0,
+                cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
+                cbar_aspect=40,
+                cbar_shrink=0.63,
+                title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
+                filename=f"{exp_name}_shap_{feature}_map.png",
+                save_dir=exp_group_geo_corr_fig_dir,
+            )
+
+        # for n_top_features abs corr with eat_hours, bar plot with mean per hour
+        top_hour_corr_features = (
+            corr_matrix["eat_hours"]
+            .abs()
+            .sort_values(ascending=False)
+            .iloc[1 : n_top_features + 1]
+            .index
+        )
+        for feature in top_hour_corr_features:
+            mean_per_hour = (
+                merge_df.groupby("eat_hours")[feature].mean().reset_index()
+            )
+
+            explaining.plot_shap_over_time(
+                mean_per_hour,
+                agg_x="eat_hours",
+                agg_y=feature,
+                xtick_interval=4,
+                xtick_offset=0,
+                xtick_convert=lambda x: f"{x//4}:00",
+                xtick_rotation=45,
+                title=f"Mean SHAP Value of {feature} by Hour",
+                xlabel="Time (UTC+3)",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_hour.png",
+                save_dir=exp_group_temp_corr_fig_dir,
+            )
+
+        # add timestamp to merge_df for easier grouping
+        merge_df["timestamp"] = test_df.loc[X_test_sample.index, "timestamp"]
+
+        # for n_top_features abs corr with date_angle, bar plot with mean per day and week of year
+        top_date_corr_features = (
+            corr_matrix["date_angle"]
+            .abs()
+            .sort_values(ascending=False)
+            .iloc[1 : n_top_features + 1]
+            .index
+        )
+        for feature in top_date_corr_features:
+            mean_per_day = (
+                merge_df.groupby(merge_df["timestamp"].dt.dayofyear)[feature]
+                .mean()
+                .reset_index()
+            )
+
+            explaining.plot_shap_over_time(
+                mean_per_day,
+                agg_x="timestamp",
+                agg_y=feature,
+                edgecolor="none",
+                xtick_interval=30,
+                title=f"Mean SHAP Value of {feature} over Year",
+                xlabel="Day of Year",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_day_over_year.png",
+                save_dir=exp_group_temp_corr_fig_dir,
+            )
+
+            mean_per_week = (
+                merge_df.groupby(merge_df["timestamp"].dt.isocalendar().week)[
+                    feature
+                ]
+                .mean()
+                .reset_index()
+            )
+
+            explaining.plot_shap_over_time(
+                mean_per_week,
+                agg_x="week",
+                agg_y=feature,
+                xtick_interval=4,
+                title=f"Mean SHAP Value of {feature} over Year",
+                xlabel="Week of Year",
+                ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
+                save_dir=exp_group_temp_corr_fig_dir,
+            )
+
+    plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)

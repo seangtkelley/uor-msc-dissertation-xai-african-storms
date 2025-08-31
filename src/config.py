@@ -420,3 +420,10 @@ EXPERIMENT_GROUPS = {
         "obs_precipitation_era5",
     ],
 }
+
+
+# ==============================================================================
+#                       EXPLAINABILITY CONFIGURATION
+# ==============================================================================
+CORR_HEATMAP_CMAP = "coolwarm"
+SHAP_MAP_CMAP = "seismic"

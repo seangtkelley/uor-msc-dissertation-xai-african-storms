@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.axes import Axes
-from matplotlib.colors import ListedColormap
+from matplotlib.colors import Colormap, ListedColormap
 from pint import Quantity
 
 import config
@@ -30,61 +30,6 @@ import config
 TERRAIN_CMAP = ListedColormap(
     plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
 )
-
-
-def plot_kde_map(
-    X: np.ndarray,
-    Y: np.ndarray,
-    Z: np.ndarray,
-    ax: Optional[Axes] = None,
-    alpha: float = 1.0,
-    contour_lines_only: bool = False,
-    add_colorbar: bool = True,
-    colorbar_padding: float = 0.1,
-) -> None:
-    """
-    Plot the result of scipy.stats.gaussian_kde on a map.
-
-    :param X: Meshgrid of longitudes.
-    :param Y: Meshgrid of latitudes.
-    :param Z: KDE values corresponding to the meshgrid.
-    :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
-    :param alpha: Transparency level for the KDE map.
-    :param contour_lines_only: If True, only plot contour lines without filled contours.
-    :param add_colorbar: Whether to add a colorbar to the plot.
-    :param colorbar_padding: Padding for the colorbar.
-    """
-
-    # setup plot of east africa
-    if ax is None:
-        plt.figure(figsize=(5, 5))
-        ax = plt.axes(projection=ccrs.PlateCarree())
-
-    # add filled contours and contour lines
-    ax.contour(
-        X,
-        Y,
-        Z,
-        levels=15,
-        colors="k",
-        linewidths=0.5,
-        alpha=0.5 * alpha if not contour_lines_only else 1.0,
-    )
-    if not contour_lines_only:
-        ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
-        if add_colorbar:
-            cbar = plt.colorbar(
-                ctf,
-                ax=ax,
-                orientation="horizontal",
-                pad=colorbar_padding,
-                aspect=50,
-            )
-            cbar.set_label("Density")
-
-    # add other map features
-    add_borders(ax)
-    add_gridlines(ax)
 
 
 def init_map(
@@ -208,3 +153,146 @@ def save_plot(
     if show:
         plt.show()
     plt.close()
+
+
+def plot_kde_map(
+    X: np.ndarray,
+    Y: np.ndarray,
+    Z: np.ndarray,
+    ax: Optional[Axes] = None,
+    alpha: float = 1.0,
+    contour_lines_only: bool = False,
+    add_colorbar: bool = True,
+    colorbar_padding: float = 0.1,
+) -> None:
+    """
+    Plot the result of scipy.stats.gaussian_kde on a map.
+
+    :param X: Meshgrid of longitudes.
+    :param Y: Meshgrid of latitudes.
+    :param Z: KDE values corresponding to the meshgrid.
+    :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
+    :param alpha: Transparency level for the KDE map.
+    :param contour_lines_only: If True, only plot contour lines without filled contours.
+    :param add_colorbar: Whether to add a colorbar to the plot.
+    :param colorbar_padding: Padding for the colorbar.
+    """
+    # init axis if not provided
+    if ax is None:
+        plt.figure(figsize=(5, 5))
+        ax = init_map()
+
+    # add filled contours and contour lines
+    ax.contour(
+        X,
+        Y,
+        Z,
+        levels=15,
+        colors="k",
+        linewidths=0.5,
+        alpha=0.5 * alpha if not contour_lines_only else 1.0,
+    )
+    if not contour_lines_only:
+        ctf = ax.contourf(X, Y, Z, levels=15, cmap="YlOrBr", alpha=alpha)
+        if add_colorbar:
+            cbar = plt.colorbar(
+                ctf,
+                ax=ax,
+                orientation="horizontal",
+                pad=colorbar_padding,
+                aspect=50,
+            )
+            cbar.set_label("Density")
+
+    # add other map features
+    add_borders(ax)
+    add_gridlines(ax)
+
+
+def plot_2d_agg_map(
+    x: np.ndarray,
+    y: np.ndarray,
+    grid: np.ndarray,
+    ax: Optional[Axes] = None,
+    cmap: Optional[str | Colormap] = None,
+    sym_cmap_centre: Optional[float] = None,
+    add_cbar: bool = True,
+    cbar_pad: float = 0.1,
+    cbar_aspect: float = 20,
+    cbar_shrink: float = 1.0,
+    cbar_label: Optional[str] = None,
+    title: Optional[str] = None,
+    filename: Optional[str] = None,
+    save_dir: Optional[Path] = None,
+) -> None:
+    """
+    Plot a 2D aggregated map.
+
+    :param x: 1D array of x-coordinates (e.g., longitudes).
+    :param y: 1D array of y-coordinates (e.g., latitudes).
+    :param grid: 2D array of aggregated values.
+    :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
+    :param cmap: Colormap to use for the plot.
+    :param sym_cmap_centre: Centre value for symmetrical colormap.
+    :param add_cbar: Whether to add a colorbar to the plot.
+    :param cbar_pad: Padding for the colorbar.
+    :param cbar_aspect: Aspect ratio for the colorbar.
+    :param cbar_shrink: Shrink factor for the colorbar.
+    :param cbar_label: Label for the colorbar.
+    :param title: Title for the plot.
+    :param filename: Filename to save the plot.
+    :param save_dir: Directory to save the plot.
+    """
+    # init axis if not provided
+    if ax is None:
+        plt.figure(figsize=(10, 6))
+        ax = init_map(extent=config.STORM_DATA_EXTENT)
+
+    if sym_cmap_centre is not None:
+        # symmetrical cmap centred at specified value
+        m = max(
+            abs(np.nanmin(grid) - sym_cmap_centre),
+            abs(np.nanmax(grid) - sym_cmap_centre),
+        )
+        vmin, vmax = sym_cmap_centre - m, sym_cmap_centre + m
+    else:
+        # use default colormap limits
+        vmin, vmax = None, None
+
+    # plot aggregated values as colormesh
+    pcolormesh = ax.pcolormesh(
+        x,
+        y,
+        grid,
+        cmap=cmap,
+        transform=ccrs.PlateCarree(),
+        vmin=vmin,
+        vmax=vmax,
+    )
+    if add_cbar:
+        cbar = plt.colorbar(
+            pcolormesh,
+            ax=ax,
+            orientation="horizontal",
+            pad=cbar_pad,
+            aspect=cbar_aspect,
+            shrink=cbar_shrink,
+        )
+        if cbar_label is not None:
+            cbar.set_label(cbar_label)
+        else:
+            cbar.set_label(f"Aggregated Value")
+
+    # add other map features
+    add_borders(ax)
+    add_gridlines(ax)
+
+    if title is not None:
+        ax.set_title(title)
+    else:
+        ax.set_title(f"Aggregated Value over Map")
+
+    if filename is not None and save_dir is not None:
+        save_plot(filename, save_dir)
+    else:
+        plt.show()
