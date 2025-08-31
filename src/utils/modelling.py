@@ -483,11 +483,7 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
     else:
         print("Loading model from manual download directory...")
 
-    if model_filepath is not None:
-        # load the model
-        model.load_model(model_filepath)
-    else:
-        raise RuntimeError("Failed to locate or download the model file.")
+    model.load_model(model_filepath)
 
     return model
 
