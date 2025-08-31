@@ -110,9 +110,11 @@ for exp_group_name, exp_names in exp_groups.items():
         test_df = processed_df.iloc[test_idx]
 
         # use first points only for all storm aggregate exps for fair comparison
-        if exp_name.startswith("storm_"):
-            # using head(1) instead of first() to preserve original index
-            test_df = test_df.groupby("storm_id").head(1)
+        if exp_name.startswith("storm_") and not all(
+            test_df["storm_obs_idx"] == 0
+        ):
+            print("Using first points only for storm aggregate experiment...")
+            test_df = test_df[test_df["storm_obs_idx"] == 0]
 
         # determine feature columns based on experiment config
         if exp_config["feature_cols"] == "all":
