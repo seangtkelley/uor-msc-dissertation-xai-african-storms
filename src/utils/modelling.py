@@ -537,9 +537,11 @@ def plot_model_verification(
 
     # Regression line and R value using sklearn
     lr = LinearRegression()
-    lr.fit(y_pred.reshape(-1, 1), y_test.reshape(-1, 1))
-    reg_line = lr.predict(np.unique(y_pred).reshape(-1, 1))
-    r_squared = lr.score(y_pred.reshape(-1, 1), y_test.reshape(-1, 1))
+    y_pred_ = y_pred.reshape(-1, 1)
+    y_test_ = y_test.reshape(-1, 1)
+    lr.fit(y_pred_, y_test_)
+    reg_line = lr.predict(np.unique(y_pred_))
+    r_squared = lr.score(y_pred_, y_test_)
 
     # plot regression line
     ax.plot(
