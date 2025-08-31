@@ -218,6 +218,8 @@ The experimental setup is designed to systematically evaluate the performance of
 
 For all experiments, two models were trained on two different feature sets: all available features and only \acrshort{era5} meteorological features. This approach allows for a comparison of model performance when utilising a focused subset of variables. While it is likely that storm genesis location and orography over the track will play a major role, it is possible that those features could confound the effects of other environmental factors, like soil moisture or skin temperature. Thus, through this setup, we ensure that one model is exclusively learning from the meteorological conditions. If model performance differs significantly, this would imply that the geographic, topological, or temporal features contain unique information not captured by the meteorological features. Through a comparison of relative feature importance of the meteorological features, we can also gain insights into their interaction with the other features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only \acrshort{era5} features. This aspect of the setup aims to evaluate the predictive power of initial storm observations.
 
+Finally, any element of the implementation involving random processes was controlled by setting a fixed random seed to ensure reproducibility of results. It is assumed that due to the dataset size, the effect of random variation on the results will be minimal and thus it was not necessary to run experiments multiple times with different seeds.
+
 The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
 
 {\small
