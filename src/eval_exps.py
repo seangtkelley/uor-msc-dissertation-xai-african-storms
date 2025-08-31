@@ -282,6 +282,10 @@ for exp_group_name, exp_names in exp_groups.items():
                 save_dir=exp_group_temp_corr_fig_dir,
             )
 
+        # add timestamp to merge_df for easier grouping
+        merge_df["timestamp"] = test_df.loc[X_test_sample.index, "timestamp"]
+
+        # for n_top_features abs corr with date_angle, bar plot with mean per day and week of year
         top_date_corr_features = (
             corr_matrix["date_angle"]
             .abs()
@@ -289,7 +293,6 @@ for exp_group_name, exp_names in exp_groups.items():
             .iloc[1 : n_top_features + 1]
             .index
         )
-        merge_df["timestamp"] = test_df.loc[X_test_sample.index, "timestamp"]
         for feature in top_date_corr_features:
             mean_per_day = (
                 merge_df.groupby(merge_df["timestamp"].dt.dayofyear)[feature]
