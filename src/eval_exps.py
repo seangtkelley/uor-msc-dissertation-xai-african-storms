@@ -169,7 +169,7 @@ for exp_group_name, exp_names in exp_groups.items():
 
         print(f"R-squared: {r_squared:.4f}")
 
-        if r_squared < 0.5:
+        if r_squared < config.R_SQUARED_THRESHOLD:
             continue
 
         # by default, use entire test set

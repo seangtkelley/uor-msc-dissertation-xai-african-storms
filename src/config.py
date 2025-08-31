@@ -425,5 +425,6 @@ EXPERIMENT_GROUPS = {
 # ==============================================================================
 #                       EXPLAINABILITY CONFIGURATION
 # ==============================================================================
+R_SQUARED_THRESHOLD = 0.5
 CORR_HEATMAP_CMAP = "coolwarm"
 SHAP_MAP_CMAP = "seismic"
