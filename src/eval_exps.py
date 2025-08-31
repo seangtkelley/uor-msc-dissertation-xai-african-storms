@@ -14,6 +14,7 @@ __status__ = "Development"
 
 import argparse
 
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -353,6 +354,92 @@ for exp_group_name, exp_names in exp_groups.items():
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
+            )
+
+        # plot mean SHAP value maps by hour for features with high geo and hour correlation
+        for feature in set(top_geo_corr_features).intersection(
+            set(top_hour_corr_features)
+        ):
+            fig, axs = plt.subplots(
+                2,
+                3,
+                figsize=(10, 6),
+                subplot_kw={"projection": ccrs.PlateCarree()},
+            )
+            axs = axs.flatten()
+            for idx, hour in enumerate(range(0, 24, 4)):
+                hour_df = merge_df[merge_df["eat_hours"] == hour]
+                if hour_df.empty:
+                    continue
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    hour_df, feature, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    ax=axs[idx],
+                    cmap=config.SHAP_MAP_CMAP,
+                    sym_cmap_centre=0.0,
+                    cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
+                    # cbar_aspect=40,
+                    # cbar_shrink=0.63,
+                    title=f"{hour}:00",
+                )
+            fig.suptitle(
+                f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
+                fontsize=18,
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map_by_hour.png",
+                exp_group_geo_corr_fig_dir,
+            )
+
+        # plot mean SHAP value maps by month for features with high geo and date correlation
+        for feature in set(top_geo_corr_features).intersection(
+            set(top_date_corr_features)
+        ):
+            fig, axs = plt.subplots(
+                3,
+                4,
+                figsize=(10, 8),
+                subplot_kw={"projection": ccrs.PlateCarree()},
+            )
+            axs = axs.flatten()
+            for idx, month in enumerate(range(1, 13)):
+                month_df = merge_df[merge_df["timestamp"].dt.month == month]
+                if month_df.empty:
+                    continue
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    month_df, feature, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    cmap=config.SHAP_MAP_CMAP,
+                    sym_cmap_centre=0.0,
+                    cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
+                    # cbar_aspect=40,
+                    # cbar_shrink=0.63,
+                    title=pd.Timestamp(month=month, day=1, year=2000).strftime(
+                        "%b"
+                    ),
+                    ax=axs[idx],
+                )
+            fig.suptitle(
+                f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
+                fontsize=18,
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map_by_month.png",
+                exp_group_geo_corr_fig_dir,
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)
