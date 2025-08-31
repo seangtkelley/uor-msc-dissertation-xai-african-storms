@@ -1,8 +1,21 @@
 \chapter{Conclusion}
 \label{ch:con}
 
-% Typically a conclusions chapter first summarizes the investigated problem and its aims and objectives. It summaries the critical/significant/major findings/results about the aims and objectives that have been obtained by applying the key methods/implementations/experiment set-ups. A conclusions chapter draws a picture/outline of your project's central and the most signification contributions and achievements. 
+\section{Future Work}
+In addition to the findings presented in this thesis, several avenues for future research can be identified. These include but are not limited to:
 
-% A good conclusions summary could be approximately 300--500 words long, but this is just a recommendation.
-
-% A conclusions chapter followed by an abstract is the last things you write in your project report.
+\begin{itemize}
+    \item Expand storm database to include storms that pass through the region, rather than only those that originate and terminate within it.
+    \item Add other available features like dthetae/dp.
+    \item Exploring the use of alternative machine learning algorithms and architectures to improve predictive performance.
+    \item Use categorical/semi-categorical features for direction or Sine and Cosine transformation instead of degrees. Regression is not ideal for circular data.
+    \item \begin{itemize}
+        \item Categorical is easier and more intuitive but loses granularity
+        \item Sine and Cosine transformation preserves granularity but is more complex. It requires multiple outputs.
+    \end{itemize}
+    \item Investigating the incorporation of additional data sources, such as satellite imagery precipitation data, as with the original paper \citep{Hill2023}.
+    \item Conducting further analysis on the interpretability of model predictions, potentially through the use of more advanced explainability techniques.
+    \begin{itemize}
+        \item Investigating anomalous individual predictions using decision plots or force plots to quantify edge cases for the models.
+    \end{itemize}
+\end{itemize}

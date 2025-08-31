@@ -73,7 +73,7 @@ Recommended for complete python environment isolation.
 |--------------|-------------|-------------|
 | `geop.nc` | Geopotential | m²/s² (divide by 9.81 m/s to get orography) |
 | `lsm.nc`  |  land-sea mask | Boolean |
-| `anor.nc` | Angle of sub-gridscale orography | radians from East | 
+| `anor.nc` | Angle of sub-gridscale orography | radians from E | 
 
 #### Hourly data stored in yearly files:
 
@@ -107,28 +107,28 @@ Notes:
 | `storm_obs_idx` | Observation index within MCS (0 for first observation, 1 for second, etc.) | - |
 | `timestamp` | Datetime of observation | UTC |
 | `date_angle` | Angle representation of current date within year | ° |
-| `eat_hours` | Time step hour of day | East Africa Time (UTC +3) |
-| `storm_total_duration` | Total duration of MCS | hr |
+| `eat_hours` | Time step hour of day | [Eastern Africa Time](https://www.timeanddate.com/time/zones/eat) (UTC+3) |
+| `storm_total_duration` | Total duration of MCS | h |
 | `lon` | Longitude of MCS centre | ° E |
 | `lat` | Latitude of MCS centre | ° N |
 | `orography_height` | Elevation of land surface at MCS centre | m |
-| `anor` | Angle of sub-gridscale orography at MCS centre | radians from East |
-| `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from North |
+| `anor` | Angle of sub-gridscale orography at MCS centre | radians from E |
+| `upslope_bearing` | Compass bearing of upslope direction at MCS centre | ° from N |
 | `slope_angle` | Angle of slope at MCS centre | ° |
 | `over_land` | Flag for MCS centre (True if MCS centre is over land, else False) | boolean |
-| `acc_land_time` | Accumulated time where `over_land=True` | hr |
-| `storm_total_land_time` | Final value of `acc_land_time` for MCS | hr |
+| `acc_land_time` | Accumulated time where `over_land=True` | h |
+| `storm_total_land_time` | Final value of `acc_land_time` for MCS | h |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio ($[0,1]$) |
-| `zonal_speed` | $x$-component of MCS centre propagation vector | km/hr |
-| `meridional_speed` | $y$-component of MCS centre propagation vector | km/hr |
+| `zonal_speed` | $x$-component of MCS centre propagation vector | km/h |
+| `meridional_speed` | $y$-component of MCS centre propagation vector | km/h |
 | `area` | Area of the MCS | km² |
-| `storm_max_area` | Max value of `area` over MCS | km² |
-| `bearing_from_prev` | Compass bearing from previous observation | ° from North |
-| `bearing_to_next` | Compass bearing to next observation | ° from North |
+| `storm_max_area` | Max value of `area` for MCS | km² |
+| `bearing_from_prev` | Compass bearing from previous observation | ° from N |
+| `bearing_to_next` | Compass bearing to next observation | ° from N |
 | `distance_from_prev` | Distance traversed from previous observation | km |
 | `distance_to_next` | Distance to next observation | km |
 | `distance_traversed` | Cumulative sum of `distance_from_prev` | km |
-| `storm_bearing` | Compass bearing from first to last MCS centre | ° from North |
+| `storm_bearing` | Compass bearing from first to last MCS centre | ° from N |
 | `storm_distance_traversed` | Total cumulative distance traversed by MCS centre | km |
 | `storm_straight_line_distance` | Distance from first to last MCS centre | km |
 | `mean_skt` | Surface temperature | K |
@@ -147,7 +147,7 @@ Notes:
 | `mean_v_shear_850_500` | Shear of meridional wind from 850 and 500 hPa | m/s |
 | `mean_u_shear_850_200` | Shear of zonal wind from 850 and 200 hPa | m/s |
 | `mean_v_shear_850_200` | Shear of meridional wind from 850 and 200 hPa | m/s |
-| `wind_direction_850` | Compass bearing from which the 850 hPa wind vector at MCS centre originates | ° from North |
+| `wind_direction_850` | Compass bearing from which the 850 hPa wind vector at MCS centre originates | ° from N |
 | `wind_angle_upslope` | Angle of `wind_direction_850` relative to `upslope_bearing` (wind is going upslope: 0, downslope: 180, cross-slope: 90,270) | ° from `upslope_bearing` |
 | `mean_tcwv` | Total column water vapour (TCWV) | kg/m² |
 | `domain_mean_tcwv` | Mean TCWV over the entire domain of ERA5 data | kg/m² |
@@ -159,12 +159,12 @@ Notes:
 | `olr_90` | 90th percentile of negative outgoing longwave radiation (OLR) within 400 km | W/m² |
 | `olr_75` | 75th percentile of negative OLR within 400 km | W/m² |
 | `olr_50` | 50th percentile of negative OLR within 400 km | W/m² |
-| `mean_prcp_400` | Precipitation over the next 6 hr | mm/hr |
+| `mean_prcp_400` | Precipitation over the next 6 h | mm |
 | `min_bt` | Minimum cloudtop brightness within MCS area | K |
-| `dmin_bt_dt` | Rate of change of `min_bt` | K/6 hr |
+| `dmin_bt_dt` | Rate of change of `min_bt` | K/h |
 | `mean_bt` | Mean cloudtop brightness within MCS area | K |
-| `dmean_bt_dt` | Rate of change of `mean_bt` | K/6 hr |
-| `storm_min_bt` | Minimum value of `min_bt` reached over MCS lifetime | K |
+| `dmean_bt_dt` | Rate of change of `mean_bt` | K/h |
+| `storm_min_bt` | Minimum value of `min_bt` reached for MCS | K |
 | `storm_min_bt_reached` | False if `storm_min_bt` has not been reached yet, else True | boolean |
 | `mjo_phase` | Phase of Madden–Julian oscillation (MJO) | integer range from 1 to 8 |
 | `mjo_amplitude` | Amplitude of MJO | - |
