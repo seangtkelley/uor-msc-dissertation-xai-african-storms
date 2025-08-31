@@ -7,23 +7,23 @@ This section details the methodology employed in this research. The approach is 
 
 \subsection{Database of East African Mesoscale Convective Systems (MCSs)}
 
-In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of cloud top brightness temperature (BT)\todo{acronym, especially to help table below?} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
+In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of \acrfull{bt} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
 
-From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must be longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of (\degN{3} - \degN{15}, \degE{34} - \degE{52}). The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs} precipitation \citep{Hill2023}.
+From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must last longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of \degN{3} - \degN{15} and \degE{34} - \degE{52}. The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs} precipitation \citep{Hill2023}.
 
 \subsection{ERA5 Data}
 
-\acrfull{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering (\degN{2} - \degN{16}, \degE{31} - \degE{53}). This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation.
+\acrfull{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering \degN{2} - \degN{16} and \degE{31} - \degE{53}. This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation.
 
 \begin{table}[ht]
     \centering
     \caption{\acrshort{era5} Data File Patterns, Descriptions, and Units}
     \label{tab:era5-file-patterns}
-    \begin{tabular}{p{0.25\linewidth} p{0.45\linewidth} p{0.2\linewidth}}
+    \begin{tabular}{p{0.28\linewidth} p{0.42\linewidth} p{0.2\linewidth}}
         \toprule
         File Pattern & Description & Units/Notes \\
         \midrule
-        \texttt{cape\_0\_YEAR.nc} & Convective available potential energy & \unit{\joule\per\kilogram} \\
+        \texttt{cape\_0\_YEAR.nc} & \acrfull{cape} & \unit{\joule\per\kilogram} \\
         \texttt{olr\_toa\_YEAR.nc} & Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) & \unit{\watt\per\meter\squared} \\
         \texttt{prcp\_tot\_YEAR.nc} & Thickness of rainfall amount (hourly accumulations) & \unit{\meter} \\
         \texttt{rhum\_PRESSURE\_YEAR.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} (used for theta e calculations) \\
@@ -33,7 +33,7 @@ From this comprehensive storm database, a subset of approximately 30,000 was sel
         \texttt{swvl1\_d1\_YEAR.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
         \texttt{swvl2\_d2\_YEAR.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
         \texttt{ta\_PRESSURE\_YEAR.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
-        \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (total column water vapour) \\
+        \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (\acrfull{tcwv}) \\
         \texttt{thetae\_PRESSURE\_YEAR.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
         \texttt{uwnd\_PRESSURE\_YEAR.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
         \texttt{vwnd\_PRESSURE\_YEAR.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
@@ -69,7 +69,7 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \endlastfoot
 
     \texttt{date\_angle} & Angle representation of current date within year & \unit{\degree} \\
-    \texttt{eat\_hours} & Time step hour of day & \href{https://www.timeanddate.com/time/zones/eat}{Eastern Africa Time} (UTC+3) \\
+    \texttt{eat\_hours} & Time step hour of day & \acrlong{eat} \\
     \texttt{storm\_total\_duration} & Total duration of \acrshort{mcs} & \unit{\hour} \\
     \texttt{lon} & Longitude of \acrshort{mcs} centre & \unit{\degree}E \\
     \texttt{lat} & Latitude of \acrshort{mcs} centre & \unit{\degree}N \\
@@ -122,9 +122,9 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{olr\_75} & 75th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{olr\_50} & 50th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & \unit{\milli\meter} \\
-    \texttt{min\_bt} & Minimum cloudtop brightness within \acrshort{mcs} area & \unit{\kelvin} \\
+    \texttt{min\_bt} & Minimum \acrfull{bt} within \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & \unit{\kelvin\per\hour} \\
-    \texttt{mean\_bt} & Mean cloudtop brightness within \acrshort{mcs} area & \unit{\kelvin} \\
+    \texttt{mean\_bt} & Mean \acrshort{bt} within \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & \unit{\kelvin\per\hour} \\
     \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached for \acrshort{mcs} & \unit{\kelvin} \\
     \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & \texttt{boolean} \\
@@ -167,7 +167,7 @@ Additionally, cross-validation is utilised during training on each trial to ensu
     \label{fig:cross_validation_process}
 \end{figure}
 
-The specific hyperparameters tuned and the corresponding values or distributions used for the sweep are included in Table \ref{tab:wandb-sweep-config}. The remaining hyperparameters were kept at their default values as defined in the \acrshort{xgb} Python implementation \insertref{need a link to xgb docs here similar to Hunt2024?}.
+The specific hyperparameters tuned and the corresponding values or distributions used for the sweep are included in Table \ref{tab:wandb-sweep-config}. The remaining hyperparameters were kept at their default values as defined in the \acrshort{xgb} \href{https://xgboost.readthedocs.io/en/stable/python/python_api.html\#module-xgboost.sklearn}{Python implementation}.
 
 \begin{table}[!ht]
     \centering
@@ -188,10 +188,9 @@ The specific hyperparameters tuned and the corresponding values or distributions
     \end{tabular}
 \end{table}
 
-Once the sweeps are complete, the best models from each sweep are evaluated on the held-out test set to provide an unbiased estimate of their performance. The test \acrshort{rmse} values are first compared with the standard deviation of the target variable in the test set to assess whether the model has successfully captured novel relationships beyond just the underlying distribution of the target. They are then compared across different models and feature sets to assess relative performance. Furthermore, test \acrshort{rmse} over the dataset region and time period is analysed to identify any spatial or temporal patterns in model performance. \todo{if no time, this is for future work section}
+Once the sweeps are complete, the best models from each sweep are evaluated on the held-out test set to provide an unbiased estimate of their performance. The test \acrshort{rmse} values are first compared with the standard deviation of the target variable in the test set to assess whether the model has successfully captured novel relationships beyond just the underlying distribution of the target. They are then compared across different models and feature sets to assess relative performance. Furthermore, test \acrshort{rmse} over the dataset region and time period is analysed to identify any spatial or temporal patterns in model performance.
 
 \section{Model Explainability}
-\todo{copied from background; will need to be adapted}
 
 \acrfull{xai} is an emerging field focused on developing methods and techniques to make the decision-making processes of \acrshort{ml} solutions more transparent and easier to understand. Approaches in this field take a variety of forms, including inherently interpretable models and post-hoc explanation methods. A summary of \acrshort{xai} taxonomy is given in Figure \ref{fig:xai-taxonomy}.
 
@@ -216,9 +215,9 @@ In this thesis, \acrshort{shap} is primarily used as a global explanation method
 
 The experimental setup is designed to systematically evaluate the performance of the proposed models under different conditions and feature sets. The experiments are divided into two groups: storm aggregate characteristic prediction tasks and immediate characteristics at observation prediction tasks. Storm aggregate tasks involve predicting characteristics that summarise the entire lifecycle of a storm with the aim of understanding its overall behaviour and impact. In contrast, immediate characteristic tasks focus on predicting properties at each observation time step, such as the 6-hour mean precipitation or the rate of intensification. These tasks require a more granular understanding of the storm's evolution and are more applicable to real-time forecasting applications.
 
-For all experiments, two models were trained on two different feature sets: all available features and only \acrshort{era5} meteorological features. This approach allows for a comparison of model performance when utilising a focused subset of variables. While it is likely that storm genesis location and orography over the track will play a major role, it is possible that those features could confound the effects of other environmental factors, like soil moisture or skin temperature. Thus, through this setup, we ensure that one model is exclusively learning from the meteorological conditions. If model performance differs significantly, this would imply that the geographic, topological, or temporal features contain unique information not captured by the meteorological features. Through a comparison of relative feature importance of the meteorological features, we can also gain insights into their interaction with the other features. In addition, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only \acrshort{era5} features. This aspect of the setup aims to evaluate the predictive power of initial storm observations.
+For all experiments, two models were trained on two different feature sets: all available features and only \acrshort{era5} meteorological features. This approach allows for a comparison of model performance when utilising a focused subset of variables. While it is likely that storm genesis location and orography over the track will likely be key factors, it is possible that those features could confound the effects of other environmental factors. For example, since Somalia is more arid than Ethiopia, it is likely that soil moisture and skin temperature are correlated with longitude. Thus, through this setup, we ensure that one model is exclusively learning from the meteorological conditions. If model performance differs significantly, this would imply that the geographic, topological, or temporal features contain unique information not captured by the meteorological features. In addition, through a comparison of relative feature importance of the meteorological features, we can also gain insights into their interaction with the other features. Lastly, for the storm aggregate prediction tasks, two additional models were trained using only the first observation of each storm, again comparing all features versus only \acrshort{era5} features. This aspect of the setup aims to evaluate the predictive power of initial storm observations.
 
-Finally, any element of the implementation involving random processes was controlled by setting a fixed random seed to ensure reproducibility of results. It is assumed that due to the dataset size, the effect of random variation on the results will be minimal and thus it was not necessary to run experiments multiple times with different seeds.
+As a note, any element of the implementation involving random processes was controlled by setting a fixed random seed to ensure reproducibility of results. It is assumed that due to the dataset size, the effect of random variation on the results will be minimal and thus it was not necessary to run experiments multiple times with different seeds.
 
 The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
 
