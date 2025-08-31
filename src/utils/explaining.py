@@ -155,7 +155,7 @@ def plot_shap_over_time(
     if xtick_interval is not None:
         # reduce xticks to every nth interval
         intervals = temp_agg_df[agg_x].nunique()
-        ax.set_xticks(range(1, intervals + 1))
+        ax.set_xticks(range(intervals))
         ax.set_xticklabels(
             [
                 (
