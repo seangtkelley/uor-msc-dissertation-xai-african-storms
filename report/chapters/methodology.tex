@@ -96,8 +96,8 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{mean\_skt} & Surface temperature & \unit{\kelvin} \\
     \texttt{mean\_land\_skt} & Land surface temperature (\acrshort{nan} if entire area is ocean) & \unit{\kelvin} \\
     \texttt{mean\_sst} & Sea surface temperature (\acrshort{nan} if entire area is land) & \unit{\kelvin} \\
-    \texttt{mean\_swvl1} & Volumetric soil moisture in the top layer ($<$7 cm; NaN over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
-    \texttt{mean\_swvl2} & Volumetric soil moisture in the second layer (7--28 cm; NaN over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
+    \texttt{mean\_swvl1} & Volumetric soil moisture in the top layer ($<$7 cm; \acrshort{nan} over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
+    \texttt{mean\_swvl2} & Volumetric soil moisture in the second layer (7--28 cm; \acrshort{nan} over ocean) & \unit{\meter\cubed\per\meter\cubed} \\
     \texttt{mean\_u850} & \SI{850}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
     \texttt{mean\_u500} & \SI{500}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
     \texttt{mean\_u200} & \SI{200}{\hecto\pascal} zonal wind & \unit{\meter\per\second} \\
@@ -111,16 +111,16 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{mean\_v\_shear\_850\_200} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
     \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at \acrshort{mcs} centre originates & \unit{\degree} from  N \\
     \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} & \unit{\degree} from \texttt{upslope\_bearing} \\
-    \texttt{mean\_tcwv} & Total column water vapour (TCWV) & \unit{\kilogram\per\meter\squared} \\
-    \texttt{domain\_mean\_tcwv} & Mean TCWV over the entire domain of \acrshort{era5} data & \unit{\kilogram\per\meter\squared} \\
+    \texttt{mean\_tcwv} & \acrfull{tcwv} & \unit{\kilogram\per\meter\squared} \\
+    \texttt{domain\_mean\_tcwv} & Mean \acrshort{tcwv} over the entire domain of \acrshort{era5} data & \unit{\kilogram\per\meter\squared} \\
     \texttt{mean\_q\_850} & \SI{850}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
     \texttt{mean\_q\_500} & \SI{500}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
     \texttt{mean\_q\_200} & \SI{200}{\hecto\pascal} specific humidity & \unit{\kilogram\per\kilogram} \\
-    \texttt{mean\_cape} & Convective available potential energy (CAPE) & \unit{\joule\per\kilogram} \\
-    \texttt{domain\_mean\_cape} & Mean CAPE over the entire domain of \acrshort{era5} data & \unit{\joule\per\kilogram} \\
-    \texttt{olr\_90} & 90th percentile of negative outgoing longwave radiation (OLR) within 400 km & \unit{\watt\per\square\meter} \\
-    \texttt{olr\_75} & 75th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
-    \texttt{olr\_50} & 50th percentile of negative OLR within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{mean\_cape} & \acrfull{cape} & \unit{\joule\per\kilogram} \\
+    \texttt{domain\_mean\_cape} & Mean \acrshort{cape} over the entire domain of \acrshort{era5} data & \unit{\joule\per\kilogram} \\
+    \texttt{olr\_90} & 90th percentile of negative \acrfull{olr} within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{olr\_75} & 75th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
+    \texttt{olr\_50} & 50th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & \unit{\milli\meter} \\
     \texttt{min\_bt} & Minimum cloudtop brightness within \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & \unit{\kelvin\per\hour} \\
@@ -128,8 +128,8 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & \unit{\kelvin\per\hour} \\
     \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached for \acrshort{mcs} & \unit{\kelvin} \\
     \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & \texttt{boolean} \\
-    \texttt{mjo\_phase} & Phase of Madden--Julian oscillation (MJO) & $[1, 8] \cap \mathbb{Z}$ \\
-    \texttt{mjo\_amplitude} & Amplitude of MJO & - \\
+    \texttt{mjo\_phase} & Phase of \acrfull{mjo} & $[1, 8] \cap \mathbb{Z}$ \\
+    \texttt{mjo\_amplitude} & Amplitude of \acrshort{mjo} & - \\
 \end{longtable}
 }
 
