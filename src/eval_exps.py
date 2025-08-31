@@ -109,13 +109,6 @@ for exp_group_name, exp_names in exp_groups.items():
         # select test dataset
         test_df = processed_df.iloc[test_idx]
 
-        # use first points only for all storm aggregate exps for fair comparison
-        if exp_name.startswith("storm_") and not all(
-            test_df["storm_obs_idx"] == 0
-        ):
-            print("Using first points only for storm aggregate experiment...")
-            test_df = test_df[test_df["storm_obs_idx"] == 0]
-
         # determine feature columns based on experiment config
         if exp_config["feature_cols"] == "all":
             feature_cols = config.ALL_FEATURE_COLS
@@ -143,6 +136,26 @@ for exp_group_name, exp_names in exp_groups.items():
         # print RMSE and standard deviation
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
+
+        if exp_name.startswith("storm_") and not all(
+            test_df["storm_obs_idx"] == 0
+        ):
+            # get first points for fair comparison of metrics
+            first_points_test_df = test_df[test_df["storm_obs_idx"] == 0]
+            X_test_first_points = X_test.loc[first_points_test_df.index]
+            y_test_first_points = y_test.loc[first_points_test_df.index]
+
+            # make predictions on first points
+            y_pred_first_points = best_model.predict(X_test_first_points)
+
+            # calculate RMSE for first points
+            test_rmse_first_points = root_mean_squared_error(
+                y_test_first_points, y_pred_first_points
+            )
+            print(f"Test RMSE (first points): {test_rmse_first_points:.4f}")
+            print(
+                f"Test target standard deviation (first points): {np.std(y_test_first_points):.4f}"
+            )
 
         # plot model verification
         r_squared = modelling.plot_model_verification(
