@@ -112,6 +112,24 @@ def plot_shap_over_time(
     filename: Optional[str] = None,
     save_dir: Optional[Path] = None,
 ):
+    """
+    Plot aggregated SHAP values over time (or another sequential variable centred at zero) using a bar plot.
+
+    :param temp_agg_df: DataFrame containing aggregated SHAP values to plot.
+    :param agg_x: Column name in temp_agg_df to use for the x-axis (e.g., time or interval).
+    :param agg_y: Column name in temp_agg_df to use for the y-axis (SHAP value to plot).
+    :param ax: Optional matplotlib Axes to plot on. If None, a new figure is created.
+    :param edgecolor: Optional color for bar edges.
+    :param xtick_interval: If set, only every nth x-tick is labeled.
+    :param xtick_offset: Offset for x-tick labeling (default: 1).
+    :param xtick_convert: Function to convert x-tick values to labels (default: str).
+    :param xtick_rotation: Rotation angle for x-tick labels (default: 0).
+    :param title: Optional plot title.
+    :param xlabel: Optional x-axis label.
+    :param ylabel: Optional y-axis label.
+    :param filename: If provided, the plot is saved to this filename.
+    :param save_dir: Directory to save the plot if filename is provided.
+    """
     # create custom color palette centred at zero
     m = np.max(np.abs(temp_agg_df[agg_y]))
     norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)

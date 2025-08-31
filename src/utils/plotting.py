@@ -228,10 +228,9 @@ def plot_2d_agg_map(
     """
     Plot a 2D aggregated map.
 
-    :param df: DataFrame containing the data with columns lon, lat, and col.
-    :param col: Column name to aggregate and plot.
-    :param n_bins: Number of bins for latitude and longitude.
-    :param agg_func: Aggregation function to apply to each bin.
+    :param x: 1D array of x-coordinates (e.g., longitudes).
+    :param y: 1D array of y-coordinates (e.g., latitudes).
+    :param grid: 2D array of aggregated values.
     :param ax: Matplotlib axis to plot on. If None, a new figure and axis will be created.
     :param cmap: Colormap to use for the plot.
     :param sym_cmap_centre: Centre value for symmetrical colormap.
