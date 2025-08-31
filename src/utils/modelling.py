@@ -498,7 +498,7 @@ def plot_model_verification(
     y_test: np.ndarray,
     y_pred: np.ndarray,
     ax: Optional[Axes],
-) -> None:
+) -> float:
     """
     Plot model verification results: scatter plot of predictions vs actuals,
     with regression line and corresponding R-squared value.
@@ -508,6 +508,7 @@ def plot_model_verification(
     :param y_test: Array of actual target values.
     :param y_pred: Array of predicted target values.
     :param ax: Matplotlib Axes object to plot on. If None, uses current axes.
+    :return: R-squared value of the regression.
     """
     if ax is None:
         ax = plt.gca()
@@ -535,3 +536,5 @@ def plot_model_verification(
     ax.set_xlabel(f"Predicted Value ({target_units})")
     ax.set_ylabel(f"Actual Value ({target_units})")
     ax.legend()
+
+    return float(r_squared)

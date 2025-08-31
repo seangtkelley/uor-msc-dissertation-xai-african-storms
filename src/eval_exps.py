@@ -145,7 +145,7 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test target standard deviation: {test_std:.4f}")
 
         # plot model verification
-        modelling.plot_model_verification(
+        r_squared = modelling.plot_model_verification(
             exp_name,
             exp_config["target_units"],
             y_test.to_numpy(),
@@ -153,13 +153,20 @@ for exp_group_name, exp_names in exp_groups.items():
             ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
         )
 
+        print(f"R-squared: {r_squared:.4f}")
+
+        if r_squared < 0.5:
+            continue
+
         # by default, use entire test set
         X_test_sample = X_test
         if args.load_shap:
+            print("Loading SHAP values...")
             X_test_sample, explanation = explaining.load_shap_for_exp(
                 exp_name, X_test
             )
         else:
+            print("Calculating SHAP values...")
             X_test_sample, explanation = explaining.calc_shap_values(
                 best_model, X_test, sample_frac=args.shap_sample
             )
