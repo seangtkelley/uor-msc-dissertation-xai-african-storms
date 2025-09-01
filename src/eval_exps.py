@@ -369,10 +369,10 @@ for exp_group_name, exp_names in exp_groups.items():
             )
             axs = axs.flatten()
 
-            # symmetrical cmap centred at specified value
+            # symmetrical cmap
             m = max(
-                abs(np.nanmin(merge_df[feature])),
-                abs(np.nanmax(merge_df[feature])),
+                abs(np.percentile(merge_df[feature], 1)),
+                abs(np.percentile(merge_df[feature], 99)),
             )
 
             for idx, hour in enumerate(range(0, 24, 4)):
@@ -433,10 +433,10 @@ for exp_group_name, exp_names in exp_groups.items():
             )
             axs = axs.flatten()
 
-            # symmetrical cmap centred at specified value
+            # symmetrical cmap
             m = max(
-                abs(np.nanmin(merge_df[feature])),
-                abs(np.nanmax(merge_df[feature])),
+                abs(np.percentile(merge_df[feature], 1)),
+                abs(np.percentile(merge_df[feature], 99)),
             )
 
             for idx, month in enumerate(range(1, 13)):
