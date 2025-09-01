@@ -193,14 +193,18 @@ TARGET_EXCLUDE_COLS_MAP = {
         "mean_bt",
         "dmean_bt_dt",
     ],
-    "storm_bearing": ["bearing_from_prev"],
+    "storm_bearing": ["zonal_speed", "meridional_speed", "bearing_from_prev"],
     "dmin_bt_dt": [
         "min_bt",
         "mean_bt",
         "dmean_bt_dt",
     ],
-    "bearing_to_next": ["bearing_from_prev"],
-    "distance_to_next": ["distance_from_prev"],
+    "bearing_to_next": ["zonal_speed", "meridional_speed", "bearing_from_prev"],
+    "distance_to_next": [
+        "zonal_speed",
+        "meridional_speed",
+        "distance_from_prev",
+    ],
 }
 
 
