@@ -65,7 +65,7 @@ All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{8.9432} & 0.3
     \label{fig:storm_max_intensity_summary}
 \end{figure}
 
-Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm max intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable appears among the top five most important features, suggesting that non-meteorological factors play a significant role in prediction. The results of the all features model also reveal a clear diurnal cycle, with stronger storms tending to develop in the late evening. Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
+Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm max intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable appears among the top five most important features. The results of the all features model also reveal a weak but present diurnal cycle, with stronger storms tending to develop in the late evening. Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
 Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
 
@@ -75,10 +75,12 @@ Particularly striking for these models is that the importance of low-level merid
     \caption{Mean SHAP values for 850 hPa meridional wind over East Africa by month for storm max intensity prediction using ERA5 features.}
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
+\todo{can remove plot title here later. kept it for easier exploration of all the figures i generated}
 
+\clearpage
 \subsection{Storm Direction}
 
-Table \ref{tab:storm_direction_results} details the performance metrics for storm direction prediction across different experimental setups as specified in the methodology.
+Table \ref{tab:storm_direction_results} details the performance metrics for storm direction prediction across different experimental setups as specified in the methodology. Again, due to the poor performance of the first points only models, further explainability analysis will focus on the all observations models.
 
 \begin{table}[ht]
 \centering
@@ -97,8 +99,6 @@ All First Points & \multicolumn{2}{c}{61.3329} & \multicolumn{2}{c}{78.7438} & 0
 \hline
 \end{tabular}
 \end{table}
-
-Again, due to the poor performance of the first points only models, further explainability analysis will focus on the all observations models.
 
 For better context in interpreting the meaning of the \acrshort{shap} values, Figure \ref{fig:storm_cardinal_directions_distribution} shows the distribution of storm cardinal directions in the dataset. The distribution indicates that the majority of storms move in a westerly direction. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
 
