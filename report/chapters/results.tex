@@ -57,9 +57,9 @@ All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{8.9432} & 0.3
 
 Due to the poor performance of the first points only models, further explainability analysis will focus on the all observations models.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_summary.png}
+    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_summary.png}
     \caption{Comparison of performance and top features for storm max intensity.}
     \label{fig:storm_max_intensity_summary}
 \end{figure}
@@ -75,9 +75,9 @@ The key observations include: \todo{make a paragraph}
 
 Particularly notable for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
+    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
     \caption{Mean SHAP values for 850 hPa meridional wind over East Africa by month for storm max intensity prediction using ERA5 features.}
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
@@ -96,10 +96,10 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 \cline{2-5}
  & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
 \hline
-storm\_direction\_all              & 21.8881 & 36.4077 & 75.7506 & 76.8966 & 0.9192 \\
-storm\_direction\_era5             & 18.2928 & 31.6709 & 75.7506 & 76.8966 & 0.9437 \\
-storm\_direction\_all\_first\_points & \multicolumn{2}{c}{61.3329} & \multicolumn{2}{c}{78.7438} & 0.3937 \\
-storm\_direction\_era5\_first\_points & \multicolumn{2}{c}{61.4484} & \multicolumn{2}{c}{78.7438} & 0.3912 \\
+All              & 21.8881 & 36.4077 & 75.7506 & 76.8966 & 0.9192 \\
+\acrshort{era5}             & 18.2928 & 31.6709 & 75.7506 & 76.8966 & 0.9437 \\
+All First Points & \multicolumn{2}{c}{61.3329} & \multicolumn{2}{c}{78.7438} & 0.3937 \\
+\acrshort{era5} First Points & \multicolumn{2}{c}{61.4484} & \multicolumn{2}{c}{78.7438} & 0.3912 \\
 \hline
 \end{tabular}
 \end{table}
@@ -108,67 +108,105 @@ Again, due to the poor performance of the first points only models, further expl
 
 For better context in interpreting the meaning of the \acrshort{shap} values, Figure \ref{fig:storm_cardinal_directions_distribution} shows the distribution of storm cardinal directions in the dataset. The distribution indicates that the majority of storms move in a westerly direction. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/generated/exploration/storm_cardinal_directions_distribution.png}
+    \includegraphics[width=0.6\textwidth]{../figures/generated/exploration/storm_cardinal_directions_distribution.png}
     \caption{Distribution of storm cardinal directions in the dataset.}
     \label{fig:storm_cardinal_directions_distribution}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_summary.png}
+    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_summary.png}
     \caption{Comparison of performance and top features for storm direction.}
     \label{fig:storm_direction_summary}
 \end{figure}
 
 Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. \texttt{eat\_hours} does not appear in the top 12 features indicating that diurnal cycle is not a significant factor for storm direction.
 
-Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_era5_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. During the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is the summer influence but mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
+Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. During the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is the summer influence but mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_u500_map_by_month.png}
+    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_u500_map_by_month.png}
     \caption{Mean SHAP values for 500 hPa zonal wind over East Africa by month for storm direction prediction using all features.}
     \label{fig:storm_direction_all_shap_mean_u500_map_by_month}
 \end{figure}
 
+\clearpage
 \section{Predict Immediate Characteristics at an Observation}
 
-These experiments aim to predict the immediate characteristics of a storm based on its current observation.
+These experiments aim to predict the immediate characteristics of a storm based on its current observation. Table \ref{tab:obs_experiment_results} shows the results of these experiments. Unfortunately, the model struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable and the resulting low R-squared values between the predicted and actual values. As such, further explainability analysis will focus on the intensification and precipitation models.
 
+\begin{table}[h!]
+\centering
+\caption{Immediate Characteristic at Observation Results}
+\label{tab:obs_experiment_results}
+\begin{tabular}{lccc}
+\hline
+\textbf{Experiment} & \textbf{Test RMSE} & \textbf{Target Std} & \textbf{R-squared} \\
+\hline
+Intensification All     & 2.8149  & 4.4840  & 0.6073 \\
+Intensification \acrshort{era5}    & 3.0828  & 4.4840  & 0.5278 \\
+Direction All     & 72.8590 & 86.4541 & 0.2898 \\
+Direction \acrshort{era5}     & 74.4878 & 86.4541 & 0.2577 \\
+Distance All      & 12.0634 & 13.1260 & 0.1559 \\
+Distance \acrshort{era5}     & 12.6901 & 13.1260 & 0.0656 \\
+Precipitation All       & 0.0488  & 0.1835  & 0.9296 \\
+Precipitation \acrshort{era5}      & 0.0851  & 0.1835  & 0.7887 \\
+\hline
+\end{tabular}
+\end{table}
+
+\clearpage
 \subsection{Intensification}
 
-\begin{figure}[h]
+Although the \acrshort{rmse} of the models are acceptable, it is evident that the both models generally tend to underpredict intensification and weakening as shown in Figure \ref{fig:obs_intensification_summary}.
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_summary.png}
     \caption{Comparison of performance and top features for intensification.}
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-\subsection{Direction}
+other key observations include: \todo{make a paragraph}
+\begin{itemize}
+    \item the longer the storm is over the ocean, the more it tends to intensify from c)
+    \item skin temperature is a critical factor in storm intensification, as indicated by its consistent presence among the top features for both models from c) and d). higher skin temperatures are associated with increased intensification, likely due to enhanced surface heating and moisture availability.
+    \item no clear diurnal cycle
+    \item \acrshort{cape} is much less important than with predicting storm max intensity from d)
+    \item counter-intuitive importance between \acrshort{cape} and domain mean \acrshort{cape}
+\end{itemize}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_next_direction/obs_next_direction_summary.png}
-    \caption{Comparison of performance and top features for direction.}
-    \label{fig:obs_direction_summary}
-\end{figure}
+\todo{haven't included any maps here as they did not seem to provide additional insights beyond the summary plots.}
 
-\subsection{Distance}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_next_direction/obs_next_direction_summary.png}
-    \caption{Comparison of performance and top features for distance.}
-    \label{fig:obs_distance_summary}
-\end{figure}
-
+\clearpage
 \subsection{Precipitation}
 
-\begin{figure}[h]
+Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day.
+
+other key observations include: \todo{make a paragraph}
+\begin{itemize}
+    \item \acrfull{bt} is not a top feature
+    \item strong diurnal cycle with peak precipitation during midday
+    \item high importance of mid and upper level humidity
+    \item again counter-intuitive relationship between \acrshort{cape} and domain mean \acrshort{cape}
+    \item \acrshort{olr} is important, likely as a proxy for cloud cover
+\end{itemize}
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/obs_precipitation_summary.png}
     \caption{Comparison of performance and top features for precipitation.}
     \label{fig:obs_precipitation_summary}
+\end{figure}
+
+The \acrshort{era5} model appears to have captured the influence of the rainy seasons (\acrshort{itcz}?) on precipitation patterns via the mean \acrshort{cape} over the study region as shown in Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year.png}
+    \caption{Temporal variability of SHAP values for domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+    \label{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}
 \end{figure}
