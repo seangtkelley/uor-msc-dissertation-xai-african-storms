@@ -92,7 +92,9 @@ def calc_shap_values(
         {col: int for col in df.select_dtypes(include="bool").columns}
     )
 
-    explainer = shap.TreeExplainer(model, df_sample)
+    explainer = shap.Explainer(
+        model, df_sample, seed=config.RANDOM_STATE, algorithm="tree"
+    )
     return df_sample, explainer(df_sample)
 
 

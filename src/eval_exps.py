@@ -14,6 +14,7 @@ __status__ = "Development"
 
 import argparse
 
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -109,11 +110,6 @@ for exp_group_name, exp_names in exp_groups.items():
         # select test dataset
         test_df = processed_df.iloc[test_idx]
 
-        # use first points only for all storm aggregate exps for fair comparison
-        if exp_name.startswith("storm_"):
-            # using head(1) instead of first() to preserve original index
-            test_df = test_df.groupby("storm_id").head(1)
-
         # determine feature columns based on experiment config
         if exp_config["feature_cols"] == "all":
             feature_cols = config.ALL_FEATURE_COLS
@@ -142,22 +138,50 @@ for exp_group_name, exp_names in exp_groups.items():
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
 
+        if exp_name.startswith("storm_") and not all(
+            test_df["storm_obs_idx"] == 0
+        ):
+            # get first points for fair comparison of metrics
+            first_points_test_df = test_df[test_df["storm_obs_idx"] == 0]
+            X_test_first_points = X_test.loc[first_points_test_df.index]
+            y_test_first_points = y_test.loc[first_points_test_df.index]
+
+            # make predictions on first points
+            y_pred_first_points = best_model.predict(X_test_first_points)
+
+            # calculate RMSE for first points
+            test_rmse_first_points = root_mean_squared_error(
+                y_test_first_points, y_pred_first_points
+            )
+            print(f"Test RMSE (first points): {test_rmse_first_points:.4f}")
+            print(
+                f"Test target standard deviation (first points): {np.std(y_test_first_points):.4f}"
+            )
+
         # plot model verification
-        modelling.plot_model_verification(
+        r_squared = modelling.plot_model_verification(
             exp_name,
             exp_config["target_units"],
             y_test.to_numpy(),
             y_pred,
             ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+            title=f"{chr(i+97)}) Model Verification for {exp_name}",
         )
+
+        print(f"R-squared: {r_squared:.4f}")
+
+        if r_squared < config.R_SQUARED_THRESHOLD:
+            continue
 
         # by default, use entire test set
         X_test_sample = X_test
         if args.load_shap:
+            print("Loading SHAP values...")
             X_test_sample, explanation = explaining.load_shap_for_exp(
                 exp_name, X_test
             )
         else:
+            print("Calculating SHAP values...")
             X_test_sample, explanation = explaining.calc_shap_values(
                 best_model, X_test, sample_frac=args.shap_sample
             )
@@ -179,7 +203,7 @@ for exp_group_name, exp_names in exp_groups.items():
             group_remaining_features=False,
             max_display=12,
         )
-        ax_shap.set_title(f"SHAP Beeswarm Plot for {exp_name}")
+        ax_shap.set_title(f"{chr(i+97+2)}) SHAP Beeswarm Plot for {exp_name}")
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
@@ -331,6 +355,134 @@ for exp_group_name, exp_names in exp_groups.items():
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
+            )
+
+        # plot mean SHAP value maps by hour for features with high geo and hour correlation
+        for feature in set(top_geo_corr_features).intersection(
+            set(top_hour_corr_features)
+        ):
+            fig, axs = plt.subplots(
+                2,
+                3,
+                figsize=(10, 6),
+                subplot_kw={"projection": ccrs.PlateCarree()},
+            )
+            axs = axs.flatten()
+
+            # symmetrical cmap
+            m = max(
+                abs(np.percentile(merge_df[feature], 1)),
+                abs(np.percentile(merge_df[feature], 99)),
+            )
+
+            for idx, hour in enumerate(range(0, 24, 4)):
+                hour_df = merge_df[merge_df["eat_hours"] == hour]
+                if hour_df.empty:
+                    continue
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    hour_df, feature, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    ax=axs[idx],
+                    cmap=config.SHAP_MAP_CMAP,
+                    vmin=-m,
+                    vmax=m,
+                    add_cbar=False,
+                    draw_grid_labels=False,
+                    title=f"{chr(idx+97)}) {hour}:00",
+                )
+
+            # single cbar for whole image
+            fig.subplots_adjust(
+                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
+            )
+            cbar_ax = fig.add_axes(
+                (0.07, 0.07, 0.86, 0.025)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+            )
+            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
+            fig.suptitle(
+                f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
+                fontsize=17,
+                y=0.97,
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map_by_hour.png",
+                exp_group_geo_corr_fig_dir,
+                tight=False,
+            )
+
+        # plot mean SHAP value maps by month for features with high geo and date correlation
+        for feature in set(top_geo_corr_features).intersection(
+            set(top_date_corr_features)
+        ):
+            fig, axs = plt.subplots(
+                3,
+                4,
+                figsize=(10, 8),
+                subplot_kw={"projection": ccrs.PlateCarree()},
+            )
+            axs = axs.flatten()
+
+            # symmetrical cmap
+            m = max(
+                abs(np.percentile(merge_df[feature], 1)),
+                abs(np.percentile(merge_df[feature], 99)),
+            )
+
+            for idx, month in enumerate(range(1, 13)):
+                month_df = merge_df[merge_df["timestamp"].dt.month == month]
+                if month_df.empty:
+                    continue
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    month_df, feature, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    ax=axs[idx],
+                    cmap=config.SHAP_MAP_CMAP,
+                    vmin=-m,
+                    vmax=m,
+                    add_cbar=False,
+                    draw_grid_labels=False,
+                    title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
+                )
+
+            # single cbar for whole image
+            fig.subplots_adjust(
+                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
+            )
+            cbar_ax = fig.add_axes(
+                (0.07, 0.07, 0.86, 0.025)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+            )
+            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
+            fig.suptitle(
+                f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
+                fontsize=17,
+                y=0.97,
+            )
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map_by_month.png",
+                exp_group_geo_corr_fig_dir,
+                tight=False,
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)

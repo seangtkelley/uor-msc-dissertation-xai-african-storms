@@ -87,15 +87,20 @@ def add_borders(
 
 def add_gridlines(
     ax: Axes,
+    draw_labels: bool = True,
 ) -> None:
     """
     Add gridlines to the given axis.
 
     :param ax: Matplotlib axis to add the gridlines to.
+    :param draw_labels: Whether to draw labels on the gridlines.
     """
-    gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
-    gl.top_labels = False
-    gl.right_labels = False
+    if draw_labels:
+        gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
+        gl.top_labels = False
+        gl.right_labels = False
+    else:
+        gl = ax.gridlines(color="lightgray", draw_labels=False)  # type: ignore
 
 
 def add_geopotential_height(
@@ -138,6 +143,7 @@ def save_plot(
     filename: str,
     directory: Path = config.EXPLORATION_FIGURES_DIR,
     dpi: int = 300,
+    tight: bool = True,
     show: bool = False,
 ) -> None:
     """
@@ -148,7 +154,8 @@ def save_plot(
     :param dpi: Dots per inch for the saved figure.
     :param show: Whether to show the plot after saving.
     """
-    plt.tight_layout()
+    if tight:
+        plt.tight_layout()
     plt.savefig(directory / filename, dpi=dpi, bbox_inches="tight")
     if show:
         plt.show()
@@ -216,11 +223,14 @@ def plot_2d_agg_map(
     ax: Optional[Axes] = None,
     cmap: Optional[str | Colormap] = None,
     sym_cmap_centre: Optional[float] = None,
+    vmin: Optional[float] = None,
+    vmax: Optional[float] = None,
     add_cbar: bool = True,
     cbar_pad: float = 0.1,
     cbar_aspect: float = 20,
     cbar_shrink: float = 1.0,
     cbar_label: Optional[str] = None,
+    draw_grid_labels: bool = True,
     title: Optional[str] = None,
     filename: Optional[str] = None,
     save_dir: Optional[Path] = None,
@@ -255,6 +265,9 @@ def plot_2d_agg_map(
             abs(np.nanmax(grid) - sym_cmap_centre),
         )
         vmin, vmax = sym_cmap_centre - m, sym_cmap_centre + m
+    elif vmin is not None and vmax is not None:
+        # use specified colormap limits
+        vmin, vmax = vmin, vmax
     else:
         # use default colormap limits
         vmin, vmax = None, None
@@ -285,7 +298,7 @@ def plot_2d_agg_map(
 
     # add other map features
     add_borders(ax)
-    add_gridlines(ax)
+    add_gridlines(ax, draw_labels=draw_grid_labels)
 
     if title is not None:
         ax.set_title(title)

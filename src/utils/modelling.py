@@ -14,7 +14,6 @@ __status__ = "Development"
 import json
 import tempfile
 import uuid
-from glob import glob
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Iterable, Literal, Optional
@@ -450,64 +449,41 @@ def get_model_from_run(wandb_run: SimpleNamespace | Run) -> XGBRegressor:
     :return: The model from the run.
     """
     model = XGBRegressor()
-    run_dir_search = glob(str(config.WANDB_LOG_DIR / f"*{wandb_run.id}*"))
-    model_filepath = None
-    try:
-        if len(run_dir_search) != 1:
-            raise ValueError(
-                f"Expected exactly one run directory but found {len(run_dir_search)} for run {wandb_run.id}."
+
+    # setup dir for manual download
+    manual_downloads_dir = config.WANDB_LOG_DIR / "manual_downloads"
+    manual_downloads_dir.mkdir(parents=True, exist_ok=True)
+
+    model_filename = f"{wandb_run.name}_model.json"
+    model_filepath = Path(manual_downloads_dir) / model_filename
+    if not model_filepath.exists():
+        print("Downloading model from W&B...")
+
+        # search run files for model json
+        model_files = [
+            f
+            for f in wandb_run.files()  # type:ignore
+            if f.name.endswith("_model.json")
+        ]
+
+        if len(model_files) == 0:
+            raise FileNotFoundError(
+                f"No model files found for run: {wandb_run.id}"
+            )
+        elif len(model_files) > 1:
+            print(
+                f"Multiple model files found for run: {wandb_run.id}. Using the first one."
             )
 
-        print("Loading model from local run directory...")
+        # download model file
+        download_filepath = model_files[0].download(exist_ok=True)
 
-        # load the model
-        model_filepath = (
-            Path(run_dir_search[0]) / "files" / f"{wandb_run.name}_model.json"
-        )
+        # move to expected location
+        Path(download_filepath.name).rename(model_filepath)
+    else:
+        print("Loading model from manual download directory...")
 
-        # check the file exists
-        if not model_filepath.exists():
-            raise FileNotFoundError(f"Model file not found: {model_filepath}")
-
-    except Exception as e:
-        # setup dir for download
-        manual_downloads_dir = config.WANDB_LOG_DIR / "manual_downloads"
-        manual_downloads_dir.mkdir(parents=True, exist_ok=True)
-
-        model_filename = f"{wandb_run.name}_model.json"
-        model_filepath = Path(manual_downloads_dir) / model_filename
-
-        if not model_filepath.exists():
-            print("Downloading model from W&B...")
-
-            # search run files for model json
-            model_files = [
-                f
-                for f in wandb_run.files()  # type:ignore
-                if f.name.endswith("_model.json")
-            ]
-
-            if len(model_files) == 0:
-                raise FileNotFoundError(
-                    f"No model files found for run: {wandb_run.id}"
-                )
-            elif len(model_files) > 1:
-                print(
-                    f"Multiple model files found for run: {wandb_run.id}. Using the first one."
-                )
-
-            # download model file
-            download_filepath = model_files[0].download(exist_ok=True)
-
-            # move to expected location
-            Path(download_filepath.name).rename(model_filepath)
-
-    finally:
-        if model_filepath is not None:
-            # load the model
-            model.load_model(model_filepath)
-        else:
-            raise RuntimeError("Failed to locate or download the model file.")
+    model.load_model(model_filepath)
 
     return model
 
@@ -518,7 +494,8 @@ def plot_model_verification(
     y_test: np.ndarray,
     y_pred: np.ndarray,
     ax: Optional[Axes],
-) -> None:
+    title: Optional[str] = None,
+) -> float:
     """
     Plot model verification results: scatter plot of predictions vs actuals,
     with regression line and corresponding R-squared value.
@@ -528,6 +505,7 @@ def plot_model_verification(
     :param y_test: Array of actual target values.
     :param y_pred: Array of predicted target values.
     :param ax: Matplotlib Axes object to plot on. If None, uses current axes.
+    :return: R-squared value of the regression.
     """
     if ax is None:
         ax = plt.gca()
@@ -540,7 +518,7 @@ def plot_model_verification(
     y_pred_ = y_pred.reshape(-1, 1)
     y_test_ = y_test.reshape(-1, 1)
     lr.fit(y_pred_, y_test_)
-    reg_line = lr.predict(np.unique(y_pred_))
+    reg_line = lr.predict(np.unique(y_pred_).reshape(-1, 1))
     r_squared = lr.score(y_pred_, y_test_)
 
     # plot regression line
@@ -551,7 +529,12 @@ def plot_model_verification(
         color="black",
         linestyle="--",
     )
-    ax.set_title(f"Model Verification for {exp_name}")
+    if title is not None:
+        ax.set_title(title)
+    else:
+        ax.set_title(f"Model Verification for {exp_name}")
     ax.set_xlabel(f"Predicted Value ({target_units})")
     ax.set_ylabel(f"Actual Value ({target_units})")
     ax.legend()
+
+    return float(r_squared)
