@@ -32,7 +32,7 @@ df.head()
 # %%
 print("Grouping storms by storm_id and getting initial points.")
 storm_groups = df.groupby("storm_id")
-storm_inits = storm_groups.first()
+storm_inits = storm_groups.head(1)
 
 # %%
 print("Plotting histogram of storm initial locations.")
@@ -86,7 +86,7 @@ plotting.plot_kde_map(storm_inits_x, storm_inits_y, storm_inits_kde, ax=axs[1])
 axs[1].set_title("b) Storm Initial Locations")
 
 # plot storm end locations
-storm_ends = storm_groups.last()
+storm_ends = storm_groups.tail(1)
 storm_ends_x, storm_ends_y, storm_ends_kde = processing.calc_kde(
     storm_ends["lon"], storm_ends["lat"]
 )
@@ -142,7 +142,6 @@ plotting.add_all_map_features(axs[0])
 axs[0].set_title("a) Angle of sub-gridscale orography")
 
 # plot storm initial locations
-storm_inits = storm_groups.first()
 storm_inits_x, storm_inits_y, storm_inits_kde = processing.calc_kde(
     storm_inits["lon"], storm_inits["lat"]
 )
@@ -151,7 +150,6 @@ plotting.plot_kde_map(storm_inits_x, storm_inits_y, storm_inits_kde, ax=axs[1])
 axs[1].set_title("b) Storm Initial Locations")
 
 # plot storm end locations
-storm_ends = storm_groups.last()
 storm_ends_x, storm_ends_y, storm_ends_kde = processing.calc_kde(
     storm_ends["lon"], storm_ends["lat"]
 )
@@ -383,17 +381,48 @@ df["storm_closest_cardinal_direction"] = (
 print("Plotting polar chart of storm cardinal directions distribution.")
 fig = go.Figure()
 
+storm_inits = df.iloc[storm_inits.index]
 fig.add_trace(
     go.Scatterpolar(
-        r=df["storm_closest_cardinal_direction"].value_counts(normalize=True)[
-            cardinal_directions
-        ],
+        r=storm_inits["storm_closest_cardinal_direction"].value_counts(
+            normalize=True
+        )[cardinal_directions],
         theta=cardinal_directions,
         fill="toself",
         name="All Storms",
     )
 )
-p98_area_df = df[df["storm_max_area"] >= area_thres]
+
+fig.update_layout(
+    polar=dict(
+        radialaxis=dict(
+            visible=True,
+        )
+    ),
+)
+
+fig.write_image(
+    config.EXPLORATION_FIGURES_DIR
+    / "storm_cardinal_directions_distribution.png"
+)
+
+# %%
+print(
+    "Plotting polar chart of storm cardinal directions distribution for different storm categories."
+)
+fig = go.Figure()
+
+fig.add_trace(
+    go.Scatterpolar(
+        r=storm_inits["storm_closest_cardinal_direction"].value_counts(
+            normalize=True
+        )[cardinal_directions],
+        theta=cardinal_directions,
+        fill="toself",
+        name="All Storms",
+    )
+)
+p98_area_df = storm_inits[storm_inits["storm_max_area"] >= area_thres]
 fig.add_trace(
     go.Scatterpolar(
         r=p98_area_df["storm_closest_cardinal_direction"].value_counts(
@@ -404,7 +433,9 @@ fig.add_trace(
         name="98% Percentile Max Area Storms",
     )
 )
-p98_duration_df = df[df["storm_total_duration"] >= duration_thres]
+p98_duration_df = storm_inits[
+    storm_inits["storm_total_duration"] >= duration_thres
+]
 fig.add_trace(
     go.Scatterpolar(
         r=p98_duration_df["storm_closest_cardinal_direction"].value_counts(
@@ -415,7 +446,9 @@ fig.add_trace(
         name="98% Percentile Duration Storms",
     )
 )
-p98_min_bt_df = df[df["storm_min_bt"] <= df["storm_min_bt"].quantile(0.02)]
+p98_min_bt_df = storm_inits[
+    storm_inits["storm_min_bt"] <= storm_inits["storm_min_bt"].quantile(0.02)
+]
 fig.add_trace(
     go.Scatterpolar(
         r=p98_min_bt_df["storm_closest_cardinal_direction"].value_counts(
@@ -434,12 +467,11 @@ fig.update_layout(
         )
     ),
     showlegend=True,
-    title="Storm Cardinal Directions Distribution",
 )
 
 fig.write_image(
     config.EXPLORATION_FIGURES_DIR
-    / "storm_cardinal_directions_distribution.png"
+    / "storm_categories_cardinal_directions_distribution.png"
 )
 
 # %%
