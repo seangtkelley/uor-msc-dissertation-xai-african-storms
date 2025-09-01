@@ -1,9 +1,11 @@
 \chapter{Results}
 \label{ch:results}
 
-The results of the experiments conducted in this study are presented in this chapter. The findings are organized according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will follow in Chapter \ref{ch:discuss}.
+The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will follow in Chapter \ref{ch:discuss}.
 
 \section{Manual Exploration of Dataset}
+
+Before modelling, a limited exploratory data analysis was conducted to understand the general characteristics of the filtered dataset assembled for the study. Special attention was paid to the geographic and temporal distribution of the storms. Figure \ref{fig:orography_storm_init_end_kde} shows the density of storm start and end locations within the study region. The distribution is highly concentrated around the Ethiopian Highlands and diminishes quickly closer to the coastline with the Indian Ocean. For the modelling problem, this spatial distribution suggests a strong orographic influence on storm genesis and dissipation.
 
 \begin{figure}[ht]
     \centering
@@ -12,7 +14,7 @@ The results of the experiments conducted in this study are presented in this cha
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
-Figure \ref{fig:orography_storm_init_end_kde} shows the density of storm start and end locations within the study region. The plot reveals that the storms in this database are highly concentrated around the Ethiopian Highlands.
+Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution of storm genesis local time with multiple distinct phenomena present. First, although the density of storms of the coast of Somalia is limited, it is clear that storms which form over the ocean tend to form in the early morning hours whereas storms which form over land tend to form in the late afternoon. However, orography also appears to play a role pushing genesis later into the night, with clear anomalies nearly the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{ZardiDinoandWhiteman2013}.
 
 \begin{figure}[ht]
     \centering
@@ -21,19 +23,22 @@ Figure \ref{fig:orography_storm_init_end_kde} shows the density of storm start a
     \label{fig:orography_storm_init_eat_hours_mode_mean}
 \end{figure}
 
-Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution of the local time of storm genesis. The plot indicates a peak in storm initiation during the evening and night, which is consistent with the diurnal cycle of convection in the region \citep{Hill2023}.
+Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night both tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
 
-\section{Experimental Results Overview}
-
-This section provides an overview of the experimental results obtained from the various predictive tasks outlined in the methodology. The results are categorised based on the type of prediction: storm aggregate features and immediate characteristics at an observation. 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{../figures/generated/exploration/min_bt_over_lifecycle_by_init_type.png}
+    \caption{Minimum \acrfull{bt} over the lifecycle of storms, categorised by their initiation type.}
+    \label{fig:min_bt_over_lifecycle_by_init_type}
+\end{figure}
 
 \section{Predict Storm Aggregate Features}
 
-These experiments aim to predict the overall characteristics of a storm based on its initial observation.
+This following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in the methodology. The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
 
 \subsection{Storm Max Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm max intensity prediction across different experimental setups as specified in the methodology. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm max intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm max intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm max intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
@@ -159,7 +164,7 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-Key observations from the intensification experiments include that storms tend to intensify more when they spend longer periods over the ocean. High skin temperature consistently emerges as a critical factor for storm intensification in both models. Unlike other experiments, there is no clear diurnal cycle observed. \acrshort{cape} is less important for predicting intensification compared to storm max intensity. Additionally, mean \acrshort{cape} and domain mean \acrshort{cape} contributions to intensification are inversely related, suggesting that localized, anomalous instability may play a more significant role than broader atmospheric conditions.
+Key observations from the intensification experiments include that storms tend to intensify more when they spend longer periods over the ocean. High skin temperature consistently emerges as a critical factor for storm intensification in both models. Unlike other experiments, there is no clear diurnal cycle observed. \acrshort{cape} is less important for predicting intensification compared to storm max intensity. Additionally, mean \acrshort{cape} and domain mean \acrshort{cape} contributions to intensification are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \todo{haven't included any maps here as they did not seem to provide additional insights beyond the summary plots.}
 
@@ -168,7 +173,7 @@ Key observations from the intensification experiments include that storms tend t
 
 Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day.
 
-Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting localized instability is more influential than broader conditions.
+Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting localised instability is more influential than broader conditions.
 
 \begin{figure}[ht]
     \centering

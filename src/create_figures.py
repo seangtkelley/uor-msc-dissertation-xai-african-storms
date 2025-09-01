@@ -722,7 +722,7 @@ day_storms = storm_first_points[
     & (storm_first_points["eat_hours"] < 20)
 ].index
 
-# Add group labels to the interpolated dataset
+# add group labels to the interpolated dataset
 storm_10_points_df["land_init"] = storm_10_points_df["storm_id"].isin(
     land_storms
 )
