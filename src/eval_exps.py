@@ -165,6 +165,7 @@ for exp_group_name, exp_names in exp_groups.items():
             y_test.to_numpy(),
             y_pred,
             ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+            title=f"{chr(i+97)}) Model Verification for {exp_name}",
         )
 
         print(f"R-squared: {r_squared:.4f}")
@@ -202,7 +203,7 @@ for exp_group_name, exp_names in exp_groups.items():
             group_remaining_features=False,
             max_display=12,
         )
-        ax_shap.set_title(f"SHAP Beeswarm Plot for {exp_name}")
+        ax_shap.set_title(f"{chr(i+97+2)}) SHAP Beeswarm Plot for {exp_name}")
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
@@ -367,6 +368,13 @@ for exp_group_name, exp_names in exp_groups.items():
                 subplot_kw={"projection": ccrs.PlateCarree()},
             )
             axs = axs.flatten()
+
+            # symmetrical cmap centred at specified value
+            m = max(
+                abs(np.nanmin(merge_df[feature])),
+                abs(np.nanmax(merge_df[feature])),
+            )
+
             for idx, hour in enumerate(range(0, 24, 4)):
                 hour_df = merge_df[merge_df["eat_hours"] == hour]
                 if hour_df.empty:
@@ -383,19 +391,34 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_grid,
                     ax=axs[idx],
                     cmap=config.SHAP_MAP_CMAP,
-                    sym_cmap_centre=0.0,
-                    cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
-                    # cbar_aspect=40,
-                    # cbar_shrink=0.63,
-                    title=f"{hour}:00",
+                    vmin=-m,
+                    vmax=m,
+                    add_cbar=False,
+                    draw_grid_labels=False,
+                    title=f"{chr(idx+97)}) {hour}:00",
                 )
+
+            # single cbar for whole image
+            fig.subplots_adjust(
+                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
+            )
+            cbar_ax = fig.add_axes(
+                (0.07, 0.07, 0.86, 0.025)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+            )
+            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
-                fontsize=18,
+                fontsize=17,
+                y=0.97,
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_hour.png",
                 exp_group_geo_corr_fig_dir,
+                tight=False,
             )
 
         # plot mean SHAP value maps by month for features with high geo and date correlation
@@ -409,6 +432,13 @@ for exp_group_name, exp_names in exp_groups.items():
                 subplot_kw={"projection": ccrs.PlateCarree()},
             )
             axs = axs.flatten()
+
+            # symmetrical cmap centred at specified value
+            m = max(
+                abs(np.nanmin(merge_df[feature])),
+                abs(np.nanmax(merge_df[feature])),
+            )
+
             for idx, month in enumerate(range(1, 13)):
                 month_df = merge_df[merge_df["timestamp"].dt.month == month]
                 if month_df.empty:
@@ -423,23 +453,36 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_lon,
                     agg_lat,
                     agg_grid,
-                    cmap=config.SHAP_MAP_CMAP,
-                    sym_cmap_centre=0.0,
-                    cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
-                    # cbar_aspect=40,
-                    # cbar_shrink=0.63,
-                    title=pd.Timestamp(month=month, day=1, year=2000).strftime(
-                        "%b"
-                    ),
                     ax=axs[idx],
+                    cmap=config.SHAP_MAP_CMAP,
+                    vmin=-m,
+                    vmax=m,
+                    add_cbar=False,
+                    draw_grid_labels=False,
+                    title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
                 )
+
+            # single cbar for whole image
+            fig.subplots_adjust(
+                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
+            )
+            cbar_ax = fig.add_axes(
+                (0.07, 0.07, 0.86, 0.025)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+            )
+            cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
-                fontsize=18,
+                fontsize=17,
+                y=0.97,
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_month.png",
                 exp_group_geo_corr_fig_dir,
+                tight=False,
             )
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)

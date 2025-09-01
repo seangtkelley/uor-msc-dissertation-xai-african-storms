@@ -75,7 +75,7 @@ fig, axs = plt.subplots(
 plotting.init_map(axs[0], extent=config.STORM_DATA_EXTENT)
 plotting.add_geopotential_height(geop, height, axs[0], add_colorbar=True)
 plotting.add_all_map_features(axs[0])
-axs[0].set_title("Orography (Geopotential Height)")
+axs[0].set_title("a) Orography (Geopotential Height)")
 
 # plot storm initial locations
 storm_inits_x, storm_inits_y, storm_inits_kde = processing.calc_kde(
@@ -83,7 +83,7 @@ storm_inits_x, storm_inits_y, storm_inits_kde = processing.calc_kde(
 )
 plotting.init_map(axs[1], extent=config.STORM_DATA_EXTENT)
 plotting.plot_kde_map(storm_inits_x, storm_inits_y, storm_inits_kde, ax=axs[1])
-axs[1].set_title("Storm Initial Locations")
+axs[1].set_title("b) Storm Initial Locations")
 
 # plot storm end locations
 storm_ends = storm_groups.last()
@@ -92,7 +92,7 @@ storm_ends_x, storm_ends_y, storm_ends_kde = processing.calc_kde(
 )
 plotting.init_map(axs[2], extent=config.STORM_DATA_EXTENT)
 plotting.plot_kde_map(storm_ends_x, storm_ends_y, storm_ends_kde, ax=axs[2])
-axs[2].set_title("Storm End Locations")
+axs[2].set_title("c) Storm End Locations")
 
 plotting.save_plot("orography_storm_init_end_kde.png")
 
@@ -139,7 +139,7 @@ cbar = plt.colorbar(
 )
 cbar.set_label("Angle (radians)")
 plotting.add_all_map_features(axs[0])
-axs[0].set_title("Angle of sub-gridscale orography")
+axs[0].set_title("a) Angle of sub-gridscale orography")
 
 # plot storm initial locations
 storm_inits = storm_groups.first()
@@ -148,7 +148,7 @@ storm_inits_x, storm_inits_y, storm_inits_kde = processing.calc_kde(
 )
 plotting.init_map(axs[1], extent=config.STORM_DATA_EXTENT)
 plotting.plot_kde_map(storm_inits_x, storm_inits_y, storm_inits_kde, ax=axs[1])
-axs[1].set_title("Storm Initial Locations")
+axs[1].set_title("b) Storm Initial Locations")
 
 # plot storm end locations
 storm_ends = storm_groups.last()
@@ -157,7 +157,7 @@ storm_ends_x, storm_ends_y, storm_ends_kde = processing.calc_kde(
 )
 plotting.init_map(axs[2], extent=config.STORM_DATA_EXTENT)
 plotting.plot_kde_map(storm_ends_x, storm_ends_y, storm_ends_kde, ax=axs[2])
-axs[2].set_title("Storm End Locations")
+axs[2].set_title("c) Storm End Locations")
 
 plotting.save_plot("anor_storm_init_end_kde.png")
 
@@ -197,7 +197,7 @@ fig, axs = plt.subplots(
 plotting.init_map(axs[0], extent=config.STORM_DATA_EXTENT)
 plotting.add_geopotential_height(geop, height, axs[0], add_colorbar=True)
 plotting.add_all_map_features(axs[0])
-axs[0].set_title("Orography (Geopotential Height)")
+axs[0].set_title("a) Orography (Geopotential Height)")
 
 # plot eat hours mode
 plotting.plot_2d_agg_map(
@@ -208,7 +208,7 @@ plotting.plot_2d_agg_map(
     cmap="twilight_shifted",
     cbar_aspect=50,
     cbar_label="Time of Day (EAT UTC+3)",
-    title="Storm Init EAT Hours Mode",
+    title="b) Storm Init EAT Hours Mode",
 )
 
 # plot eat hours mean
@@ -220,7 +220,7 @@ plotting.plot_2d_agg_map(
     cmap="twilight_shifted",
     cbar_aspect=50,
     cbar_label="Time of Day (EAT UTC+3)",
-    title="Storm Init EAT Hours Mean",
+    title="c) Storm Init EAT Hours Mean",
 )
 
 plotting.save_plot("orography_storm_init_eat_hours_mode_mean.png")
@@ -472,7 +472,7 @@ axs[0].hist(
     label="Distance Traversed",
 )
 axs[0].set_ylabel("Frequency")
-axs[0].set_title("98% Percentile Duration Storms")
+axs[0].set_title("a) 98% Percentile Duration Storms")
 axs[0].legend()
 
 # 98th percentile area storms
@@ -489,7 +489,7 @@ axs[1].hist(
     label="Distance Traversed",
 )
 axs[1].set_ylabel("Frequency")
-axs[1].set_title("98% Percentile Area Storms")
+axs[1].set_title("b) 98% Percentile Area Storms")
 
 # 2% lowest storm_min_bt storms
 min_bt_thres = df["storm_min_bt"].quantile(0.02)
@@ -508,7 +508,7 @@ axs[2].hist(
 )
 
 axs[2].set_ylabel("Frequency")
-axs[2].set_title("2% Coldest Min BT Storms")
+axs[2].set_title("c) 2% Coldest Min BT Storms")
 
 # All storms
 axs[3].hist(
@@ -525,7 +525,7 @@ axs[3].hist(
 )
 axs[3].set_ylabel("Frequency")
 axs[3].set_xlabel("Distance (km)")
-axs[3].set_title("All Storms")
+axs[3].set_title("d) All Storms")
 
 plt.suptitle("Storm Distance Comparison Histograms")
 
@@ -631,15 +631,15 @@ storm_counts.columns = ["date", "storm_count"]
 
 fig, axs = plt.subplots(3, 1, figsize=(15, 10), sharex=True)
 sns.lineplot(data=storm_counts, x="date", y="storm_count", ax=axs[0])
-axs[0].set_ylabel("Number of Storms")
+axs[0].set_ylabel("a) Number of Storms")
 
 mjo_phases = df.groupby("date")["mjo_phase"].first().reset_index()
 sns.lineplot(data=mjo_phases, x="date", y="mjo_phase", ax=axs[1])
-axs[1].set_ylabel("MJO Phase")
+axs[1].set_ylabel("b) MJO Phase")
 
 mjo_ampls = df.groupby("date")["mjo_amplitude"].first().reset_index()
 sns.lineplot(data=mjo_ampls, x="date", y="mjo_amplitude", ax=axs[2])
-axs[2].set_ylabel("MJO Amplitude")
+axs[2].set_ylabel("c) MJO Amplitude")
 plt.xticks(rotation=45)
 plt.xlabel("Date")
 

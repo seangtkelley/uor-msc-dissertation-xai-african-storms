@@ -494,6 +494,7 @@ def plot_model_verification(
     y_test: np.ndarray,
     y_pred: np.ndarray,
     ax: Optional[Axes],
+    title: Optional[str] = None,
 ) -> float:
     """
     Plot model verification results: scatter plot of predictions vs actuals,
@@ -528,7 +529,10 @@ def plot_model_verification(
         color="black",
         linestyle="--",
     )
-    ax.set_title(f"Model Verification for {exp_name}")
+    if title is not None:
+        ax.set_title(title)
+    else:
+        ax.set_title(f"Model Verification for {exp_name}")
     ax.set_xlabel(f"Predicted Value ({target_units})")
     ax.set_ylabel(f"Actual Value ({target_units})")
     ax.legend()
