@@ -100,7 +100,7 @@ All First Points & \multicolumn{2}{c}{61.3329} & \multicolumn{2}{c}{78.7438} & 0
 \end{tabular}
 \end{table}
 
-For better context in interpreting the meaning of the \acrshort{shap} values, Figure \ref{fig:storm_cardinal_directions_distribution} shows the distribution of storm cardinal directions in the dataset. The distribution indicates that the majority of storms move in a westerly direction. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
+For better context in interpreting the meaning of the \acrshort{shap} values, Figure \ref{fig:storm_cardinal_directions_distribution} shows the distribution of storm cardinal directions in the dataset. The distribution indicates that the majority of storms move in a westerly direction and indeed the mean storm direction is approximately \ang{258}. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
 
 \begin{figure}[ht]
     \centering
@@ -116,9 +116,7 @@ For better context in interpreting the meaning of the \acrshort{shap} values, Fi
     \label{fig:storm_direction_summary}
 \end{figure}
 
-Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. \texttt{eat\_hours} does not appear in the top 12 features indicating that diurnal cycle is not a significant factor for storm direction.
-
-Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. During the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is the summer influence but mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
+Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. \texttt{eat\_hours} does not appear in the top 12 features indicating that diurnal cycle is not a significant factor for storm direction. Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. During the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is the summer influence but mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
 
 \begin{figure}[ht]
     \centering
@@ -130,7 +128,7 @@ Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:s
 \clearpage
 \section{Predict Immediate Characteristics at an Observation}
 
-These experiments aim to predict the immediate characteristics of a storm based on its current observation. Table \ref{tab:obs_experiment_results} shows the results of these experiments. Unfortunately, the model struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable and the resulting low R-squared values between the predicted and actual values. As such, further explainability analysis will focus on the intensification and precipitation models.
+These experiments aim to predict the immediate characteristics of a storm based on its current observation and Table \ref{tab:obs_experiment_results} shows performance metrics of the models. Unfortunately, \acrshort{xgb} struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable and the resulting low R-squared values between the predicted and actual values. As such, no further explainability analysis will be conducted on those experiments. However, possible reasons for this poor performance and future directions for improvement are discussed in Chapter \ref{ch:discuss}.
 
 \begin{table}[h!]
 \centering
@@ -164,16 +162,14 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-Key observations from the intensification experiments include that storms tend to intensify more when they spend longer periods over the ocean. High skin temperature consistently emerges as a critical factor for storm intensification in both models. Unlike other experiments, there is no clear diurnal cycle observed. \acrshort{cape} is less important for predicting intensification compared to storm max intensity. Additionally, mean \acrshort{cape} and domain mean \acrshort{cape} contributions to intensification are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
+As for the feature contributions, surface characteristics seem to be particularly important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm max intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \todo{haven't included any maps here as they did not seem to provide additional insights beyond the summary plots.}
 
 \clearpage
 \subsection{Precipitation}
 
-Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day.
-
-Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting localised instability is more influential than broader conditions.
+Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day. Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related.
 
 \begin{figure}[ht]
     \centering
@@ -182,7 +178,7 @@ Although included in the all features model, \acrfull{bt} does not appear among 
     \label{fig:obs_precipitation_summary}
 \end{figure}
 
-The \acrshort{era5} model appears to have captured the influence of the rainy seasons (\acrshort{itcz}?) on precipitation patterns via the mean \acrshort{cape} over the study region as shown in Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}.
+The \acrshort{era5} model appears to have captured the influence of the rainy seasons \todo{\acrshort{itcz}?} on precipitation patterns via the mean \acrshort{cape} over the study region as shown in Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}.
 
 \begin{figure}[ht]
     \centering
