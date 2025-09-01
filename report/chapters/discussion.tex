@@ -1,19 +1,28 @@
 \chapter{Discussion}
 \label{ch:discuss}
+\todo{in progress}
 
-% \section{Significance of the findings}
-% In this chapter, you should also try to discuss the significance of the results and key findings, in order to enhance the reader's understanding of the investigated problem
+This chapter discusses the implications of the findings, the limitations of the study, and potential directions for future research.
 
-% \section{Limitations}
-% Discuss the key limitations and potential implications or improvements of the findings.
+\section{Model Performance and Predictability}
 
-% \section{Summary}
+As shown in Tables \ref{tab:storm_direction_results} and \ref{tab:obs_experiment_results} respectively, storm direct models perform well, but direction and distance at observation models perform poorly.
+This could be due to several factors. Observations are available at 15 minute intervals and thus are likely quite noisy. In addition, the centroid might be weakly defined for \acrshortpl{mcs} as they're not always like cyclones with a clear center of circulation. For example, squall lines are linear features and the centroid location output by the tracking algorithm may vary significantly based on the shape and orientation of the line between each time step.
+
+\section{Future Work}
 
 \begin{itemize}
-    \item Next Direction and next distance models are terrible, but storm direction is not
+    \item Expand storm database to include storms that pass through the region, rather than only those that originate and terminate within it.
+    \item Add other available features like dthetae/dp.
+    \item Exploring the use of alternative machine learning algorithms and architectures to improve predictive performance.
+    \item Use categorical/semi-categorical features for direction or Sine and Cosine transformation instead of degrees. Regression is not ideal for circular data.
+    \item \begin{itemize}
+        \item Categorical is easier and more intuitive but loses granularity
+        \item Sine and Cosine transformation preserves granularity but is more complex. It requires multiple outputs.
+    \end{itemize}
+    \item Investigating the incorporation of additional data sources, such as satellite imagery precipitation data, as with the original paper \citep{Hill2023}.
+    \item Conducting further analysis on the interpretability of model predictions, potentially through the use of more advanced explainability techniques.
     \begin{itemize}
-        \item lots of noise, each obs is 15 mins apart
-        \item centroid is might be weakly definied for MCSs. theyre not always like cyclones with a clear center of circulation e.g. a storm front
+        \item Investigating anomalous individual predictions using decision plots or force plots to quantify edge cases for the models.
     \end{itemize}
 \end{itemize}
-    
