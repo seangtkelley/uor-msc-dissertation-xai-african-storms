@@ -29,13 +29,7 @@ These experiments aim to predict the overall characteristics of a storm based on
 
 \subsection{Storm Max Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm max intensity prediction across different experimental setups as specified in the methodology. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate stronger storms.
-
-The key observations include: \todo{make a paragraph}
-\begin{itemize}
-    \item ERA5 features alone perform comparably to all features
-    \item Using only the first points results in a substantial drop in performance
-\end{itemize}
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm max intensity prediction across different experimental setups as specified in the methodology. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm max intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
@@ -55,8 +49,6 @@ All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{8.9432} & 0.3
 \end{tabular}
 \end{table}
 
-Due to the poor performance of the first points only models, further explainability analysis will focus on the all observations models.
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_summary.png}
@@ -64,16 +56,9 @@ Due to the poor performance of the first points only models, further explainabil
     \label{fig:storm_max_intensity_summary}
 \end{figure}
 
-Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm max intensity using all features versus \acrshort{era5} only.
+Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm max intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable appears among the top five most important features, suggesting that non-meteorological factors play a significant role in prediction. The results of the all features model also reveal a clear diurnal cycle, with stronger storms tending to develop in the late evening. Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
-The key observations include: \todo{make a paragraph}
-\begin{itemize}
-    \item only one meteorological variable in top 5 for all features model from c)
-    \item diurnal cycle is clear with stronger storms developing in late evening from c)
-    \item \acrshort{cape} is reliably the most important meteorological factor from c) and d)
-\end{itemize}
-
-Particularly notable for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
+Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
@@ -170,14 +155,7 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-other key observations include: \todo{make a paragraph}
-\begin{itemize}
-    \item the longer the storm is over the ocean, the more it tends to intensify from c)
-    \item skin temperature is a critical factor in storm intensification, as indicated by its consistent presence among the top features for both models from c) and d). higher skin temperatures are associated with increased intensification, likely due to enhanced surface heating and moisture availability.
-    \item no clear diurnal cycle
-    \item \acrshort{cape} is much less important than with predicting storm max intensity from d)
-    \item counter-intuitive importance between \acrshort{cape} and domain mean \acrshort{cape}
-\end{itemize}
+Key observations from the intensification experiments include that storms tend to intensify more when they spend longer periods over the ocean. High skin temperature consistently emerges as a critical factor for storm intensification in both models. Unlike other experiments, there is no clear diurnal cycle observed. \acrshort{cape} is less important for predicting intensification compared to storm max intensity. Additionally, mean \acrshort{cape} and domain mean \acrshort{cape} contributions to intensification are inversely related, suggesting that localized, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \todo{haven't included any maps here as they did not seem to provide additional insights beyond the summary plots.}
 
@@ -186,14 +164,7 @@ other key observations include: \todo{make a paragraph}
 
 Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day.
 
-other key observations include: \todo{make a paragraph}
-\begin{itemize}
-    \item \acrfull{bt} is not a top feature
-    \item strong diurnal cycle with peak precipitation during midday
-    \item high importance of mid and upper level humidity
-    \item again counter-intuitive relationship between \acrshort{cape} and domain mean \acrshort{cape}
-    \item \acrshort{olr} is important, likely as a proxy for cloud cover
-\end{itemize}
+Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting localized instability is more influential than broader conditions.
 
 \begin{figure}[ht]
     \centering
