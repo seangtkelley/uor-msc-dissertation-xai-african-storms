@@ -116,7 +116,7 @@ For better context in interpreting the meaning of the \acrshort{shap} values, Fi
     \label{fig:storm_direction_summary}
 \end{figure}
 
-Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. \texttt{eat\_hours} does not appear in the top 12 features indicating that diurnal cycle is not a significant factor for storm direction. Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. During the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is the summer influence but mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
+Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. Towards the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
 
 \begin{figure}[ht]
     \centering
@@ -153,7 +153,7 @@ Precipitation \acrshort{era5}      & 0.0851  & & 0.7887 \\
 \clearpage
 \subsection{Intensification}
 
-Although the \acrshort{rmse} of the models are acceptable, it is evident that the both models generally tend to underpredict intensification and weakening as shown in Figure \ref{fig:obs_intensification_summary}.
+Although the \acrshort{rmse} of the models are acceptable, it is evident that the models from both feature sets generally tend to underpredict intensification and weakening as shown in Figure \ref{fig:obs_intensification_summary}.
 
 \begin{figure}[ht]
     \centering
