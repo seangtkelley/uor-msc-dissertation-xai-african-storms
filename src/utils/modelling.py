@@ -139,6 +139,24 @@ def circ_sqerr_obj(
 
     return grad, hess
 
+def circ_r2(y_true_deg: np.ndarray, y_pred_deg: np.ndarray) -> float:
+    """
+    Custom computation for R2:
+    circular R squared with angle wrapping
+
+    :param y_true: True values in degrees
+    :param y_pred: Predicted values in degrees
+    :return: Circular R2 value
+    """
+    # circular R2: 1 - (sum(squared angular error) / sum(squared angular deviation from mean))
+    ss_res = np.sum(circ_sqerr(y_true_deg, y_pred_deg))
+    mean_true = (
+        np.angle(np.mean(np.exp(1j * np.deg2rad(y_true_deg))), deg=True)
+        % 360
+    )
+    ss_tot = np.sum(circ_sqerr(y_true_deg, mean_true))
+    return 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
+
 
 def train_model(
     X: pd.DataFrame,
@@ -572,6 +590,7 @@ def plot_model_verification(
     y_pred: np.ndarray,
     ax: Optional[Axes],
     title: Optional[str] = None,
+    r_squared: Optional[float] = None,
 ) -> float:
     """
     Plot model verification results: scatter plot of predictions vs actuals,
@@ -596,7 +615,8 @@ def plot_model_verification(
     y_test_ = y_test.reshape(-1, 1)
     lr.fit(y_pred_, y_test_)
     reg_line = lr.predict(np.unique(y_pred_).reshape(-1, 1))
-    r_squared = lr.score(y_pred_, y_test_)
+    if r_squared is None:
+        r_squared = float(lr.score(y_pred_, y_test_))
 
     # plot regression line
     ax.plot(
@@ -614,4 +634,4 @@ def plot_model_verification(
     ax.set_ylabel(f"Actual Value ({target_units})")
     ax.legend()
 
-    return float(r_squared)
+    return r_squared
