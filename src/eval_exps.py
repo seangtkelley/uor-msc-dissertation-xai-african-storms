@@ -432,8 +432,11 @@ for exp_group_name, exp_names in exp_groups.items():
                 abs(np.percentile(merge_df[feature], 99)),
             )
 
-            for idx, hour in enumerate(range(0, 24, 4)):
-                hour_df = merge_df[merge_df["eat_hours"] == hour]
+            delta = 4
+            for idx, hour in enumerate(range(0, 24, delta)):
+                hour_df = merge_df[
+                    merge_df["eat_hours"].isin(range(hour, hour + delta - 1))
+                ]
                 if hour_df.empty:
                     continue
                 agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
@@ -452,7 +455,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     vmax=m,
                     add_cbar=False,
                     small_grid_labels=True,
-                    title=f"{chr(idx+97)}) {hour}:00",
+                    title=f"{chr(idx+97)}) {hour}:00 - {hour + delta - 1}:59",
                 )
 
             # single cbar for whole image
