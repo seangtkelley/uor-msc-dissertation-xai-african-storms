@@ -21,6 +21,7 @@ import pandas as pd
 import seaborn as sns
 import shap
 from dotenv import load_dotenv
+from scipy.stats import circstd
 from sklearn.metrics import root_mean_squared_error
 
 import config
@@ -128,11 +129,13 @@ for exp_group_name, exp_names in exp_groups.items():
         # make predictions on test set
         y_pred = best_model.predict(X_test)
 
-        # calculate RMSE
-        test_rmse = root_mean_squared_error(y_test, y_pred)
-
-        # calculate standard deviation of test target
-        test_std = np.std(y_test)
+        # calculate RMSE and std dev
+        if exp_config["target_units"] == "degrees":
+            test_rmse = modelling.rmse(y_test.to_numpy(), y_pred)
+            test_std = circstd(y_test.to_numpy(), high=360)
+        else:
+            test_rmse = root_mean_squared_error(y_test, y_pred)
+            test_std = np.std(y_test)
 
         # print RMSE and standard deviation
         print(f"Test RMSE: {test_rmse:.4f}")
@@ -149,13 +152,23 @@ for exp_group_name, exp_names in exp_groups.items():
             # make predictions on first points
             y_pred_first_points = best_model.predict(X_test_first_points)
 
-            # calculate RMSE for first points
-            test_rmse_first_points = root_mean_squared_error(
-                y_test_first_points, y_pred_first_points
-            )
+            # calculate RMSE and std dev for first points
+            if exp_config["target_units"] == "degrees":
+                test_rmse_first_points = modelling.rmse(
+                    y_test_first_points.to_numpy(), y_pred_first_points
+                )
+                test_std_first_points = circstd(
+                    y_test_first_points.to_numpy(), high=360
+                )
+            else:
+                test_rmse_first_points = root_mean_squared_error(
+                    y_test_first_points, y_pred_first_points
+                )
+                test_std_first_points = np.std(y_test_first_points)
+
             print(f"Test RMSE (first points): {test_rmse_first_points:.4f}")
             print(
-                f"Test target standard deviation (first points): {np.std(y_test_first_points):.4f}"
+                f"Test target standard deviation (first points): {test_std_first_points:.4f}"
             )
 
         # plot model verification
