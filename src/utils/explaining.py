@@ -21,7 +21,7 @@ import pandas as pd
 import seaborn as sns
 import shap
 from matplotlib.axes import Axes
-from matplotlib.colors import TwoSlopeNorm
+from matplotlib.colors import Colormap, TwoSlopeNorm
 
 import config
 from utils import plotting
@@ -104,6 +104,7 @@ def plot_shap_over_time(
     agg_y: str,
     ax: Optional[Axes] = None,
     edgecolor: Optional[str] = None,
+    cmap: Optional[str | Colormap] = None,
     xtick_interval: Optional[int] = None,
     xtick_offset: int = 1,
     xtick_convert: Callable[[int], str] = str,
@@ -123,6 +124,7 @@ def plot_shap_over_time(
     :param agg_y: Column name in temp_agg_df to use for the y-axis (SHAP value to plot).
     :param ax: Optional matplotlib Axes to plot on. If None, a new figure is created.
     :param edgecolor: Optional color for bar edges.
+    :param cmap: Optional colormap to use for the plot.
     :param xtick_interval: If set, only every nth x-tick is labeled.
     :param xtick_offset: Offset for x-tick labeling (default: 1).
     :param xtick_convert: Function to convert x-tick values to labels (default: str).
@@ -137,7 +139,7 @@ def plot_shap_over_time(
     # create custom color palette centred at zero
     m = np.max(np.abs(temp_agg_df[agg_y]))
     norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
-    cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
+    cmap = plt.get_cmap(cmap if cmap is not None else config.SHAP_MAP_CMAP)
     colors = [cmap(norm(val)) for val in temp_agg_df[agg_y]]
 
     # init plot if not axis provided
