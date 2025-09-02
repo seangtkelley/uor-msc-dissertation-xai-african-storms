@@ -116,13 +116,13 @@ For better context in interpreting the meaning of the \acrshort{shap} values, Fi
     \label{fig:storm_direction_summary}
 \end{figure}
 
-Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. Mid-level zonal winds also appear to be important, as shown in Figure \ref{fig:storm_direction_all_shap_mean_u500_map_by_month}. The influence of these winds varies with location and time of year. During the summer months, the influence is predominantly negative over the Somali coastal plains and positive over the Ethiopian Highlands. Towards the end of the year, the influence appears mostly neutral over the entire domain. However, in the spring, the influence is mirrored horizontally, with negative values over the Gulf of Aden and positive values on the Ethiopian border with South Sudan and Kenya.
+Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the influence of these winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian. During the winter months, however, the influence appears mostly negative over the entire domain.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_u500_map_by_month.png}
-    \caption{Mean SHAP values for 500 hPa zonal wind over East Africa by month for storm direction prediction using all features.}
-    \label{fig:storm_direction_all_shap_mean_u500_map_by_month}
+    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_v850_map_by_month.png}
+    \caption{Mean SHAP values for \SI{850}{\hecto\pascal} zonal wind over East Africa by month for storm direction prediction using all features.}
+    \label{fig:storm_direction_all_shap_mean_v850_map_by_month}
 \end{figure}
 
 \clearpage
