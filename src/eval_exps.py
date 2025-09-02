@@ -519,6 +519,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 figsize=(10, 8),
                 subplot_kw={"projection": ccrs.PlateCarree()},
             )
+
+            # add extra spacing between row subplots
+            fig.subplots_adjust(wspace=0.25)
             axs = axs.flatten()
 
             # symmetrical cmap

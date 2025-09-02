@@ -95,13 +95,18 @@ def add_gridlines(
     :param ax: Matplotlib axis to add the gridlines to.
     :param small_labels: Whether to reduce the font size of the grid labels.
     """
-    gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
-    gl.top_labels = False
-    gl.right_labels = False
-
     if small_labels:
-        gl.xlabel_style = {"fontsize": 8}
-        gl.ylabel_style = {"fontsize": 8}
+        gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
+        gl.xlines = False
+        gl.ylines = False
+        gl.top_labels = False
+        gl.right_labels = False
+        gl.xlabel_style = {"fontsize": 8, "rotation": 90}
+        gl.ylabel_style = {"fontsize": 8, "rotation": 0}
+    else:
+        gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
+        gl.top_labels = False
+        gl.right_labels = False
 
 
 def add_geopotential_height(
