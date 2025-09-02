@@ -1,7 +1,7 @@
 \chapter{Results}
 \label{ch:results}
 
-The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will follow in Chapter \ref{ch:discuss}.
+The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed interpretation of the results, including relevant figures and tables to support the findings. Further analysis of the results and their implications will follow in Chapter \ref{ch:discuss}.
 
 \section{General characteristics of storms from the database}
 
@@ -14,7 +14,7 @@ Before modelling, a limited exploratory data analysis was conducted to understan
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
-Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution of storm genesis local time with multiple distinct phenomena present. First, although the density of storms of the coast of Somalia is limited, it is clear that storms which form over the ocean tend to form in the early morning hours whereas storms which form over land tend to form in the late afternoon. However, orography also appears to play a role pushing genesis later into the night, with clear anomalies nearly the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{ZardiDinoandWhiteman2013}.
+Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution of storm genesis local time with multiple distinct phenomena present. First, although the density of storms of the coast of Somalia is limited, it is clear that storms which form over the ocean tend to during the early morning hours whereas storms which form over land tend to during the late afternoon. However, orography also appears to play a role pushing genesis later into the night, with clear anomalies near the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{ZardiDinoandWhiteman2013}.
 
 \begin{figure}[ht]
     \centering
@@ -23,7 +23,7 @@ Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution
     \label{fig:orography_storm_init_eat_hours_mode_mean}
 \end{figure}
 
-Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night both tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
+Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
 
 \begin{figure}[ht]
     \centering
@@ -34,11 +34,11 @@ Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \
 
 \section{Predict Storm Aggregate Features}
 
-This following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in the methodology. The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
+The following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in the methodology (Chapter \ref{ch:method}). The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
 
 \subsection{Storm Maximum Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate a lower overall minimum \acrshort{bt} and thus a textit{stronger} \acrshort{mcs}. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequent explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
@@ -72,7 +72,7 @@ Particularly striking for these models is that the importance of low-level merid
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
-    \caption{Mean SHAP values for 850 hPa meridional wind over East Africa by month for storm maximum intensity prediction using ERA5 features.}
+    \caption{Mean SHAP values for \SI{850}{\hecto\pascal} meridional wind over East Africa by month for storm maximum intensity prediction using \acrshort{era5} features.}
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
 \todo{can remove plot title here later. kept it for easier exploration of all the figures i generated}
