@@ -231,6 +231,7 @@ def plot_2d_agg_map(
     cbar_aspect: float = 20,
     cbar_shrink: float = 1.0,
     cbar_label: Optional[str] = None,
+    cbar_value_labels: Optional[dict] = None,
     small_grid_labels: bool = False,
     title: Optional[str] = None,
     filename: Optional[str] = None,
@@ -297,6 +298,24 @@ def plot_2d_agg_map(
             cbar.set_label(cbar_label)
         else:
             cbar.set_label(f"Aggregated Value")
+        if cbar_value_labels is not None:
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                cbar_value_labels["negative"],
+                va="center",
+                ha="right",
+                transform=cbar.ax.transAxes,
+            )
+
+            cbar.ax.text(
+                1.05,
+                0.5,
+                cbar_value_labels["positive"],
+                va="center",
+                ha="left",
+                transform=cbar.ax.transAxes,
+            )
 
     # add other map features
     add_borders(ax)

@@ -302,6 +302,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
                 cbar_shrink=0.63,
+                cbar_value_labels=config.SHAP_VALUES_DESCRIPTION[
+                    exp_group_name
+                ],
                 title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
                 filename=f"{exp_name}_shap_{feature}_map.png",
                 save_dir=exp_group_geo_corr_fig_dir,
@@ -439,6 +442,26 @@ for exp_group_name, exp_names in exp_groups.items():
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
 
+            # add negative label to the left of the cbar
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["negative"],
+                va="center",
+                ha="right",
+                transform=cbar_ax.transAxes,
+            )
+
+            # add positive label to the left of the cbar
+            cbar.ax.text(
+                1.05,
+                0.5,
+                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["positive"],
+                va="center",
+                ha="left",
+                transform=cbar_ax.transAxes,
+            )
+
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
                 fontsize=17,
@@ -502,6 +525,26 @@ for exp_group_name, exp_names in exp_groups.items():
                 axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
+            # add negative label to the left of the cbar
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["negative"],
+                va="center",
+                ha="right",
+                transform=cbar_ax.transAxes,
+            )
+
+            # add positive label to the left of the cbar
+            cbar.ax.text(
+                1.05,
+                0.5,
+                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["positive"],
+                va="center",
+                ha="left",
+                transform=cbar_ax.transAxes,
+            )
 
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
