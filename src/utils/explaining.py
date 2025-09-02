@@ -179,6 +179,7 @@ def plot_shap_over_time(
     if ylabel is not None:
         plt.ylabel(ylabel)
     if y_value_labels is not None:
+        # add negative label to the top of the y-axis
         ax.text(
             -0.05,
             -0.05,
@@ -187,6 +188,7 @@ def plot_shap_over_time(
             ha="right",
             transform=ax.transAxes,
         )
+        # add positive label to the bottom of the y-axis
         ax.text(
             -0.05,
             1.05,

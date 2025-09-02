@@ -239,6 +239,7 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
+        # add negative label to the left of the x-axis
         ax_shap.text(
             -0.05,
             -0.05,
@@ -247,6 +248,7 @@ for exp_group_name, exp_names in exp_groups.items():
             ha="right",
             transform=ax_shap.transAxes,
         )
+        # add positive label to the right of the x-axis
         ax_shap.text(
             1.05,
             -0.05,
@@ -473,7 +475,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 transform=cbar_ax.transAxes,
             )
 
-            # add positive label to the left of the cbar
+            # add positive label to the right of the cbar
             cbar.ax.text(
                 1.05,
                 0.5,
@@ -557,7 +559,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 transform=cbar_ax.transAxes,
             )
 
-            # add positive label to the left of the cbar
+            # add positive label to the right of the cbar
             cbar.ax.text(
                 1.05,
                 0.5,

@@ -300,6 +300,7 @@ def plot_2d_agg_map(
         else:
             cbar.set_label(f"Aggregated Value")
         if cbar_value_labels is not None:
+            # add negative label to the left of the cbar
             cbar.ax.text(
                 -0.05,
                 0.5,
@@ -308,7 +309,7 @@ def plot_2d_agg_map(
                 ha="right",
                 transform=cbar.ax.transAxes,
             )
-
+            # add positive label to the right of the cbar
             cbar.ax.text(
                 1.05,
                 0.5,
