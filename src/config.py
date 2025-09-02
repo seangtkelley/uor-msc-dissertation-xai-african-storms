@@ -432,3 +432,20 @@ EXPERIMENT_GROUPS = {
 R_SQUARED_THRESHOLD = 0.5
 CORR_HEATMAP_CMAP = "coolwarm"
 SHAP_MAP_CMAP = "seismic"
+SHAP_VALUES_DESCRIPTION = {
+    "storm_max_intensity": {
+        "positive": "Less intense",
+        "negative": "More intense",
+    },
+    "storm_direction": {"positive": "Northward", "negative": "Southward"},
+    "obs_intensification": {
+        "positive": "Intensifies slower",
+        "negative": "Intensifies faster",
+    },
+    "obs_next_direction": {"positive": "Northward", "negative": "Southward"},
+    "obs_next_distance": {"positive": "Farther", "negative": "Nearer"},
+    "obs_precipitation": {
+        "positive": "More rainfall",
+        "negative": "Less rainfall",
+    },
+}
