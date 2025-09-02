@@ -139,7 +139,70 @@ The following highly correlated features were identified and removed to prevent 
     \item \texttt{mean\_swvl1} and \texttt{mean\_swvl2} have a Pearson correlation coefficient of 0.94 and thus \texttt{mean\_swvl2} was removed.
     \item \texttt{olr\_90}, \texttt{olr\_75}, \texttt{olr\_50} were all correlated with coefficients above 0.8, so only \texttt{olr\_90} was retained.
 \end{itemize}
-Additionally, measures were implemented to prevent data leakage, including the careful exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time. These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+Additionally, measures were implemented to prevent data leakage, including the careful exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time (Table \ref{tab:excluded_features}). These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+
+{\small
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.4\linewidth} >{\raggedright\arraybackslash}p{0.6\linewidth}}
+    \caption{Excluded features.}
+    \label{tab:excluded_features}
+    \toprule
+    \textbf{Category / Target Feature} & \textbf{Excluded Features} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{2}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \toprule
+    \textbf{Category / Target Feature} & \textbf{Excluded Features} \\
+    \midrule
+    \endhead
+
+    \midrule \multicolumn{2}{r}{{Continued on next page}} \\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    \multirow{13}{*}{\textit{All Target Excluded Features}} & \texttt{storm\_total\_duration} \\
+        & \texttt{storm\_total\_land\_time} \\
+        & \texttt{storm\_max\_area} \\
+        & \texttt{storm\_bearing} \\
+        & \texttt{storm\_distance\_traversed} \\
+        & \texttt{storm\_straight\_line\_distance} \\
+        & \texttt{storm\_min\_bt} \\
+        & \texttt{storm\_min\_bt\_reached} \\
+        & \texttt{bearing\_to\_next} \\
+        & \texttt{distance\_to\_next} \\
+        & \texttt{mean\_swvl2} \\
+        & \texttt{olr\_75} \\
+        & \texttt{olr\_50} \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Experiment Specific Features}} \\
+    \midrule
+    \texttt{mean\_prcp\_400} & None \\
+    \cmidrule(lr){1-2}
+    \multirow{4}{*}{\texttt{storm\_min\_bt}} & \texttt{min\_bt} \\
+        & \texttt{dmin\_bt\_dt} \\
+        & \texttt{mean\_bt} \\
+        & \texttt{dmean\_bt\_dt} \\ 
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{storm\_bearing}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{dmin\_bt\_dt}} & \texttt{min\_bt} \\
+        & \texttt{mean\_bt} \\
+        & \texttt{dmean\_bt\_dt} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{bearing\_to\_next}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{distance\_to\_next}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+\end{longtable}
+}
 
 \section{Modelling Approach}
 
