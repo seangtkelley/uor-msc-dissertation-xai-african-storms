@@ -251,6 +251,7 @@ def plot_2d_agg_map(
     :param cbar_aspect: Aspect ratio for the colorbar.
     :param cbar_shrink: Shrink factor for the colorbar.
     :param cbar_label: Label for the colorbar.
+    :param cbar_value_labels: Labels for the colorbar max and min values.
     :param small_grid_labels: Whether to make small grid labels.
     :param title: Title for the plot.
     :param filename: Filename to save the plot.
