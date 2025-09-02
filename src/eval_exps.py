@@ -485,7 +485,7 @@ for exp_group_name, exp_names in exp_groups.items():
 
             # single cbar for whole image
             fig.subplots_adjust(
-                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
+                bottom=0.16, top=0.98, left=0.07, right=0.97, hspace=0.08
             )
             cbar_ax = fig.add_axes(
                 (0.07, 0.07, 0.86, 0.025)
