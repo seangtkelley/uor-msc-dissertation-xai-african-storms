@@ -50,10 +50,10 @@ Table \ref{tab:storm_max_intensity_results} details the performance metrics for 
 \cline{2-5}
  & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
 \hline
-All              & 2.7610 & 4.4872 & 9.1679 & 8.8540 & 0.9098 \\
-\acrshort{era5}             & 2.7503 & 4.1075 & 9.1679 & 8.8540 & 0.9134 \\
-All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{8.9432} & 0.3478 \\
-\acrshort{era5} First Points & \multicolumn{2}{c}{7.4673} & \multicolumn{2}{c}{8.9432} & 0.3034 \\
+All              & 2.7610 & 4.4872 & \multirow{2}{*}{9.1679} & \multirow{2}{*}{8.8540} & 0.9098 \\
+\acrshort{era5}  & 2.7503 & 4.1075 & & & 0.9134 \\
+All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{\multirow{2}{*}{8.9432}} & 0.3478 \\
+\acrshort{era5} First Points & \multicolumn{2}{c}{7.4673} & & & 0.3034 \\
 \hline
 \end{tabular}
 \end{table}
@@ -92,10 +92,10 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 \cline{2-5}
  & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
 \hline
-All              & 20.6609 & 35.0730 & 75.7506 & 76.8966 & 0.9281 \\
-\acrshort{era5}             & 18.2928 & 31.6709 & 75.7506 & 76.8966 & 0.9437 \\
-All First Points & \multicolumn{2}{c}{60.7651} & \multicolumn{2}{c}{78.7438} & 0.4047 \\
-\acrshort{era5} First Points & \multicolumn{2}{c}{61.4484} & \multicolumn{2}{c}{78.7438} & 0.3912 \\
+All              & 20.6609 & 35.0730 & \multirow{2}{*}{75.7506} & \multirow{2}{*}{76.8966} & 0.9281 \\
+\acrshort{era5}             & 18.2928 & 31.6709 & & & 0.9437 \\
+All First Points & \multicolumn{2}{c}{60.7651} & \multicolumn{2}{c}{\multirow{2}{*}{78.7438}} & 0.4047 \\
+\acrshort{era5} First Points & \multicolumn{2}{c}{61.4484} & & & 0.3912 \\
 \hline
 \end{tabular}
 \end{table}
@@ -138,14 +138,14 @@ These experiments aim to predict the immediate characteristics of a storm based 
 \hline
 \textbf{Experiment} & \textbf{Test RMSE} & \textbf{Target Std} & \textbf{R-squared} \\
 \hline
-Intensification All     & 2.8149  & 4.4840  & 0.6073 \\
-Intensification \acrshort{era5}    & 3.0828  & 4.4840  & 0.5278 \\
-Direction All     & 72.8590 & 86.4541 & 0.2898 \\
-Direction \acrshort{era5}     & 74.4878 & 86.4541 & 0.2577 \\
-Distance All      & 12.0634 & 13.1260 & 0.1559 \\
-Distance \acrshort{era5}     & 12.6901 & 13.1260 & 0.0656 \\
-Precipitation All       & 0.0488  & 0.1835  & 0.9296 \\
-Precipitation \acrshort{era5}      & 0.0851  & 0.1835  & 0.7887 \\
+Intensification All     & 2.8149  & \multirow{2}{*}{4.4840}  & 0.6073 \\
+Intensification \acrshort{era5}    & 3.0828  & & 0.5278 \\
+Direction All     & 72.8590 & \multirow{2}{*}{86.4541} & 0.2898 \\
+Direction \acrshort{era5}     & 74.4878 & & 0.2577 \\
+Distance All      & 12.0634 & \multirow{2}{*}{13.1260} & 0.1559 \\
+Distance \acrshort{era5}     & 12.6901 & & 0.0656 \\
+Precipitation All       & 0.0488  & \multirow{2}{*}{0.1835}  & 0.9296 \\
+Precipitation \acrshort{era5}      & 0.0851  & & 0.7887 \\
 \hline
 \end{tabular}
 \end{table}
