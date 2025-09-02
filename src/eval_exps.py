@@ -408,14 +408,31 @@ for exp_group_name, exp_names in exp_groups.items():
                 .reset_index()
             )
 
+            def week_to_month_fun(week: int) -> str:
+                """
+                Convert week number to month name.
+                If the month has already been seen, return an empty string.
+
+                :param week: week number
+                :return month name
+                """
+                curr_week = pd.Timestamp(
+                    year=2000, month=12, day=31
+                ) + pd.Timedelta(weeks=week)
+                prev_week = curr_week - pd.Timedelta(weeks=1)
+                if curr_week.month != prev_week.month and week < 50:
+                    return curr_week.strftime("%b")
+                return ""
+
             explaining.plot_shap_over_time(
                 mean_per_week,
                 agg_x="week",
                 agg_y=feature,
                 cmap=cmap,
-                xtick_interval=4,
+                xtick_interval=1,
+                xtick_convert=week_to_month_fun,
                 title=f"Mean SHAP Value of {feature} over Year",
-                xlabel="Week of Year",
+                xlabel="Month",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
