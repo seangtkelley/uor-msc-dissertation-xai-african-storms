@@ -3,7 +3,7 @@
 
 The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed analysis of the results, including relevant figures and tables to support the findings. Detailed analysis of the results will follow in Chapter \ref{ch:discuss}.
 
-\section{Manual Exploration of Dataset}
+\section{General characteristics of storms from the database}
 
 Before modelling, a limited exploratory data analysis was conducted to understand the general characteristics of the filtered dataset assembled for the study. Special attention was paid to the geographic and temporal distribution of the storms. Figure \ref{fig:orography_storm_init_end_kde} shows the density of storm start and end locations within the study region. The distribution is highly concentrated around the Ethiopian Highlands and diminishes quickly closer to the coastline with the Indian Ocean. For the modelling problem, this spatial distribution suggests a strong orographic influence on storm genesis and dissipation.
 
@@ -36,13 +36,13 @@ Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \
 
 This following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in the methodology. The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
 
-\subsection{Storm Max Intensity}
+\subsection{Storm Maximum Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm max intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm max intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values are stronger. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequently, further explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
-\caption{Experiment results for storm max intensity prediction}
+\caption{Experiment results for storm maximum intensity prediction}
 \label{tab:storm_max_intensity_results}
 \begin{tabular}{lccccc}
 \hline
@@ -61,18 +61,18 @@ All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{8.9432} & 0.3
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_summary.png}
-    \caption{Comparison of performance and top features for storm max intensity.}
+    \caption{Comparison of performance and top features for storm maximum intensity.}
     \label{fig:storm_max_intensity_summary}
 \end{figure}
 
-Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm max intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable appears among the top five most important features. The results of the all features model also reveal a weak but present diurnal cycle, with stronger storms tending to develop in the late evening. Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
+Figure \ref{fig:storm_max_intensity_summary} presents a detailed comparison of the model performance and the most influential features for predicting storm maximum intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable appears among the top five most important features. The results of the all features model also reveal a weak but present diurnal cycle, with stronger storms tending to develop in the late evening. Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
 Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
-    \caption{Mean SHAP values for 850 hPa meridional wind over East Africa by month for storm max intensity prediction using ERA5 features.}
+    \caption{Mean SHAP values for 850 hPa meridional wind over East Africa by month for storm maximum intensity prediction using ERA5 features.}
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
 \todo{can remove plot title here later. kept it for easier exploration of all the figures i generated}
@@ -92,9 +92,9 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 \cline{2-5}
  & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
 \hline
-All              & 21.8881 & 36.4077 & 75.7506 & 76.8966 & 0.9192 \\
+All              & 20.6609 & 35.0730 & 75.7506 & 76.8966 & 0.9281 \\
 \acrshort{era5}             & 18.2928 & 31.6709 & 75.7506 & 76.8966 & 0.9437 \\
-All First Points & \multicolumn{2}{c}{61.3329} & \multicolumn{2}{c}{78.7438} & 0.3937 \\
+All First Points & \multicolumn{2}{c}{60.7651} & \multicolumn{2}{c}{78.7438} & 0.4047 \\
 \acrshort{era5} First Points & \multicolumn{2}{c}{61.4484} & \multicolumn{2}{c}{78.7438} & 0.3912 \\
 \hline
 \end{tabular}
@@ -162,7 +162,7 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-As for the feature contributions, surface characteristics seem to be particularly important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm max intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
+As for the feature contributions, surface characteristics seem to be particularly important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \todo{haven't included any maps here as they did not seem to provide additional insights beyond the summary plots.}
 
