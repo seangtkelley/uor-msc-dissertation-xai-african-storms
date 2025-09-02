@@ -26,6 +26,7 @@ from sklearn.metrics import root_mean_squared_error
 
 import config
 from utils import explaining, modelling, plotting, processing
+from matplotlib import colormaps as cm
 
 load_dotenv()
 
@@ -225,6 +226,10 @@ for exp_group_name, exp_names in exp_groups.items():
                     exp_name, X_test_sample, explanation
                 )
 
+        if exp_group_name == "obs_precipitation":
+            cmap = cm.get_cmap(config.SHAP_MAP_CMAP).reversed()
+        else:
+            cmap = config.SHAP_MAP_CMAP
         # plot SHAP summary plot
         ax_shap = exp_group_sum_fig.add_subplot(
             2, len(exp_names), len(exp_names) + i + 1
@@ -321,7 +326,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 agg_lon,
                 agg_lat,
                 agg_grid,
-                cmap=config.SHAP_MAP_CMAP,
+                cmap=cmap,
                 sym_cmap_centre=0.0,
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
@@ -450,7 +455,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_lat,
                     agg_grid,
                     ax=axs[idx],
-                    cmap=config.SHAP_MAP_CMAP,
+                    cmap=cmap,
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
@@ -534,7 +539,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_lat,
                     agg_grid,
                     ax=axs[idx],
-                    cmap=config.SHAP_MAP_CMAP,
+                    cmap=cmap,
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
