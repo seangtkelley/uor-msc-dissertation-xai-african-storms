@@ -423,7 +423,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
-                    draw_grid_labels=False,
+                    small_grid_labels=True,
                     title=f"{chr(idx+97)}) {hour}:00",
                 )
 
@@ -487,7 +487,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
-                    draw_grid_labels=False,
+                    small_grid_labels=True,
                     title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
                 )
 
