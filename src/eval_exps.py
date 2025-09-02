@@ -131,8 +131,10 @@ for exp_group_name, exp_names in exp_groups.items():
 
         # calculate RMSE and std dev
         if exp_config["target_units"] == "degrees":
-            test_rmse = modelling.rmse(y_test.to_numpy(), y_pred)
-            test_std = circstd(y_test.to_numpy(), high=360)
+            y_pred_deg = (y_pred + 360) % 360
+            y_true_deg = y_test.to_numpy() % 360
+            test_rmse = modelling.rmse(y_true_deg, y_pred_deg)
+            test_std = circstd(y_true_deg, high=360)
         else:
             test_rmse = root_mean_squared_error(y_test, y_pred)
             test_std = np.std(y_test)
@@ -154,12 +156,12 @@ for exp_group_name, exp_names in exp_groups.items():
 
             # calculate RMSE and std dev for first points
             if exp_config["target_units"] == "degrees":
+                y_pred_fp_deg = (y_pred_first_points + 360) % 360
+                y_true_fp_deg = y_test_first_points.to_numpy() % 360
                 test_rmse_first_points = modelling.rmse(
-                    y_test_first_points.to_numpy(), y_pred_first_points
+                    y_true_fp_deg, y_pred_fp_deg
                 )
-                test_std_first_points = circstd(
-                    y_test_first_points.to_numpy(), high=360
-                )
+                test_std_first_points = circstd(y_true_fp_deg, high=360)
             else:
                 test_rmse_first_points = root_mean_squared_error(
                     y_test_first_points, y_pred_first_points
@@ -171,15 +173,29 @@ for exp_group_name, exp_names in exp_groups.items():
                 f"Test target standard deviation (first points): {test_std_first_points:.4f}"
             )
 
-        # plot model verification
-        r_squared = modelling.plot_model_verification(
-            exp_name,
-            exp_config["target_units"],
-            y_test.to_numpy(),
-            y_pred,
-            ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
-            title=f"{chr(i+97)}) Model Verification for {exp_name}",
-        )
+        # plot model verification and compute R2
+        if exp_config["target_units"] == "degrees":
+            y_pred_deg = (y_pred + 360) % 360
+            y_true_deg = y_test.to_numpy() % 360
+            r_squared = modelling.circ_r2(y_true_deg, y_pred_deg)
+            modelling.plot_model_verification(
+                exp_name,
+                exp_config["target_units"],
+                y_true_deg,
+                y_pred_deg,
+                ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+                title=f"{chr(i+97)}) Model Verification for {exp_name}",
+                r_squared=r_squared,
+            )
+        else:
+            r_squared = modelling.plot_model_verification(
+                exp_name,
+                exp_config["target_units"],
+                y_test.to_numpy(),
+                y_pred,
+                ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+                title=f"{chr(i+97)}) Model Verification for {exp_name}",
+            )
 
         print(f"R-squared: {r_squared:.4f}")
 
