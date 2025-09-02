@@ -21,6 +21,7 @@ import pandas as pd
 import seaborn as sns
 import shap
 from dotenv import load_dotenv
+from scipy.stats import circstd
 from sklearn.metrics import root_mean_squared_error
 
 import config
@@ -91,6 +92,9 @@ for exp_group_name, exp_names in exp_groups.items():
     # init exp group summary fig
     exp_group_sum_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
+    # retrieve exp group shap description
+    shap_descriptions = config.SHAP_VALUES_DESCRIPTION[exp_group_name]
+
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
         print(f"Evaluating experiment: {exp_name}")
@@ -128,11 +132,15 @@ for exp_group_name, exp_names in exp_groups.items():
         # make predictions on test set
         y_pred = best_model.predict(X_test)
 
-        # calculate RMSE
-        test_rmse = root_mean_squared_error(y_test, y_pred)
-
-        # calculate standard deviation of test target
-        test_std = np.std(y_test)
+        # calculate RMSE and std dev
+        if exp_config["target_units"] == "degrees":
+            y_pred_deg = (y_pred + 360) % 360
+            y_true_deg = y_test.to_numpy() % 360
+            test_rmse = modelling.rmse(y_true_deg, y_pred_deg)
+            test_std = circstd(y_true_deg, high=360)
+        else:
+            test_rmse = root_mean_squared_error(y_test, y_pred)
+            test_std = np.std(y_test)
 
         # print RMSE and standard deviation
         print(f"Test RMSE: {test_rmse:.4f}")
@@ -149,24 +157,48 @@ for exp_group_name, exp_names in exp_groups.items():
             # make predictions on first points
             y_pred_first_points = best_model.predict(X_test_first_points)
 
-            # calculate RMSE for first points
-            test_rmse_first_points = root_mean_squared_error(
-                y_test_first_points, y_pred_first_points
-            )
+            # calculate RMSE and std dev for first points
+            if exp_config["target_units"] == "degrees":
+                y_pred_fp_deg = (y_pred_first_points + 360) % 360
+                y_true_fp_deg = y_test_first_points.to_numpy() % 360
+                test_rmse_first_points = modelling.rmse(
+                    y_true_fp_deg, y_pred_fp_deg
+                )
+                test_std_first_points = circstd(y_true_fp_deg, high=360)
+            else:
+                test_rmse_first_points = root_mean_squared_error(
+                    y_test_first_points, y_pred_first_points
+                )
+                test_std_first_points = np.std(y_test_first_points)
+
             print(f"Test RMSE (first points): {test_rmse_first_points:.4f}")
             print(
-                f"Test target standard deviation (first points): {np.std(y_test_first_points):.4f}"
+                f"Test target standard deviation (first points): {test_std_first_points:.4f}"
             )
 
-        # plot model verification
-        r_squared = modelling.plot_model_verification(
-            exp_name,
-            exp_config["target_units"],
-            y_test.to_numpy(),
-            y_pred,
-            ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
-            title=f"{chr(i+97)}) Model Verification for {exp_name}",
-        )
+        # plot model verification and compute R2
+        if exp_config["target_units"] == "degrees":
+            y_pred_deg = (y_pred + 360) % 360
+            y_true_deg = y_test.to_numpy() % 360
+            r_squared = modelling.circ_r2(y_true_deg, y_pred_deg)
+            modelling.plot_model_verification(
+                exp_name,
+                exp_config["target_units"],
+                y_true_deg,
+                y_pred_deg,
+                ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+                title=f"{chr(i+97)}) Model Verification for {exp_name}",
+                r_squared=r_squared,
+            )
+        else:
+            r_squared = modelling.plot_model_verification(
+                exp_name,
+                exp_config["target_units"],
+                y_test.to_numpy(),
+                y_pred,
+                ax=exp_group_sum_fig.add_subplot(2, len(exp_names), i + 1),
+                title=f"{chr(i+97)}) Model Verification for {exp_name}",
+            )
 
         print(f"R-squared: {r_squared:.4f}")
 
@@ -206,6 +238,25 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_title(f"{chr(i+97+2)}) SHAP Beeswarm Plot for {exp_name}")
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
+
+        # add negative label to the left of the x-axis
+        ax_shap.text(
+            -0.05,
+            -0.05,
+            shap_descriptions["negative"],
+            va="center",
+            ha="right",
+            transform=ax_shap.transAxes,
+        )
+        # add positive label to the right of the x-axis
+        ax_shap.text(
+            1.05,
+            -0.05,
+            shap_descriptions["positive"],
+            va="center",
+            ha="left",
+            transform=ax_shap.transAxes,
+        )
 
         # convert shap values to dataframe
         shap_df = pd.DataFrame(
@@ -273,6 +324,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
                 cbar_shrink=0.63,
+                cbar_value_labels=shap_descriptions,
                 title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
                 filename=f"{exp_name}_shap_{feature}_map.png",
                 save_dir=exp_group_geo_corr_fig_dir,
@@ -302,6 +354,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} by Hour",
                 xlabel="Time (UTC+3)",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_hour.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -333,6 +386,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} over Year",
                 xlabel="Day of Year",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_day_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -353,6 +407,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} over Year",
                 xlabel="Week of Year",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -394,7 +449,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
-                    draw_grid_labels=False,
+                    small_grid_labels=True,
                     title=f"{chr(idx+97)}) {hour}:00",
                 )
 
@@ -409,6 +464,26 @@ for exp_group_name, exp_names in exp_groups.items():
                 axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
+            # add negative label to the left of the cbar
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                shap_descriptions["negative"],
+                va="center",
+                ha="right",
+                transform=cbar_ax.transAxes,
+            )
+
+            # add positive label to the right of the cbar
+            cbar.ax.text(
+                1.05,
+                0.5,
+                shap_descriptions["positive"],
+                va="center",
+                ha="left",
+                transform=cbar_ax.transAxes,
+            )
 
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
@@ -458,7 +533,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
-                    draw_grid_labels=False,
+                    small_grid_labels=True,
                     title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
                 )
 
@@ -473,6 +548,26 @@ for exp_group_name, exp_names in exp_groups.items():
                 axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
+
+            # add negative label to the left of the cbar
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                shap_descriptions["negative"],
+                va="center",
+                ha="right",
+                transform=cbar_ax.transAxes,
+            )
+
+            # add positive label to the right of the cbar
+            cbar.ax.text(
+                1.05,
+                0.5,
+                shap_descriptions["positive"],
+                va="center",
+                ha="left",
+                transform=cbar_ax.transAxes,
+            )
 
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",

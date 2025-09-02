@@ -60,6 +60,7 @@ modelling.run_experiment(
     first_points_only=exp_config["first_points_only"],
     target_col=exp_config["target_col"],
     feature_cols=exp_config["feature_cols"],
+    target_units=exp_config["target_units"],
     trials=args.trials,
     wandb_mode=args.wandb_mode,
 )

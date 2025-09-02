@@ -87,20 +87,21 @@ def add_borders(
 
 def add_gridlines(
     ax: Axes,
-    draw_labels: bool = True,
+    small_labels: bool = False,
 ) -> None:
     """
     Add gridlines to the given axis.
 
     :param ax: Matplotlib axis to add the gridlines to.
-    :param draw_labels: Whether to draw labels on the gridlines.
+    :param small_labels: Whether to reduce the font size of the grid labels.
     """
-    if draw_labels:
-        gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
-        gl.top_labels = False
-        gl.right_labels = False
-    else:
-        gl = ax.gridlines(color="lightgray", draw_labels=False)  # type: ignore
+    gl = ax.gridlines(color="lightgray", draw_labels=True)  # type: ignore
+    gl.top_labels = False
+    gl.right_labels = False
+
+    if small_labels:
+        gl.xlabel_style = {"fontsize": 8}
+        gl.ylabel_style = {"fontsize": 8}
 
 
 def add_geopotential_height(
@@ -230,7 +231,8 @@ def plot_2d_agg_map(
     cbar_aspect: float = 20,
     cbar_shrink: float = 1.0,
     cbar_label: Optional[str] = None,
-    draw_grid_labels: bool = True,
+    cbar_value_labels: Optional[dict] = None,
+    small_grid_labels: bool = False,
     title: Optional[str] = None,
     filename: Optional[str] = None,
     save_dir: Optional[Path] = None,
@@ -249,6 +251,8 @@ def plot_2d_agg_map(
     :param cbar_aspect: Aspect ratio for the colorbar.
     :param cbar_shrink: Shrink factor for the colorbar.
     :param cbar_label: Label for the colorbar.
+    :param cbar_value_labels: Labels for the colorbar max and min values.
+    :param small_grid_labels: Whether to make small grid labels.
     :param title: Title for the plot.
     :param filename: Filename to save the plot.
     :param save_dir: Directory to save the plot.
@@ -295,10 +299,29 @@ def plot_2d_agg_map(
             cbar.set_label(cbar_label)
         else:
             cbar.set_label(f"Aggregated Value")
+        if cbar_value_labels is not None:
+            # add negative label to the left of the cbar
+            cbar.ax.text(
+                -0.05,
+                0.5,
+                cbar_value_labels["negative"],
+                va="center",
+                ha="right",
+                transform=cbar.ax.transAxes,
+            )
+            # add positive label to the right of the cbar
+            cbar.ax.text(
+                1.05,
+                0.5,
+                cbar_value_labels["positive"],
+                va="center",
+                ha="left",
+                transform=cbar.ax.transAxes,
+            )
 
     # add other map features
     add_borders(ax)
-    add_gridlines(ax, draw_labels=draw_grid_labels)
+    add_gridlines(ax, small_labels=small_grid_labels)
 
     if title is not None:
         ax.set_title(title)

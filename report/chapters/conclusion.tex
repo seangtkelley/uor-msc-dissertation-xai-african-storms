@@ -1,21 +1,3 @@
 \chapter{Conclusion}
 \label{ch:con}
 
-\section{Future Work}
-In addition to the findings presented in this thesis, several avenues for future research can be identified. These include but are not limited to:
-
-\begin{itemize}
-    \item Expand storm database to include storms that pass through the region, rather than only those that originate and terminate within it.
-    \item Add other available features like dthetae/dp.
-    \item Exploring the use of alternative machine learning algorithms and architectures to improve predictive performance.
-    \item Use categorical/semi-categorical features for direction or Sine and Cosine transformation instead of degrees. Regression is not ideal for circular data.
-    \item \begin{itemize}
-        \item Categorical is easier and more intuitive but loses granularity
-        \item Sine and Cosine transformation preserves granularity but is more complex. It requires multiple outputs.
-    \end{itemize}
-    \item Investigating the incorporation of additional data sources, such as satellite imagery precipitation data, as with the original paper \citep{Hill2023}.
-    \item Conducting further analysis on the interpretability of model predictions, potentially through the use of more advanced explainability techniques.
-    \begin{itemize}
-        \item Investigating anomalous individual predictions using decision plots or force plots to quantify edge cases for the models.
-    \end{itemize}
-\end{itemize}

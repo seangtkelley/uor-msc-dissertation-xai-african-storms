@@ -7,13 +7,14 @@ This section details the methodology employed in this research. The approach is 
 
 \subsection{Database of East African Mesoscale Convective Systems (MCSs)}
 
-In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of \acrfull{bt} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery.
+In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery over 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of \acrfull{bt} below a threshold of \SI{233}{\kelvin}. The algorithm then tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery \citep{Huffman2015}.
 
-From this comprehensive storm database, a subset of approximately 30,000 was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must last longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of \degN{3} - \degN{15} and \degE{34} - \degE{52}. The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs} precipitation \citep{Hill2023}.
+From this comprehensive storm database, a subset of 27,982 storms was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must last longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of \degN{3} - \degN{15} and \degE{34} - \degE{52}. The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs}-related precipitation \citep{Hill2023}.
 
 \subsection{ERA5 Data}
+\label{sec:era5-data}
 
-\acrfull{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering \degN{2} - \degN{16} and \degE{31} - \degE{53}. This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation.
+\acrshort{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering \degN{2} - \degN{16} and \degE{31} - \degE{53}. This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation (Table \ref{tab:era5-file-patterns}).
 
 \begin{table}[ht]
     \centering
@@ -33,7 +34,7 @@ From this comprehensive storm database, a subset of approximately 30,000 was sel
         \texttt{swvl1\_d1\_YEAR.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
         \texttt{swvl2\_d2\_YEAR.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
         \texttt{ta\_PRESSURE\_YEAR.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
-        \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour & \unit{\kilogram\per\meter\squared} (\acrfull{tcwv}) \\
+        \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour (\acrfull{tcwv}) & \unit{\kilogram\per\meter\squared} \\
         \texttt{thetae\_PRESSURE\_YEAR.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
         \texttt{uwnd\_PRESSURE\_YEAR.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
         \texttt{vwnd\_PRESSURE\_YEAR.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
@@ -44,12 +45,12 @@ From this comprehensive storm database, a subset of approximately 30,000 was sel
 
 \subsection{Feature Engineering and Selection}
 
-Table \ref{tab:features} describes the X features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire domain of the \acrshort{era5} and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the grid points corresponding to the storm centroids.
+Table \ref{tab:features} describes the features used for this thesis and their respective units. These features were derived from the original storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix are calculated over a 400 km radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix are calculated over the entire domain of the \acrshort{era5}, as defined in Section \ref{sec:era5-data}, and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or are derived from the \acrshort{era5} data at the closest grid point to the storm centroids. Finally, \acrshort{mjo} phase and amplitude were obtained from \href{https://www.bom.gov.au/climate/mjo/}{Australian Government Bureau of Meteorology}, which are calculated using the All-Season Real-time Multivariate \acrshort{mjo} index from \cite{Wheeler2004}.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\linewidth} p{0.50\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
-    \caption{Features Used in the Study.} \\
-    \label{tab:features} \\
+    \caption{Features Used in the Study.}
+    \label{tab:features} \\ 
     \toprule
     \textbf{Feature name} & \textbf{Description} & \textbf{Units} \\
     \midrule
@@ -68,31 +69,31 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \bottomrule
     \endlastfoot
 
-    \texttt{date\_angle} & Angle representation of current date within year & \unit{\degree} \\
+    \texttt{date\_angle} & Angle representation of current day of year (\ang{0}=Jan 1) & \unit{\degree} \\
     \texttt{eat\_hours} & Time step hour of day & \acrlong{eat} \\
-    \texttt{storm\_total\_duration} & Total duration of \acrshort{mcs} & \unit{\hour} \\
-    \texttt{lon} & Longitude of \acrshort{mcs} centre & \unit{\degree}E \\
-    \texttt{lat} & Latitude of \acrshort{mcs} centre & \unit{\degree}N \\
-    \texttt{orography\_height} & Elevation of land surface at \acrshort{mcs} centre & \unit{\meter} \\
-    \texttt{anor} & Angle of sub-gridscale orography at \acrshort{mcs} centre & radians from E \\
-    \texttt{upslope\_bearing} & Compass bearing of upslope direction at \acrshort{mcs} centre & \unit{\degree} from  N \\
-    \texttt{slope\_angle} & Angle of slope at \acrshort{mcs} centre & \unit{\degree} \\
-    \texttt{over\_land} & Flag for \acrshort{mcs} centre (True if \acrshort{mcs} centre is over land, else False) & \texttt{boolean} \\
+    \texttt{storm\_total\_duration} & Total duration of the \acrshort{mcs} & \unit{\hour} \\
+    \texttt{lon} & Longitude of the \acrshort{mcs} centre & \unit{\degree}E \\
+    \texttt{lat} & Latitude of the \acrshort{mcs} centre & \unit{\degree}N \\
+    \texttt{orography\_height} & Elevation of land surface at the \acrshort{mcs} centre & \unit{\meter} \\
+    \texttt{anor} & Angle of sub-gridscale orography at the \acrshort{mcs} centre & radians from E \\
+    \texttt{upslope\_bearing} & Compass bearing of upslope direction at the \acrshort{mcs} centre & \unit{\degree} from  N \\
+    \texttt{slope\_angle} & Angle of slope at the \acrshort{mcs} centre & \unit{\degree} \\
+    \texttt{over\_land} & Flag for the \acrshort{mcs} centre (True if the \acrshort{mcs} centre is over land, else False) & \texttt{boolean} \\
     \texttt{acc\_land\_time} & Accumulated time where \texttt{over\_land}=True & \unit{\hour} \\
-    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for \acrshort{mcs} & \unit{\hour} \\
+    \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for the \acrshort{mcs} & \unit{\hour} \\
     \texttt{mean\_land\_frac} & Fraction of area within 400 km that is over land & ratio ($[0,1]$) \\
-    \texttt{zonal\_speed} & $x$-component of \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
-    \texttt{meridional\_speed} & $y$-component of \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
-    \texttt{area} & Area of the \acrshort{mcs} & \unit{\km\squared} \\
-    \texttt{storm\_max\_area} & Max value of \texttt{area} for \acrshort{mcs} & \unit{\km\squared} \\
+    \texttt{zonal\_speed} & $x$-component of the \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{meridional\_speed} & $y$-component of the \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{area} & Area of the the \acrshort{mcs} & \unit{\km\squared} \\
+    \texttt{storm\_max\_area} & Maximum value of \texttt{area} for the \acrshort{mcs} & \unit{\km\squared} \\
     \texttt{bearing\_from\_prev} & Compass bearing from previous observation & \unit{\degree} from  N \\
     \texttt{bearing\_to\_next} & Compass bearing to next observation & \unit{\degree} from  N \\
     \texttt{distance\_from\_prev} & Distance traversed from previous observation & \unit{\km} \\
     \texttt{distance\_to\_next} & Distance to next observation & \unit{\km} \\
     \texttt{distance\_traversed} & Cumulative sum of \texttt{distance\_from\_prev} & \unit{\km} \\
-    \texttt{storm\_bearing} & Compass bearing from first to last \acrshort{mcs} centre & \unit{\degree} from  N \\
-    \texttt{storm\_distance\_ traversed} & Total cumulative distance traversed by \acrshort{mcs} centre & \unit{\km} \\
-    \texttt{storm\_straight\_ line\_distance} & Distance from first to last \acrshort{mcs} centre & \unit{\km} \\
+    \texttt{storm\_bearing} & Compass bearing from first to last the \acrshort{mcs} centre & \unit{\degree} from  N \\
+    \texttt{storm\_distance\_ traversed} & Total cumulative distance traversed by the \acrshort{mcs} centre & \unit{\km} \\
+    \texttt{storm\_straight\_ line\_distance} & Distance from first to last the \acrshort{mcs} centre & \unit{\km} \\
     \texttt{mean\_skt} & Surface temperature & \unit{\kelvin} \\
     \texttt{mean\_land\_skt} & Land surface temperature (\acrshort{nan} if entire area is ocean) & \unit{\kelvin} \\
     \texttt{mean\_sst} & Sea surface temperature (\acrshort{nan} if entire area is land) & \unit{\kelvin} \\
@@ -109,7 +110,7 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{mean\_v\_shear\_850\_500} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{500}{\hecto\pascal} & \unit{\meter\per\second} \\
     \texttt{mean\_u\_shear\_850\_200} & Shear of zonal wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
     \texttt{mean\_v\_shear\_850\_200} & Shear of meridional wind from \SI{850}{\hecto\pascal} to \SI{200}{\hecto\pascal} & \unit{\meter\per\second} \\
-    \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at \acrshort{mcs} centre originates & \unit{\degree} from  N \\
+    \texttt{wind\_direction\_850} & Compass bearing from which the \SI{850}{\hecto\pascal} wind vector at the \acrshort{mcs} centre originates & \unit{\degree} from  N \\
     \texttt{wind\_angle\_upslope} & Angle of \texttt{wind\_direction\_850} relative to \texttt{upslope\_bearing} & \unit{\degree} from \texttt{upslope\_bearing} \\
     \texttt{mean\_tcwv} & \acrfull{tcwv} & \unit{\kilogram\per\meter\squared} \\
     \texttt{domain\_mean\_tcwv} & Mean \acrshort{tcwv} over the entire domain of \acrshort{era5} data & \unit{\kilogram\per\meter\squared} \\
@@ -122,11 +123,11 @@ Table \ref{tab:features} describes the X features used for this thesis and their
     \texttt{olr\_75} & 75th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{olr\_50} & 50th percentile of negative \acrshort{olr} within 400 km & \unit{\watt\per\square\meter} \\
     \texttt{mean\_prcp\_400} & Precipitation over the next 6 hr & \unit{\milli\meter} \\
-    \texttt{min\_bt} & Minimum \acrfull{bt} within \acrshort{mcs} area & \unit{\kelvin} \\
+    \texttt{min\_bt} & Minimum \acrfull{bt} within the \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmin\_bt\_dt} & Rate of change of \texttt{min\_bt} & \unit{\kelvin\per\hour} \\
-    \texttt{mean\_bt} & Mean \acrshort{bt} within \acrshort{mcs} area & \unit{\kelvin} \\
+    \texttt{mean\_bt} & Mean \acrshort{bt} within the \acrshort{mcs} area & \unit{\kelvin} \\
     \texttt{dmean\_bt\_dt} & Rate of change of \texttt{mean\_bt} & \unit{\kelvin\per\hour} \\
-    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached for \acrshort{mcs} & \unit{\kelvin} \\
+    \texttt{storm\_min\_bt} & Minimum value of \texttt{min\_bt} reached for the \acrshort{mcs} & \unit{\kelvin} \\
     \texttt{storm\_min\_bt\_reached} & False if \texttt{storm\_min\_bt} has not been reached yet, else True & \texttt{boolean} \\
     \texttt{mjo\_phase} & Phase of \acrfull{mjo} & $[1, 8] \cap \mathbb{Z}$ \\
     \texttt{mjo\_amplitude} & Amplitude of \acrshort{mjo} & - \\
@@ -138,7 +139,70 @@ The following highly correlated features were identified and removed to prevent 
     \item \texttt{mean\_swvl1} and \texttt{mean\_swvl2} have a Pearson correlation coefficient of 0.94 and thus \texttt{mean\_swvl2} was removed.
     \item \texttt{olr\_90}, \texttt{olr\_75}, \texttt{olr\_50} were all correlated with coefficients above 0.8, so only \texttt{olr\_90} was retained.
 \end{itemize}
-Additionally, measures were implemented to prevent data leakage, including the careful exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time. These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+Additionally, measures were implemented to prevent data leakage, including the careful exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time (Table \ref{tab:excluded_features}). These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+
+{\small
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.4\linewidth} >{\raggedright\arraybackslash}p{0.6\linewidth}}
+    \caption{Excluded features.}
+    \label{tab:excluded_features} \\ 
+    \toprule
+    \textbf{Category / Target Feature} & \textbf{Excluded Features} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{2}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \toprule
+    \textbf{Category / Target Feature} & \textbf{Excluded Features} \\
+    \midrule
+    \endhead
+
+    \midrule \multicolumn{2}{r}{{Continued on next page}} \\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    \multirow{13}{*}{\textit{All Target Excluded Features}} & \texttt{storm\_total\_duration} \\
+        & \texttt{storm\_total\_land\_time} \\
+        & \texttt{storm\_max\_area} \\
+        & \texttt{storm\_bearing} \\
+        & \texttt{storm\_distance\_traversed} \\
+        & \texttt{storm\_straight\_line\_distance} \\
+        & \texttt{storm\_min\_bt} \\
+        & \texttt{storm\_min\_bt\_reached} \\
+        & \texttt{bearing\_to\_next} \\
+        & \texttt{distance\_to\_next} \\
+        & \texttt{mean\_swvl2} \\
+        & \texttt{olr\_75} \\
+        & \texttt{olr\_50} \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Experiment Specific Features}} \\
+    \midrule
+    \texttt{mean\_prcp\_400} & None \\
+    \cmidrule(lr){1-2}
+    \multirow{4}{*}{\texttt{storm\_min\_bt}} & \texttt{min\_bt} \\
+        & \texttt{dmin\_bt\_dt} \\
+        & \texttt{mean\_bt} \\
+        & \texttt{dmean\_bt\_dt} \\ 
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{storm\_bearing}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{dmin\_bt\_dt}} & \texttt{min\_bt} \\
+        & \texttt{mean\_bt} \\
+        & \texttt{dmean\_bt\_dt} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{bearing\_to\_next}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+    \cmidrule(lr){1-2}
+    \multirow{3}{*}{\texttt{distance\_to\_next}} & \texttt{zonal\_speed} \\
+        & \texttt{meridional\_speed} \\
+        & \texttt{bearing\_from\_prev} \\
+\end{longtable}
+}
 
 \section{Modelling Approach}
 
@@ -196,7 +260,7 @@ Once the sweeps are complete, the best models from each sweep are evaluated on t
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/static/xai-taxonomy.jpg}
+    \includegraphics[width=0.6\textwidth]{../figures/static/xai-taxonomy.jpg}
     \caption{\acrshort{xai} Taxonomy \citep{Molnar2025}}
     \label{fig:xai-taxonomy}
 \end{figure}
@@ -223,8 +287,8 @@ The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.27\linewidth} p{0.43\linewidth} >{\raggedright\arraybackslash}p{0.20\linewidth}}
-    \caption{Experiments Summary.} \\
-    \label{tab:experimental-setup} \\
+    \caption{Experiments Summary.}
+    \label{tab:experimental-setup} \\ 
     \toprule
     \textbf{Experiment alias} & \textbf{Description} & \textbf{Predictand} \\
     \midrule

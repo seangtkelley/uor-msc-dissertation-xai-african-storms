@@ -29,6 +29,7 @@ from wandb.integration.xgboost import WandbCallback
 from wandb.sdk.wandb_run import Run
 from xgboost import XGBRegressor
 from xgboost.callback import EarlyStopping
+from scipy.stats import circmean
 
 import config
 import wandb
@@ -78,6 +79,82 @@ def init_wandb(
     short_guid = uuid.uuid4().hex[:8]
     run_name = f"{run_name_base}_{short_guid}"
     return wandb.init(name=run_name, mode=wandb_mode)
+
+
+def wrap180(angles: np.ndarray) -> np.ndarray:
+    """
+    Wrap angles to [-180, 180].
+
+    :param angles: Angles in degrees
+    :return: Wrapped angles in degrees
+    """
+    return (angles + 180) % 360 - 180
+
+
+def circ_sqerr(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """
+    Squared error for circular values in degrees (0-360).
+
+    :param y_true: True values in degrees
+    :param y_pred: Predicted values in degrees
+    :return: Squared errors
+    """
+    diffs = y_true - y_pred
+    diffs = wrap180(diffs)
+    return diffs**2
+
+
+def rmse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    RMSE for circular values in degrees (0-360).
+    Name of function must be identical to default eval metric "rmse"
+    in order to overwrite it
+
+    :param y_true: True values in degrees
+    :param y_pred: Predicted values in degrees
+    :return: RMSE value
+    """
+    sqerr = circ_sqerr(y_true, y_pred)
+    return float(np.sqrt(np.mean(sqerr)))
+
+
+def circ_sqerr_obj(
+    y_true: np.ndarray, y_pred: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Custom objective for XGBoost:
+    squared error with angle wrapping to [-180, 180].
+
+    :param y_true: True values in degrees
+    :param y_pred: Predicted values in degrees
+    :return: Gradient and Hessian for XGBoost
+    """
+    # difference wrapped
+    diff = wrap180(y_true - y_pred)
+
+    # gradient: -2 * diff
+    grad = -2.0 * diff
+
+    # hessian: constant 2
+    hess = np.full_like(y_true, 2.0)
+
+    return grad, hess
+
+
+def circ_r2(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    Custom computation for R2:
+    circular R squared with angle wrapping
+
+    :param y_true: True values in degrees
+    :param y_pred: Predicted values in degrees
+    :return: Circular R2 value
+    """
+    # circular R2: 1 - (sum(squared angular error) / sum(squared angular deviation from mean))
+    ss_res = np.sum(circ_sqerr(y_true, y_pred))
+    mean_true = circmean(y_true, high=360, low=0)
+    ss_tot = np.sum(circ_sqerr(y_true, mean_true))  # type: ignore
+    return 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
 
 
 def train_model(
@@ -149,6 +226,7 @@ def train_model(
 def train_model_cv(
     X: pd.DataFrame,
     y: pd.Series,
+    target_units: str,
     wandb_run: Optional[Run] = None,
 ):
     """
@@ -156,6 +234,7 @@ def train_model_cv(
 
     :param X: Features DataFrame.
     :param y: Target Series.
+    :param target_units: The units of the target variable.
     :param wandb_run: Weights & Biases run object.
     """
     # if wandb_run is None, provide a no-op run
@@ -194,7 +273,15 @@ def train_model_cv(
         ]
 
         # init the model
-        model = XGBRegressor(**wandb.config.as_dict(), callbacks=callbacks)
+        if target_units == "degrees":
+            model = XGBRegressor(
+                **wandb.config.as_dict(),
+                callbacks=callbacks,
+                objective=circ_sqerr_obj,
+                eval_metric=rmse,
+            )
+        else:
+            model = XGBRegressor(**wandb.config.as_dict(), callbacks=callbacks)
 
         # train the model
         model.fit(
@@ -227,6 +314,7 @@ def train_model_cv(
 def wandb_sweep_func(
     X: pd.DataFrame,
     y: pd.Series,
+    target_units: str,
     run_base_name: str = f"run_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}",
     wandb_mode: Literal["online", "offline", "disabled"] = "disabled",
 ):
@@ -245,7 +333,7 @@ def wandb_sweep_func(
     )
 
     # train the model
-    train_model_cv(X, y, wandb_run=wandb_run)
+    train_model_cv(X, y, target_units=target_units, wandb_run=wandb_run)
 
     # finish the W&B run
     wandb_run.finish()
@@ -255,6 +343,7 @@ def wandb_sweep(
     processed_df: pd.DataFrame,
     target_col: str,
     feature_cols: Iterable[str],
+    target_units: str,
     run_base_name: str,
     trials: Optional[int],
     prior_run_ids: Optional[list[str]] = None,
@@ -266,6 +355,7 @@ def wandb_sweep(
     :param processed_df: The processed DataFrame containing features and target.
     :param target_col: The target column for the model.
     :param feature_cols: The feature columns for the model.
+    :param target_units: The units of the target variable.
     :param run_base_name: The base name for the W&B run.
     :param trials: The number of trials for the sweep.
     :param prior_run_ids: The IDs of prior runs to use for the sweep.
@@ -290,6 +380,7 @@ def wandb_sweep(
         function=lambda: wandb_sweep_func(
             X,
             y,
+            target_units=target_units,
             run_base_name=run_base_name,
             wandb_mode=wandb_mode,
         ),
@@ -320,6 +411,7 @@ def run_experiment(
     first_points_only: bool,
     target_col: str,
     feature_cols: str | list[str],
+    target_units: str,
     trials: Optional[int],
     wandb_mode: Literal["online", "offline", "disabled"],
 ):
@@ -330,6 +422,7 @@ def run_experiment(
     :param processed_df: The processed DataFrame containing features and target.
     :param first_points_only: Whether to use only the first points of each storm.
     :param target_col: The target column for the model.
+    :param target_units: The units of the target variable.
     :param feature_cols: The feature columns for the model.
     :param wandb_mode: The mode for W&B (online, offline, disabled).
     """
@@ -381,6 +474,7 @@ def run_experiment(
         processed_df=df,
         target_col=target_col,
         feature_cols=feature_cols,
+        target_units=target_units,
         run_base_name=exp_name,
         trials=trials,
         prior_run_ids=prior_run_ids,
@@ -495,6 +589,7 @@ def plot_model_verification(
     y_pred: np.ndarray,
     ax: Optional[Axes],
     title: Optional[str] = None,
+    r_squared: Optional[float] = None,
 ) -> float:
     """
     Plot model verification results: scatter plot of predictions vs actuals,
@@ -519,7 +614,8 @@ def plot_model_verification(
     y_test_ = y_test.reshape(-1, 1)
     lr.fit(y_pred_, y_test_)
     reg_line = lr.predict(np.unique(y_pred_).reshape(-1, 1))
-    r_squared = lr.score(y_pred_, y_test_)
+    if r_squared is None:
+        r_squared = float(lr.score(y_pred_, y_test_))
 
     # plot regression line
     ax.plot(
@@ -537,4 +633,4 @@ def plot_model_verification(
     ax.set_ylabel(f"Actual Value ({target_units})")
     ax.legend()
 
-    return float(r_squared)
+    return r_squared
