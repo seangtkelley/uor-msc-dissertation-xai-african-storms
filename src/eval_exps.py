@@ -93,7 +93,9 @@ for exp_group_name, exp_names in exp_groups.items():
     exp_group_sum_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
     # retrieve exp group shap description
-    shap_descriptions = config.SHAP_VALUES_DESCRIPTION[exp_group_name]
+    shap_descriptions = config.SHAP_VALUES_DESCRIPTION[
+        exp_group_name.replace("_first_points", "")
+    ]
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
