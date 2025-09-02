@@ -141,7 +141,7 @@ def circ_sqerr_obj(
     return grad, hess
 
 
-def circ_r2(y_true_deg: np.ndarray, y_pred_deg: np.ndarray) -> float:
+def circ_r2(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     Custom computation for R2:
     circular R squared with angle wrapping
@@ -151,9 +151,9 @@ def circ_r2(y_true_deg: np.ndarray, y_pred_deg: np.ndarray) -> float:
     :return: Circular R2 value
     """
     # circular R2: 1 - (sum(squared angular error) / sum(squared angular deviation from mean))
-    ss_res = np.sum(circ_sqerr(y_true_deg, y_pred_deg))
-    mean_true = circmean(y_true_deg, high=360, low=0)
-    ss_tot = np.sum(circ_sqerr(y_true_deg, mean_true))  # type: ignore
+    ss_res = np.sum(circ_sqerr(y_true, y_pred))
+    mean_true = circmean(y_true, high=360, low=0)
+    ss_tot = np.sum(circ_sqerr(y_true, mean_true))  # type: ignore
     return 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
 
 
