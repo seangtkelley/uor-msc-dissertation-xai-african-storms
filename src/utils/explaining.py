@@ -111,6 +111,7 @@ def plot_shap_over_time(
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
+    y_value_labels: Optional[dict] = None,
     filename: Optional[str] = None,
     save_dir: Optional[Path] = None,
 ):
@@ -129,6 +130,7 @@ def plot_shap_over_time(
     :param title: Optional plot title.
     :param xlabel: Optional x-axis label.
     :param ylabel: Optional y-axis label.
+    :param y_value_labels: Labels for the y-axis max and min values.
     :param filename: If provided, the plot is saved to this filename.
     :param save_dir: Directory to save the plot if filename is provided.
     """
@@ -176,6 +178,23 @@ def plot_shap_over_time(
         plt.xlabel(xlabel)
     if ylabel is not None:
         plt.ylabel(ylabel)
+    if y_value_labels is not None:
+        ax.text(
+            -0.05,
+            -0.05,
+            y_value_labels["negative"],
+            va="top",
+            ha="right",
+            transform=ax.transAxes,
+        )
+        ax.text(
+            -0.05,
+            1.05,
+            y_value_labels["positive"],
+            va="bottom",
+            ha="right",
+            transform=ax.transAxes,
+        )
 
     if filename is not None and save_dir is not None:
         plotting.save_plot(filename, save_dir)

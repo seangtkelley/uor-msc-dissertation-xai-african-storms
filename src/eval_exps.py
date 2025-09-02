@@ -92,6 +92,9 @@ for exp_group_name, exp_names in exp_groups.items():
     # init exp group summary fig
     exp_group_sum_fig = plt.figure(figsize=(16, 6 * len(exp_names)))
 
+    # retrieve exp group shap description
+    shap_descriptions = config.SHAP_VALUES_DESCRIPTION[exp_group_name]
+
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
         print(f"Evaluating experiment: {exp_name}")
@@ -236,6 +239,23 @@ for exp_group_name, exp_names in exp_groups.items():
         ax_shap.set_xlabel(f"SHAP value ({exp_config['target_units']})")
         ax_shap.tick_params(axis="y", labelsize=10)
 
+        ax_shap.text(
+            -0.05,
+            -0.05,
+            shap_descriptions["negative"],
+            va="center",
+            ha="right",
+            transform=ax_shap.transAxes,
+        )
+        ax_shap.text(
+            1.05,
+            -0.05,
+            shap_descriptions["positive"],
+            va="center",
+            ha="left",
+            transform=ax_shap.transAxes,
+        )
+
         # convert shap values to dataframe
         shap_df = pd.DataFrame(
             explanation.values,
@@ -302,9 +322,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
                 cbar_shrink=0.63,
-                cbar_value_labels=config.SHAP_VALUES_DESCRIPTION[
-                    exp_group_name
-                ],
+                cbar_value_labels=shap_descriptions,
                 title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
                 filename=f"{exp_name}_shap_{feature}_map.png",
                 save_dir=exp_group_geo_corr_fig_dir,
@@ -334,6 +352,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} by Hour",
                 xlabel="Time (UTC+3)",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_hour.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -365,6 +384,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} over Year",
                 xlabel="Day of Year",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_day_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -385,6 +405,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"Mean SHAP Value of {feature} over Year",
                 xlabel="Week of Year",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
+                y_value_labels=shap_descriptions,
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
@@ -446,7 +467,7 @@ for exp_group_name, exp_names in exp_groups.items():
             cbar.ax.text(
                 -0.05,
                 0.5,
-                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["negative"],
+                shap_descriptions["negative"],
                 va="center",
                 ha="right",
                 transform=cbar_ax.transAxes,
@@ -456,7 +477,7 @@ for exp_group_name, exp_names in exp_groups.items():
             cbar.ax.text(
                 1.05,
                 0.5,
-                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["positive"],
+                shap_descriptions["positive"],
                 va="center",
                 ha="left",
                 transform=cbar_ax.transAxes,
@@ -530,7 +551,7 @@ for exp_group_name, exp_names in exp_groups.items():
             cbar.ax.text(
                 -0.05,
                 0.5,
-                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["negative"],
+                shap_descriptions["negative"],
                 va="center",
                 ha="right",
                 transform=cbar_ax.transAxes,
@@ -540,7 +561,7 @@ for exp_group_name, exp_names in exp_groups.items():
             cbar.ax.text(
                 1.05,
                 0.5,
-                config.SHAP_VALUES_DESCRIPTION[exp_group_name]["positive"],
+                shap_descriptions["positive"],
                 va="center",
                 ha="left",
                 transform=cbar_ax.transAxes,
