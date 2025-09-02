@@ -173,6 +173,27 @@ Particularly interesting is the temporal variability of the influence of mean \a
     \label{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour}
 \end{figure}
 
+Figure \ref{fig:obs_intensification_sst_skt_by_hour} shows the temporal variability of the mean SHAP values for \acrfull{sst} and land skin temperature for the intensification models. Here we might postulate that the slight offset between the hours where each variable contributes most strongly to intensification corresponds to the diurnal cycle of the heating of the Earth surface, with land skin temperature peaking during midday and \acrshort{sst} lagging by a few hours.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/temporal_corr/obs_intensification_all_shap_mean_skt_by_hour.png}
+        \caption{Temporal variability of SHAP values for mean land skin temperature by hour for the intensification model with all features.}
+        \label{fig:obs_intensification_all_shap_mean_skt_by_hour}
+    \end{subfigure}
+    \vspace{1em}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/temporal_corr/obs_intensification_era5_shap_mean_sst_by_hour.png}
+        \caption{Temporal variability of SHAP values for mean sea surface temperature by hour for the intensification model with only \acrshort{era5} features.}
+        \label{fig:obs_intensification_era5_shap_mean_sst_by_hour}
+    \end{subfigure}
+    \caption{Comparison of mean \acrshort{shap} value for \acrshort{sst} and land skin temperature by hour for the intensification models.}
+    \label{fig:obs_intensification_sst_skt_by_hour}
+\end{figure}
+
 \clearpage
 \subsection{Precipitation}
 
