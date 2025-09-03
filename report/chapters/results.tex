@@ -120,12 +120,14 @@ For better context in interpreting the meaning of the \acrshort{shap} values, Fi
     \label{fig:storm_direction_summary}
 \end{figure}
 
-Low-level zonal winds are by far the most important factor for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of \texttt{mean\_u850} (westerly winds) tend to shift the predicted storm direction eastward. As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the influence of these winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian. During the winter months, however, the influence appears mostly negative over the entire domain.
+High-level winds are by far the most important factors for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of both meridional and zonal  winds, southerly and westerly winds respectively, tend to shift the predicted storm direction northward and vice versa.
+
+As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the effect of low-level meridional winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian. During the winter months, however, the influence appears mostly negative over the entire domain.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_v850_map_by_month.png}
-    \caption{Mean SHAP values for \SI{850}{\hecto\pascal} zonal wind over East Africa by month for storm direction prediction using all features.}
+    \caption{Mean SHAP values for \SI{850}{\hecto\pascal} meridional wind over East Africa by month for storm direction prediction using all features.}
     \label{fig:storm_direction_all_shap_mean_v850_map_by_month}
 \end{figure}
 
@@ -166,7 +168,7 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-As for the feature contributions, surface characteristics seem to be expressly important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
+As for the feature contributions, surface characteristics seem to be especially important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \acrfull{tcwv} has strong contributions to both models which highlights its importance and aligns with existing literature \citep{Li2023,Muetzelfeldt2025,Klein2020}. Particularly interesting is the temporal variability of its influence over the study domain as shown in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour}. During the early morning hours, convection is generally suppressed across the region. Later in the evening, however, conditions are generally more amenable to convection and a clear geographic pattern of how mean \acrshort{tcwv} contributes to storm intensification emerges. \todo{if generate the plots, include whether the values of mean \acrshort{tcwv} are high or low}
 
