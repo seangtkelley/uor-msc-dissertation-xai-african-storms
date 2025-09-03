@@ -21,15 +21,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.axes import Axes
-from matplotlib.colors import Colormap, ListedColormap
+from matplotlib.colors import Colormap
 from pint import Quantity
 
 import config
-
-# scope cmap terrain to start at green
-TERRAIN_CMAP = ListedColormap(
-    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
-)
 
 
 def init_map(
@@ -100,8 +95,10 @@ def add_gridlines(
     gl.right_labels = False
 
     if small_labels:
-        gl.xlabel_style = {"fontsize": 8}
-        gl.ylabel_style = {"fontsize": 8}
+        gl.xlines = False
+        gl.ylines = False
+        gl.xlabel_style = {"fontsize": 8, "rotation": 90}
+        gl.ylabel_style = {"fontsize": 8, "rotation": 0}
 
 
 def add_geopotential_height(
@@ -117,7 +114,7 @@ def add_geopotential_height(
         geop["longitude"],
         geop["latitude"],
         height,
-        cmap=TERRAIN_CMAP,
+        cmap=config.TERRAIN_CMAP,
         transform=ccrs.PlateCarree(),
     )
     if add_colorbar:
@@ -308,6 +305,7 @@ def plot_2d_agg_map(
                 va="center",
                 ha="right",
                 transform=cbar.ax.transAxes,
+                fontsize=8,
             )
             # add positive label to the right of the cbar
             cbar.ax.text(
@@ -317,6 +315,7 @@ def plot_2d_agg_map(
                 va="center",
                 ha="left",
                 transform=cbar.ax.transAxes,
+                fontsize=8,
             )
 
     # add other map features

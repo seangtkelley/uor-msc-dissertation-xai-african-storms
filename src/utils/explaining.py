@@ -21,7 +21,7 @@ import pandas as pd
 import seaborn as sns
 import shap
 from matplotlib.axes import Axes
-from matplotlib.colors import TwoSlopeNorm
+from matplotlib.colors import Colormap, TwoSlopeNorm
 
 import config
 from utils import plotting
@@ -102,8 +102,10 @@ def plot_shap_over_time(
     temp_agg_df: pd.DataFrame,
     agg_x: str,
     agg_y: str,
+    agg_val: Optional[str] = None,
     ax: Optional[Axes] = None,
     edgecolor: Optional[str] = None,
+    cmap: Optional[str | Colormap] = None,
     xtick_interval: Optional[int] = None,
     xtick_offset: int = 1,
     xtick_convert: Callable[[int], str] = str,
@@ -121,8 +123,10 @@ def plot_shap_over_time(
     :param temp_agg_df: DataFrame containing aggregated SHAP values to plot.
     :param agg_x: Column name in temp_agg_df to use for the x-axis (e.g., time or interval).
     :param agg_y: Column name in temp_agg_df to use for the y-axis (SHAP value to plot).
+    :param agg_val: Column name in temp_agg_df to use for the secondary y-axis (Feature value to plot).
     :param ax: Optional matplotlib Axes to plot on. If None, a new figure is created.
     :param edgecolor: Optional color for bar edges.
+    :param cmap: Optional colormap to use for the plot.
     :param xtick_interval: If set, only every nth x-tick is labeled.
     :param xtick_offset: Offset for x-tick labeling (default: 1).
     :param xtick_convert: Function to convert x-tick values to labels (default: str).
@@ -137,7 +141,7 @@ def plot_shap_over_time(
     # create custom color palette centred at zero
     m = np.max(np.abs(temp_agg_df[agg_y]))
     norm = TwoSlopeNorm(vmin=-m, vcenter=0, vmax=m)
-    cmap = plt.get_cmap(config.SHAP_MAP_CMAP)
+    cmap = plt.get_cmap(cmap if cmap is not None else config.SHAP_MAP_CMAP)
     colors = [cmap(norm(val)) for val in temp_agg_df[agg_y]]
 
     # init plot if not axis provided
@@ -155,6 +159,21 @@ def plot_shap_over_time(
         edgecolor=edgecolor,
         ax=ax,
     )
+
+    if agg_val:
+        # plot line for feature value on secondary y-axis
+        ax2 = ax.twinx()
+        ax2 = sns.pointplot(
+            data=temp_agg_df,
+            x=agg_x,
+            y=agg_val,
+            color="dimgray",
+            ax=ax2,
+            markers="",
+            linewidth=2,
+        )
+        ax2.set_ylabel(f"Feature value: {agg_val}")
+        ax2.grid(False)
 
     if xtick_interval is not None:
         # reduce xticks to every nth interval
@@ -177,7 +196,7 @@ def plot_shap_over_time(
     if xlabel is not None:
         plt.xlabel(xlabel)
     if ylabel is not None:
-        plt.ylabel(ylabel)
+        ax.set_ylabel(ylabel)
     if y_value_labels is not None:
         # add negative label to the top of the y-axis
         ax.text(
