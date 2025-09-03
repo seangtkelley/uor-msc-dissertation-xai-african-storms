@@ -305,6 +305,16 @@ for exp_group_name, exp_names in exp_groups.items():
             exp_group_fig_dir,
         )
 
+        # add feature value columns with prefix
+        feature_cols_to_add = [
+            col for col in shap_df.columns if col not in geo_temp_cols
+        ]
+        feature_values = test_df.loc[X_test_sample.index, feature_cols_to_add]
+        feature_values = feature_values.add_prefix("feature_")
+        merge_df = merge_df.merge(
+            feature_values, left_index=True, right_index=True
+        )
+
         # get absolute correlations with lon and lat
         corr_with_lon = corr_matrix["lon"].abs()
         corr_with_lat = corr_matrix["lat"].abs()
@@ -334,6 +344,28 @@ for exp_group_name, exp_names in exp_groups.items():
                 cbar_value_labels=shap_descriptions,
                 title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
                 filename=f"{exp_name}_shap_{feature}_map.png",
+                save_dir=exp_group_geo_corr_fig_dir,
+            )
+
+            # plot feature value maps
+            feature_column = f"feature_{feature}"
+            agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                merge_df, feature_column
+            )
+            plotting.plot_2d_agg_map(
+                agg_lon,
+                agg_lat,
+                agg_grid,
+                cmap=(
+                    config.TERRAIN_CMAP
+                    if "orography" in feature_column
+                    else config.DEFAULT_MAP_CMAP
+                ),
+                cbar_label=f"Feature Value: {feature_column}",
+                cbar_aspect=40,
+                cbar_shrink=0.63,
+                title=f"Value of {feature} over Map for {exp_name}",
+                filename=f"{exp_name}_{feature}_map.png",
                 save_dir=exp_group_geo_corr_fig_dir,
             )
 

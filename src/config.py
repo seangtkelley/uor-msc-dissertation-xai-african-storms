@@ -64,6 +64,8 @@ ERA5_DATA_EXTENT = (
 TERRAIN_CMAP = ListedColormap(
     plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
 )
+# default cmap for feature value maps
+DEFAULT_MAP_CMAP = "plasma"
 
 
 # ==============================================================================
