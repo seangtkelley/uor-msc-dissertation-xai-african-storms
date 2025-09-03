@@ -550,7 +550,7 @@ for exp_group_name, exp_names in exp_groups.items():
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
                 fontsize=17,
-                y=0.97,
+                y=1.03,
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_hour.png",
