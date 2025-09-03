@@ -23,13 +23,38 @@ Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution
     \label{fig:orography_storm_init_eat_hours_mode_mean}
 \end{figure}
 
-Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
+Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\textwidth]{../figures/generated/exploration/min_bt_over_lifecycle_by_init_type.png}
     \caption{Minimum \acrfull{bt} over the lifecycle of storms, categorised by their initiation type.}
     \label{fig:min_bt_over_lifecycle_by_init_type}
+\end{figure}
+
+Finally, as coarse representation of the general climatology of the region, Figure \ref{fig:figures} shows the mean values of meteorological variables across the study region which are relevant in the explainability analyses below.
+\begin{figure}
+\centering
+\begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/tcwv_mean_by_loc.png}
+    \caption{\acrfull{tcwv}.}
+    \label{fig:first}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/u850_mean_by_loc.png}
+    \caption{850 hPa zonal wind component.}
+    \label{fig:u850_mean_by_loc}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/v850_mean_by_loc.png}
+    \caption{850 hPa meridional wind component.}
+    \label{fig:v850_mean_by_loc}
+\end{subfigure}
+
+\caption{Mean values of meteorological variables across the study region.}
+\label{fig:figures}
 \end{figure}
 
 \section{Predict Storm Aggregate Features}
@@ -158,6 +183,7 @@ Precipitation \acrshort{era5}      & 0.0851  & & 0.7887 \\
 
 \clearpage
 \subsection{Intensification}
+\label{sec:results-intensification}
 
 Although the \acrshort{rmse} of the models are acceptable, it is evident that the models from both feature sets generally tend to underpredict intensification and weakening as shown in Figure \ref{fig:obs_intensification_summary}.
 
@@ -168,7 +194,7 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
     \label{fig:obs_intensification_summary}
 \end{figure}
 
-As for the feature contributions, surface characteristics seem to be especially important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. Additionally, the contributions of mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related, suggesting that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
+As for the feature contributions, surface characteristics seem to be especially important. In the \acrshort{era5} model, land skin, sea surface, and overall skin temperature all appear in the top ten features. Across both models, high land skin temperature consistently emerges as an important factor for intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. The contributions of mean \acrshort{cape} and domain mean \acrshort{cape} notably have opposite effects on intensification. One interpretation of this result is that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
 \acrfull{tcwv}'s feature contribution for the model trained on only \acrshort{era5} data is quite peculiar. On the one hand, the fact it has strong contributions to both models should be expected based on established literature \citep{Li2023,Muetzelfeldt2025,Klein2020}. However, the relationship between the its contribution and feature value should theoretically be reversed. According to the the beeswarm plot d) in Figure \ref{fig:obs_intensification_summary}, higher values of mean \acrshort{tcwv} tend to slow intensification where as low values accelerate it.
 
@@ -176,7 +202,7 @@ Looking at the spatial and temporal distribution of mean \acrshort{tcwv} values 
 
 The optimistic interpretation of this result could be that orographic lifting causes moist air to rise and condense, leading to precipitation and thus lower \acrshort{tcwv} values. The storms are then more likely to intensify when they are situated over or near elevated terrain, where orographic effects can enhance convection. This hypothesis may be bolstered by subplots g) and i) in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} which show enhanced intensification over the highlands in the late afternoon, as is consistent with the diurnal cycle of orographic lifting \citep{Colle2015,Negash2024,Zardi2013}.
 
-Alternately, the counterintuitive relationship may be an artifact of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features (c) in Figure \ref{fig:obs_intensification_summary}) shows that orographic elevation has a strong positive contribution to intensification. Farther down the same plot, mean \acrshort{tcwv}'s contribution is shows no clear pattern. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may essentially be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly.
+Alternately, the counterintuitive relationship may be an artifact of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features (c) in Figure \ref{fig:obs_intensification_summary}) shows that orographic elevation has a strong positive contribution to intensification. Farther down the same plot, mean \acrshort{tcwv}'s contribution is shows no clear pattern. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may essentially be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
 
 \begin{figure}[ht]
     \centering
@@ -209,7 +235,7 @@ Lastly for the intensification experiment, Figure \ref{fig:obs_intensification_s
 \clearpage
 \subsection{Precipitation}
 
-Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day. Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} are inversely related.
+Unlike the other experiments, there is a meaningful discrepancy in performance between the ERA5-only feature set and all features. This would indicate that the meteorological variables available are insufficient to fully capture the factors influencing precipitation. This is further supported by the top features for the ERA5-only model being mean land skin temperature, a feature that is highly correlated with time of day. Although included in the all features model, \acrfull{bt} does not appear among the top features, however, \acrfull{olr} is an important feature, potentially serving as a proxy for cloud cover. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. There is also a strong diurnal cycle with peak precipitation occurring during midday. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} have opposite contributions to precipitation.
 
 \begin{figure}[ht]
     \centering
@@ -218,7 +244,7 @@ Unlike the other experiments, there is a meaningful discrepancy in performance b
     \label{fig:obs_precipitation_summary}
 \end{figure}
 
-The \acrshort{era5} model appears to have captured the influence of the rainy seasons \todo{\acrshort{itcz}?} on precipitation patterns via the mean \acrshort{cape} over the study region as shown in Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}.
+Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year} displays the change in contribution of domain mean \acrshort{cape} to precipitation by week over the year. The periods of high values in domain mean \acrshort{cape} correspond well with the two rainy seasons in the region. However, the contribution of domain mean \acrshort{cape} to precipitation is negative during these periods. As hinted at in Section \ref{sec:results-intensification}, this may suggest that when the overall atmospheric instability is high across the region, it may not be as conducive for individual storms to intensify or produce significant precipitation. Instead, more isolated pockets of high instability (i.e., high mean \acrshort{cape}) may be more favourable for fast intensification and/or heavy precipitation.
 
 \begin{figure}[ht]
     \centering
