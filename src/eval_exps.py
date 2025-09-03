@@ -230,9 +230,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 )
 
         if exp_group_name == "obs_precipitation":
-            cmap = cm.get_cmap(config.SHAP_MAP_CMAP).reversed()
+            shap_map_cmap = cm.get_cmap(config.SHAP_MAP_CMAP).reversed()
         else:
-            cmap = config.SHAP_MAP_CMAP
+            shap_map_cmap = config.SHAP_MAP_CMAP
         # plot SHAP summary plot
         ax_shap = exp_group_sum_fig.add_subplot(
             2, len(exp_names), len(exp_names) + i + 1
@@ -355,7 +355,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 agg_lat,
                 agg_grid,
                 ax=axs[0],
-                cmap=cmap,
+                cmap=shap_map_cmap,
                 sym_cmap_centre=0.0,
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
@@ -425,7 +425,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 agg_x="eat_hours",
                 agg_y=feature,
                 agg_val=value_column,
-                cmap=cmap,
+                cmap=shap_map_cmap,
                 xtick_interval=4,
                 xtick_offset=0,
                 xtick_convert=lambda x: f"{x//4}:00",
@@ -462,7 +462,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 mean_per_day,
                 agg_x="timestamp",
                 agg_y=feature,
-                cmap=cmap,
+                cmap=shap_map_cmap,
                 edgecolor="none",
                 xtick_interval=30,
                 title=f"Mean SHAP Value of {feature} over Year",
@@ -503,7 +503,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 agg_x="week",
                 agg_y=feature,
                 agg_val=value_column,
-                cmap=cmap,
+                cmap=shap_map_cmap,
                 xtick_interval=1,
                 xtick_convert=week_to_month_fun,
                 title=f"Mean SHAP Value of {feature} over Year",
@@ -558,7 +558,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_lat,
                     agg_grid,
                     ax=axs[idx],
-                    cmap=cmap,
+                    cmap=shap_map_cmap,
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
@@ -698,7 +698,7 @@ for exp_group_name, exp_names in exp_groups.items():
                     agg_lat,
                     agg_grid,
                     ax=axs[idx],
-                    cmap=cmap,
+                    cmap=shap_map_cmap,
                     vmin=-m,
                     vmax=m,
                     add_cbar=False,
