@@ -44,16 +44,18 @@ Table \ref{tab:storm_max_intensity_results} details the performance metrics for 
 \centering
 \caption{Experiment results for storm maximum intensity prediction}
 \label{tab:storm_max_intensity_results}
-\begin{tabular}{lccccc}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{Experiment} & \multicolumn{2}{c}{\textbf{RMSE}} & \multicolumn{2}{c}{\textbf{Target Std}} & \textbf{Actual vs. Predicted $R^2$} \\
-\cline{2-5}
- & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
+ & & \multicolumn{2}{c|}{All Observations} & First Points Only \\
+\hline \hline
+\multirow{2}{*}{\textbf{RMSE}} & All & 2.7610 & 4.4872 & 7.2265 \\
+ & \acrshort{era5} & 2.7503 & 4.1075 & 7.4673 \\
 \hline
-All              & 2.7610 & 4.4872 & \multirow{2}{*}{9.1679} & \multirow{2}{*}{8.8540} & 0.9098 \\
-\acrshort{era5}  & 2.7503 & 4.1075 & & & 0.9134 \\
-All First Points & \multicolumn{2}{c}{7.2265} & \multicolumn{2}{c}{\multirow{2}{*}{8.9432}} & 0.3478 \\
-\acrshort{era5} First Points & \multicolumn{2}{c}{7.4673} & & & 0.3034 \\
+\textbf{Target Std} & Both & 9.1679 & 8.8540 & 8.9432 \\
+\hline \hline
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & All Points & \multicolumn{2}{c|}{First Points} \\ \cline{3-5}
+ & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
 \hline
 \end{tabular}
 \end{table}
@@ -86,16 +88,18 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 \centering
 \caption{Experiment results for storm direction prediction}
 \label{tab:storm_direction_results}
-\begin{tabular}{lccccc}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{Experiment} & \multicolumn{2}{c}{\textbf{RMSE}} & \multicolumn{2}{c}{\textbf{Target Std}} & \textbf{Actual vs. Predicted $R^2$} \\
-\cline{2-5}
- & \textbf{All} & \textbf{First pts} & \textbf{All} & \textbf{First pts} &  \\
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
+ & & \multicolumn{2}{c|}{All Observations} & First Points Only \\
+\hline \hline
+\multirow{2}{*}{\textbf{RMSE}} & All & 20.6609 & 35.0730 & 60.7651 \\
+ & \acrshort{era5} & 18.2928 & 31.6709 & 61.4484 \\
 \hline
-All              & 20.6609 & 35.0730 & \multirow{2}{*}{75.7506} & \multirow{2}{*}{76.8966} & 0.9281 \\
-\acrshort{era5}             & 18.2928 & 31.6709 & & & 0.9437 \\
-All First Points & \multicolumn{2}{c}{60.7651} & \multicolumn{2}{c}{\multirow{2}{*}{78.7438}} & 0.4047 \\
-\acrshort{era5} First Points & \multicolumn{2}{c}{61.4484} & & & 0.3912 \\
+\textbf{Target Std} & Both & 75.7506 & 76.8966 & 78.7438 \\
+\hline \hline
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & All Points & \multicolumn{2}{c|}{First Points} \\ \cline{3-5}
+ & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
 \hline
 \end{tabular}
 \end{table}
