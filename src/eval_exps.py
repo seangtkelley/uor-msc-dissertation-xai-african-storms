@@ -387,14 +387,18 @@ for exp_group_name, exp_names in exp_groups.items():
             .index
         )
         for feature in top_hour_corr_features:
+            value_column = f"feature_{feature}"
             mean_per_hour = (
-                merge_df.groupby("eat_hours")[feature].mean().reset_index()
+                merge_df.groupby("eat_hours")[[feature, value_column]]
+                .mean()
+                .reset_index()
             )
 
             explaining.plot_shap_over_time(
                 mean_per_hour,
                 agg_x="eat_hours",
                 agg_y=feature,
+                agg_val=value_column,
                 cmap=cmap,
                 xtick_interval=4,
                 xtick_offset=0,
@@ -443,9 +447,10 @@ for exp_group_name, exp_names in exp_groups.items():
                 save_dir=exp_group_temp_corr_fig_dir,
             )
 
+            value_column = f"feature_{feature}"
             mean_per_week = (
                 merge_df.groupby(merge_df["timestamp"].dt.isocalendar().week)[
-                    feature
+                    [feature, value_column]
                 ]
                 .mean()
                 .reset_index()
@@ -471,6 +476,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 mean_per_week,
                 agg_x="week",
                 agg_y=feature,
+                agg_val=value_column,
                 cmap=cmap,
                 xtick_interval=1,
                 xtick_convert=week_to_month_fun,

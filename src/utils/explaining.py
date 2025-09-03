@@ -102,6 +102,7 @@ def plot_shap_over_time(
     temp_agg_df: pd.DataFrame,
     agg_x: str,
     agg_y: str,
+    agg_val: Optional[str] = None,
     ax: Optional[Axes] = None,
     edgecolor: Optional[str] = None,
     cmap: Optional[str | Colormap] = None,
@@ -122,6 +123,7 @@ def plot_shap_over_time(
     :param temp_agg_df: DataFrame containing aggregated SHAP values to plot.
     :param agg_x: Column name in temp_agg_df to use for the x-axis (e.g., time or interval).
     :param agg_y: Column name in temp_agg_df to use for the y-axis (SHAP value to plot).
+    :param agg_val: Column name in temp_agg_df to use for the secondary y-axis (Feature value to plot).
     :param ax: Optional matplotlib Axes to plot on. If None, a new figure is created.
     :param edgecolor: Optional color for bar edges.
     :param cmap: Optional colormap to use for the plot.
@@ -158,6 +160,21 @@ def plot_shap_over_time(
         ax=ax,
     )
 
+    if agg_val:
+        # plot line for feature value on secondary y-axis
+        ax2 = ax.twinx()
+        ax2 = sns.pointplot(
+            data=temp_agg_df,
+            x=agg_x,
+            y=agg_val,
+            color="dimgray",
+            ax=ax2,
+            markers="",
+            linewidth=2,
+        )
+        ax2.set_ylabel(f"Feature value: {agg_val}")
+        ax2.grid(False)
+
     if xtick_interval is not None:
         # reduce xticks to every nth interval
         intervals = temp_agg_df[agg_x].nunique()
@@ -179,7 +196,7 @@ def plot_shap_over_time(
     if xlabel is not None:
         plt.xlabel(xlabel)
     if ylabel is not None:
-        plt.ylabel(ylabel)
+        ax.set_ylabel(ylabel)
     if y_value_labels is not None:
         # add negative label to the top of the y-axis
         ax.text(
