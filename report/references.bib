@@ -700,6 +700,14 @@
   url       = {https://arxiv.org/abs/1705.07874v2},
   year      = {2017}
 }
+@article{Lundberg2019,
+  abstract = {Interpreting predictions from tree ensemble methods such as gradient boosting machines and random forests is important, yet feature attribution for trees is often heuristic and not individualized for each prediction. Here we show that popular feature attribution methods are inconsistent, meaning they can lower a feature's assigned importance when the true impact of that feature actually increases. This is a fundamental problem that casts doubt on any comparison between features. To address it we turn to recent applications of game theory and develop fast exact tree solutions for SHAP (SHapley Additive exPlanation) values, which are the unique consistent and locally accurate attribution values. We then extend SHAP values to interaction effects and define SHAP interaction values. We propose a rich visualization of individualized feature attributions that improves over classic attribution summaries and partial dependence plots, and a unique "supervised" clustering (clustering based on feature attributions). We demonstrate better agreement with human intuition through a user study, exponential improvements in run time, improved clustering performance, and better identification of influential features. An implementation of our algorithm has also been merged into XGBoost and LightGBM, see http://github.com/slundberg/shap for details.},
+  author   = {Scott M Lundberg and Gabriel G Erion and Su-In Lee},
+  journal  = {Advances in Neural Information Processing Systems},
+  title    = {Consistent Individualized Feature Attribution for Tree Ensembles},
+  url      = {https://arxiv.org/abs/1802.03888v3},
+  year     = {2019}
+}
 @article{Luo2025,
   abstract  = {Weather forecasting is essential but remains computationally intensive and physically incomplete in traditional numerical weather prediction (NWP) methods. Deep learning (DL) models offer efficiency and accuracy but often ignore physical laws, limiting interpretability and generalization. We propose PhyDL-NWP, a physics-guided deep learning framework that integrates physical equations with latent force parameterization into data-driven models. It predicts weather variables from arbitrary spatiotemporal coordinates, computes physical terms via automatic differentiation, and uses a physics-informed loss to align predictions with governing dynamics. PhyDL-NWP enables resolution-free downscaling by modeling weather as a continuous function and fine-tunes pre-trained models with minimal overhead, achieving up to 170x faster inference with only 55K parameters. Experiments show that PhyDL-NWP improves both forecasting performance and physical consistency.},
   author    = {Yingtao Luo and Shikai Fang and Binqing Wu and Qingsong Wen and Liang Sun},
