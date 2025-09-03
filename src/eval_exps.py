@@ -521,21 +521,27 @@ for exp_group_name, exp_names in exp_groups.items():
             set(top_hour_corr_features)
         ):
             fig, axs = plt.subplots(
-                2,
                 3,
-                figsize=(10, 6),
+                4,
+                figsize=(12, 8),
                 subplot_kw={"projection": ccrs.PlateCarree()},
             )
             axs = axs.flatten()
 
-            # symmetrical cmap
+            # symmetrical cmap shap
             m = max(
                 abs(np.percentile(merge_df[feature], 1)),
                 abs(np.percentile(merge_df[feature], 99)),
             )
 
+            value_column = f"feature_{feature}"
+            # cmap values for features
+            vmin = min(merge_df[value_column])
+            vmax = max(merge_df[value_column])
+
             delta = 4
-            for idx, hour in enumerate(range(0, 24, delta)):
+            idx = 0
+            for hour in range(0, 24, delta):
                 hour_df = merge_df[
                     merge_df["eat_hours"].isin(range(hour, hour + delta - 1))
                 ]
@@ -560,15 +566,62 @@ for exp_group_name, exp_names in exp_groups.items():
                     title=f"{chr(idx+97)}) {hour}:00 - {hour + delta - 1}:59",
                 )
 
-            # single cbar for whole image
-            fig.subplots_adjust(
-                bottom=0.16, top=0.98, left=0.07, right=0.97, hspace=0.08
-            )
+                idx += 1
+
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    hour_df, value_column, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    ax=axs[idx],
+                    cmap=(
+                        config.TERRAIN_CMAP
+                        if "orography" in value_column
+                        else config.DEFAULT_MAP_CMAP
+                    ),
+                    vmin=vmin,
+                    vmax=vmax,
+                    add_cbar=False,
+                    small_grid_labels=True,
+                    title=f"{chr(idx+97)}) {hour}:00 - {hour + delta - 1}:59",
+                )
+
+                idx += 1
+
+            # single cbar for feature value subplots
             cbar_ax = fig.add_axes(
-                (0.07, 0.07, 0.86, 0.025)
+                (0.07, 0.98, 0.86, 0.025)
             )  # [left, bottom, width, height]
             cbar = fig.colorbar(
-                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+                axs[-1].collections[0],
+                cax=cbar_ax,
+                orientation="horizontal",
+            )
+            cbar.set_label(f"Feature Value: {feature}")
+
+            # Increase space between the top colourbar/suptitle and the plots
+            fig.subplots_adjust(
+                bottom=0.16,
+                top=0.86,
+                left=0.07,
+                right=0.97,
+                hspace=0.65,
+                wspace=0,
+            )
+
+            # single cbar for all shap subplots
+            cbar_ax = fig.add_axes(
+                (0.07, 0.05, 0.86, 0.025)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-2].collections[0],
+                cax=cbar_ax,
+                orientation="horizontal",
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
 
@@ -595,7 +648,7 @@ for exp_group_name, exp_names in exp_groups.items():
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
                 fontsize=17,
-                y=1.03,
+                y=1.05,
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_hour.png",
