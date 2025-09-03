@@ -34,15 +34,15 @@ Finally, Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \
 
 \section{Predict Storm Aggregate Features}
 
-The following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in the methodology (Chapter \ref{ch:method}). The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
+The following two sections provide an overview of the experimental results obtained from the various predictive tasks outlined in Section \ref{sec:experimental-setup}. The experiments in this section aim to predict the overall characteristics of a storm and assess the predictive power of a storm's initial observation.
 
 \subsection{Storm Maximum Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate a lower overall minimum \acrshort{bt} and thus a textit{stronger} \acrshort{mcs}. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to only the first observation points leads to a substantial drop in performance. Subsequent explainability analysis will only focus on the all observations models.
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate a lower overall minimum \acrshort{bt} and thus a textit{stronger} \acrshort{mcs}. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to train on only the first observation leads to a substantial drop in performance. Subsequent explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
-\caption{Experiment results for storm maximum intensity prediction}
+\caption{Experimental results for storm maximum intensity prediction.}
 \label{tab:storm_max_intensity_results}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
@@ -63,7 +63,7 @@ Table \ref{tab:storm_max_intensity_results} details the performance metrics for 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_summary.png}
-    \caption{Comparison of performance and top features for storm maximum intensity.}
+    \caption{Comparison of performance and top features between the model trained on all features and ERA5 data only when predicting storm maximum intensity.}
     \label{fig:storm_max_intensity_summary}
 \end{figure}
 
@@ -73,7 +73,7 @@ Particularly striking for these models is that the importance of low-level merid
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/geographic_corr/storm_max_intensity_era5_shap_mean_v850_map_by_month.png}
     \caption{Mean SHAP values for \SI{850}{\hecto\pascal} meridional wind over East Africa by month for storm maximum intensity prediction using \acrshort{era5} features.}
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
@@ -126,7 +126,7 @@ As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, th
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_v850_map_by_month.png}
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/geographic_corr/storm_direction_all_shap_mean_v850_map_by_month.png}
     \caption{Mean SHAP values for \SI{850}{\hecto\pascal} meridional wind over East Africa by month for storm direction prediction using all features.}
     \label{fig:storm_direction_all_shap_mean_v850_map_by_month}
 \end{figure}
