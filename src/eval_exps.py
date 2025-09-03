@@ -336,6 +336,17 @@ for exp_group_name, exp_names in exp_groups.items():
             .index
         )
         for feature in top_geo_corr_features:
+            # plot shap and feature values side-by-side
+            fig, axs = plt.subplots(
+                1,
+                2,
+                figsize=(10, 6),
+                subplot_kw={"projection": ccrs.PlateCarree()},
+            )
+            axs = axs.flatten()
+
+            # plot shap values map
+            axs[0] = plotting.init_map(axs[0], extent=config.STORM_DATA_EXTENT)
             agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
                 merge_df, feature
             )
@@ -343,37 +354,52 @@ for exp_group_name, exp_names in exp_groups.items():
                 agg_lon,
                 agg_lat,
                 agg_grid,
+                ax=axs[0],
                 cmap=cmap,
                 sym_cmap_centre=0.0,
                 cbar_label=f"Mean SHAP Value ({exp_config['target_units']})",
                 cbar_aspect=40,
-                cbar_shrink=0.63,
+                cbar_shrink=0.8,
+                cbar_pad=0.15,
                 cbar_value_labels=shap_descriptions,
-                title=f"Mean SHAP Value of {feature} over Map for {exp_name}",
-                filename=f"{exp_name}_shap_{feature}_map.png",
-                save_dir=exp_group_geo_corr_fig_dir,
+                small_grid_labels=True,
+                title=f"a) Mean SHAP Value",
             )
 
-            # plot feature value maps
-            feature_column = f"feature_{feature}"
+            # plot feature value map
+            value_column = f"feature_{feature}"
+            axs[1] = plotting.init_map(axs[1], extent=config.STORM_DATA_EXTENT)
             agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
-                merge_df, feature_column
+                merge_df, value_column
             )
             plotting.plot_2d_agg_map(
                 agg_lon,
                 agg_lat,
                 agg_grid,
+                ax=axs[1],
                 cmap=(
                     config.TERRAIN_CMAP
-                    if "orography" in feature_column
+                    if "orography" in value_column
                     else config.DEFAULT_MAP_CMAP
                 ),
-                cbar_label=f"Feature Value: {feature_column}",
+                cbar_label=f"Mean {feature}",
                 cbar_aspect=40,
-                cbar_shrink=0.63,
-                title=f"Value of {feature} over Map for {exp_name}",
-                filename=f"{exp_name}_{feature}_map.png",
-                save_dir=exp_group_geo_corr_fig_dir,
+                cbar_shrink=0.8,
+                cbar_pad=0.15,
+                small_grid_labels=True,
+                title=f"b) Mean Feature Value",
+            )
+
+            plt.suptitle(
+                f"{feature} over Map for {exp_name}",
+                y=0.85,
+                fontsize=17,
+            )
+
+            plotting.save_plot(
+                f"{exp_name}_shap_{feature}_map.png",
+                exp_group_geo_corr_fig_dir,
+                tight=False,
             )
         # endregion
 
