@@ -13,6 +13,10 @@ __status__ = "Development"
 
 from pathlib import Path
 
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
+import numpy as np
+
 # ==============================================================================
 #                           PATH CONFIGURATION
 # ==============================================================================
@@ -56,6 +60,12 @@ ERA5_DATA_EXTENT = (
     2.0,  # lat min
     16.0,  # lat max
 )
+# scope cmap terrain to start at green
+TERRAIN_CMAP = ListedColormap(
+    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
+)
+# default cmap for feature value maps
+DEFAULT_MAP_CMAP = "plasma"
 
 
 # ==============================================================================
