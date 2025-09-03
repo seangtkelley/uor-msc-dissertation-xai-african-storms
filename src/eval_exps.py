@@ -100,6 +100,7 @@ for exp_group_name, exp_names in exp_groups.items():
 
     # evaluate each experiment in the group
     for i, exp_name in enumerate(exp_names):
+        # region: evaluate each experiment
         print(f"Evaluating experiment: {exp_name}")
 
         # get exp config
@@ -207,7 +208,9 @@ for exp_group_name, exp_names in exp_groups.items():
 
         if r_squared < config.R_SQUARED_THRESHOLD:
             continue
+        # endregion
 
+        # region: shap values
         # by default, use entire test set
         X_test_sample = X_test
         if args.load_shap:
@@ -271,7 +274,9 @@ for exp_group_name, exp_names in exp_groups.items():
             columns=X_test_sample.columns,
             index=X_test_sample.index,
         )
+        # endregion
 
+        # region: correlation computation
         # merge shap values dataframe with geo_temp_cols from X_test dataframe
         geo_temp_cols = ["lon", "lat", "eat_hours", "date_angle"]
         merge_df = test_df.loc[X_test_sample.index, geo_temp_cols].merge(
@@ -318,7 +323,9 @@ for exp_group_name, exp_names in exp_groups.items():
         # get absolute correlations with lon and lat
         corr_with_lon = corr_matrix["lon"].abs()
         corr_with_lat = corr_matrix["lat"].abs()
+        # endregion
 
+        # region: geo correlated features
         # combine and get top features (excluding lon and lat themselves)
         n_top_features = 5
         combined_corr = corr_with_lon.add(corr_with_lat, fill_value=0)
@@ -368,7 +375,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 filename=f"{exp_name}_{feature}_map.png",
                 save_dir=exp_group_geo_corr_fig_dir,
             )
+        # endregion
 
+        # region: hour correlated features
         # for n_top_features abs corr with eat_hours, bar plot with mean per hour
         top_hour_corr_features = (
             corr_matrix["eat_hours"]
@@ -398,7 +407,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 filename=f"{exp_name}_shap_{feature}_by_hour.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
+        # endregion
 
+        # region: date correlated features
         # add timestamp to merge_df for easier grouping
         merge_df["timestamp"] = test_df.loc[X_test_sample.index, "timestamp"]
 
@@ -470,7 +481,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 filename=f"{exp_name}_shap_{feature}_by_week_over_year.png",
                 save_dir=exp_group_temp_corr_fig_dir,
             )
+        # endregion
 
+        # region: hour-geo correlated features
         # plot mean SHAP value maps by hour for features with high geo and hour correlation
         for feature in set(top_geo_corr_features).intersection(
             set(top_hour_corr_features)
@@ -557,7 +570,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 exp_group_geo_corr_fig_dir,
                 tight=False,
             )
+        # endregion
 
+        # region: date-geo correlated features
         # plot mean SHAP value maps by month for features with high geo and date correlation
         for feature in set(top_geo_corr_features).intersection(
             set(top_date_corr_features)
@@ -644,5 +659,6 @@ for exp_group_name, exp_names in exp_groups.items():
                 exp_group_geo_corr_fig_dir,
                 tight=False,
             )
+        # endregion
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)
