@@ -543,7 +543,7 @@ for exp_group_name, exp_names in exp_groups.items():
             idx = 0
             for hour in range(0, 24, delta):
                 hour_df = merge_df[
-                    merge_df["eat_hours"].isin(range(hour, hour + delta - 1))
+                    merge_df["eat_hours"].isin(range(hour, hour + delta))
                 ]
                 if hour_df.empty:
                     continue
