@@ -183,6 +183,7 @@ plotting.plot_2d_agg_map(
     cbar_label="Time of Day (EAT UTC+3)",
     title="Storm Initial Locations with Mode of EAT Hours",
     filename="storm_init_eat_hours_mode_by_loc.png",
+    save_dir=config.EXPLORATION_FIGURES_DIR,
 )
 
 # %%
