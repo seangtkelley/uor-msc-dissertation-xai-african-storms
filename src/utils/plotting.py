@@ -308,6 +308,7 @@ def plot_2d_agg_map(
                 va="center",
                 ha="right",
                 transform=cbar.ax.transAxes,
+                fontsize=8,
             )
             # add positive label to the right of the cbar
             cbar.ax.text(
@@ -317,6 +318,7 @@ def plot_2d_agg_map(
                 va="center",
                 ha="left",
                 transform=cbar.ax.transAxes,
+                fontsize=8,
             )
 
     # add other map features
