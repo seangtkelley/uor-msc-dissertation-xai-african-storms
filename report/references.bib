@@ -376,6 +376,19 @@
   url       = {https://journals.ametsoc.org/view/journals/clim/32/5/jcli-d-18-0559.1.xml},
   year      = {2019}
 }
+@article{Hall1999,
+  author    = {Timothy J Hall and Thomas H Vonder Haar},
+  city      = {Boston MA, USA},
+  doi       = {10.1175/1520-0469(1999)056<3401:TDCOWP>2.0.CO;2},
+  issue     = {19},
+  journal   = {Journal of the Atmospheric Sciences},
+  pages     = {3401 - 3415},
+  publisher = {American Meteorological Society},
+  title     = {The Diurnal Cycle of West Pacific Deep Convection and Its Relation to the Spatial and Temporal Variation of Tropical MCSs},
+  volume    = {56},
+  url       = {https://journals.ametsoc.org/view/journals/atsc/56/19/1520-0469_1999_056_3401_tdcowp_2.0.co_2.xml},
+  year      = {1999}
+}
 @article{Hersbach2020,
   abstract  = {Within the Copernicus Climate Change Service (C3S), ECMWF is producing the ERA5 reanalysis which, once completed, will embody a detailed record of the global atmosphere, land surface and ocean waves from 1950 onwards. This new reanalysis replaces the ERA-Interim reanalysis (spanning 1979 onwards) which was started in 2006. ERA5 is based on the Integrated Forecasting System (IFS) Cy41r2 which was operational in 2016. ERA5 thus benefits from a decade of developments in model physics, core dynamics and data assimilation. In addition to a significantly enhanced horizontal resolution of 31 km, compared to 80 km for ERA-Interim, ERA5 has hourly output throughout, and an uncertainty estimate from an ensemble (3-hourly at half the horizontal resolution). This paper describes the general set-up of ERA5, as well as a basic evaluation of characteristics and performance, with a focus on the dataset from 1979 onwards which is currently publicly available. Re-forecasts from ERA5 analyses show a gain of up to one day in skill with respect to ERA-Interim. Comparison with radiosonde and PILOT data prior to assimilation shows an improved fit for temperature, wind and humidity in the troposphere, but not the stratosphere. A comparison with independent buoy data shows a much improved fit for ocean wave height. The uncertainty estimate reflects the evolution of the observing systems used in ERA5. The enhanced temporal and spatial resolution allows for a detailed evolution of weather systems. For precipitation, global-mean correlation with monthly-mean GPCP data is increased from 67% to 77%. In general, low-frequency variability is found to be well represented and from 10 hPa downwards general patterns of anomalies in temperature match those from the ERA-Interim, MERRA-2 and JRA-55 reanalyses.},
   author    = {Hans Hersbach and Bill Bell and Paul Berrisford and Shoji Hirahara and András Horányi and Joaquín Muñoz-Sabater and Julien Nicolas and Carole Peubey and Raluca Radu and Dinand Schepers and Adrian Simmons and Cornel Soci and Saleh Abdalla and Xavier Abellan and Gianpaolo Balsamo and Peter Bechtold and Gionata Biavati and Jean Bidlot and Massimo Bonavita and Giovanna De Chiara and Per Dahlgren and Dick Dee and Michail Diamantakis and Rossana Dragani and Johannes Flemming and Richard Forbes and Manuel Fuentes and Alan Geer and Leo Haimberger and Sean Healy and Robin J. Hogan and Elías Hólm and Marta Janisková and Sarah Keeley and Patrick Laloyaux and Philippe Lopez and Cristina Lupu and Gabor Radnoti and Patricia de Rosnay and Iryna Rozum and Freja Vamborg and Sebastien Villaume and Jean Noël Thépaut},
@@ -584,6 +597,22 @@
   volume  = {7},
   year    = {2020}
 }
+@article{Li2023,
+  abstract  = {As one of the major producers of extreme precipitation, mesoscale convective systems (MCSs) have received much attention. Recently, MCSs over several hotpots, including the Sahel and US Great Plains, have been found to intensify under global warming. However, relevant studies on the East Asian rainband, another MCS hotpot, are scarce. Here, by using a novel rain-cell tracking algorithm on a high spatiotemporal resolution satellite precipitation product, we show that both the frequency and intensity of MCSs over the East Asian rainband have increased by 21.8% and 9.8% respectively over the past two decades (2000–2021). The more frequent and intense MCSs contribute nearly three quarters to the total precipitation increase. The changes in MCSs are caused by more frequent favorable large-scale water vapor-rich environments that are likely to increase under global warming. The increased frequency and intensity of MCSs have profound impacts on the hydroclimate of East Asia, including producing extreme events such as severe flooding.},
+  author    = {Puxi Li and Fengfei Song and Haoming Chen and Jian Li and Andreas F. Prein and Wenxia Zhang and Tianjun Zhou and Moran Zhuang and Kalli Furtado and Mark Muetzelfeldt and Reinhard Schiemann and Chao Li},
+  doi       = {10.1029/2023GL103595},
+  issn      = {1944-8007},
+  issue     = {16},
+  journal   = {Geophysical Research Letters},
+  keywords  = {atmospheric total column water vapor,global warming,large,long,mesoscale convective systems,precipitation,scale environments,term changes},
+  month     = {8},
+  pages     = {e2023GL103595},
+  publisher = {John Wiley \& Sons, Ltd},
+  title     = {Intensification of Mesoscale Convective Systems in the East Asian Rainband Over the Past Two Decades},
+  volume    = {50},
+  url       = {https://onlinelibrary.wiley.com/doi/full/10.1029/2023GL103595 https://onlinelibrary.wiley.com/doi/abs/10.1029/2023GL103595 https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2023GL103595},
+  year      = {2023}
+}
 @misc{Lin2023,
   author = {Johnny Lin},
   note   = {Software available from neuronpedia.org},
@@ -670,6 +699,14 @@
   volume    = {2017-December},
   url       = {https://arxiv.org/abs/1705.07874v2},
   year      = {2017}
+}
+@article{Lundberg2019,
+  abstract = {Interpreting predictions from tree ensemble methods such as gradient boosting machines and random forests is important, yet feature attribution for trees is often heuristic and not individualized for each prediction. Here we show that popular feature attribution methods are inconsistent, meaning they can lower a feature's assigned importance when the true impact of that feature actually increases. This is a fundamental problem that casts doubt on any comparison between features. To address it we turn to recent applications of game theory and develop fast exact tree solutions for SHAP (SHapley Additive exPlanation) values, which are the unique consistent and locally accurate attribution values. We then extend SHAP values to interaction effects and define SHAP interaction values. We propose a rich visualization of individualized feature attributions that improves over classic attribution summaries and partial dependence plots, and a unique "supervised" clustering (clustering based on feature attributions). We demonstrate better agreement with human intuition through a user study, exponential improvements in run time, improved clustering performance, and better identification of influential features. An implementation of our algorithm has also been merged into XGBoost and LightGBM, see http://github.com/slundberg/shap for details.},
+  author   = {Scott M Lundberg and Gabriel G Erion and Su-In Lee},
+  journal  = {Advances in Neural Information Processing Systems},
+  title    = {Consistent Individualized Feature Attribution for Tree Ensembles},
+  url      = {https://arxiv.org/abs/1802.03888v3},
+  year     = {2019}
 }
 @article{Luo2025,
   abstract  = {Weather forecasting is essential but remains computationally intensive and physically incomplete in traditional numerical weather prediction (NWP) methods. Deep learning (DL) models offer efficiency and accuracy but often ignore physical laws, limiting interpretability and generalization. We propose PhyDL-NWP, a physics-guided deep learning framework that integrates physical equations with latent force parameterization into data-driven models. It predicts weather variables from arbitrary spatiotemporal coordinates, computes physical terms via automatic differentiation, and uses a physics-informed loss to align predictions with governing dynamics. PhyDL-NWP enables resolution-free downscaling by modeling weather as a continuous function and fine-tunes pre-trained models with minimal overhead, achieving up to 170x faster inference with only 55K parameters. Experiments show that PhyDL-NWP improves both forecasting performance and physical consistency.},
