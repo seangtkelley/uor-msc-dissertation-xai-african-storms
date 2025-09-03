@@ -604,7 +604,7 @@ for exp_group_name, exp_names in exp_groups.items():
             )
             cbar.set_label(f"Feature Value: {feature}")
 
-            # Increase space between the top colourbar/suptitle and the plots
+            # adjust figure size
             fig.subplots_adjust(
                 bottom=0.16,
                 top=0.86,
@@ -663,14 +663,12 @@ for exp_group_name, exp_names in exp_groups.items():
             set(top_date_corr_features)
         ):
             fig, axs = plt.subplots(
-                3,
+                6,
                 4,
-                figsize=(10, 8),
+                figsize=(10, 16),
                 subplot_kw={"projection": ccrs.PlateCarree()},
             )
 
-            # add extra spacing between row subplots
-            fig.subplots_adjust(wspace=0.25)
             axs = axs.flatten()
 
             # symmetrical cmap
@@ -679,7 +677,13 @@ for exp_group_name, exp_names in exp_groups.items():
                 abs(np.percentile(merge_df[feature], 99)),
             )
 
-            for idx, month in enumerate(range(1, 13)):
+            value_column = f"feature_{feature}"
+            # cmap values for features
+            vmin = min(merge_df[value_column])
+            vmax = max(merge_df[value_column])
+
+            idx = 0
+            for month in range(1, 13):
                 month_df = merge_df[merge_df["timestamp"].dt.month == month]
                 if month_df.empty:
                     continue
@@ -702,15 +706,62 @@ for exp_group_name, exp_names in exp_groups.items():
                     title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
                 )
 
-            # single cbar for whole image
-            fig.subplots_adjust(
-                bottom=0.11, top=0.93, left=0.07, right=0.97, hspace=0.08
-            )
+                idx += 1
+
+                agg_lon, agg_lat, agg_grid = processing.calc_2d_agg(
+                    month_df, value_column, n_bins=25
+                )
+                axs[idx] = plotting.init_map(
+                    axs[idx], extent=config.STORM_DATA_EXTENT
+                )
+                plotting.plot_2d_agg_map(
+                    agg_lon,
+                    agg_lat,
+                    agg_grid,
+                    ax=axs[idx],
+                    cmap=(
+                        config.TERRAIN_CMAP
+                        if "orography" in value_column
+                        else config.DEFAULT_MAP_CMAP
+                    ),
+                    vmin=vmin,
+                    vmax=vmax,
+                    add_cbar=False,
+                    small_grid_labels=True,
+                    title=f"{chr(idx+97)}) {pd.Timestamp(month=month, day=1, year=2000).strftime('%b')}",
+                )
+
+                idx += 1
+
+            # single cbar for feature value subplots
             cbar_ax = fig.add_axes(
-                (0.07, 0.07, 0.86, 0.025)
+                (0.07, 0.93, 0.86, 0.02)
             )  # [left, bottom, width, height]
             cbar = fig.colorbar(
-                axs[-1].collections[0], cax=cbar_ax, orientation="horizontal"
+                axs[-1].collections[0],
+                cax=cbar_ax,
+                orientation="horizontal",
+            )
+            cbar.set_label(f"Feature Value: {feature}")
+
+            # adjust figure size
+            fig.subplots_adjust(
+                bottom=0.16,
+                top=0.86,
+                left=0.07,
+                right=0.97,
+                hspace=0.65,
+                wspace=0.1,
+            )
+
+            # single cbar for all shap subplots
+            cbar_ax = fig.add_axes(
+                (0.07, 0.07, 0.86, 0.02)
+            )  # [left, bottom, width, height]
+            cbar = fig.colorbar(
+                axs[-2].collections[0],
+                cax=cbar_ax,
+                orientation="horizontal",
             )
             cbar.set_label(f"Mean SHAP Value ({exp_config['target_units']})")
 
@@ -737,7 +788,7 @@ for exp_group_name, exp_names in exp_groups.items():
             fig.suptitle(
                 f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
                 fontsize=17,
-                y=0.97,
+                y=1,
             )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_month.png",
