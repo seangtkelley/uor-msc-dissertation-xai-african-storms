@@ -21,15 +21,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.axes import Axes
-from matplotlib.colors import Colormap, ListedColormap
+from matplotlib.colors import Colormap
 from pint import Quantity
 
 import config
-
-# scope cmap terrain to start at green
-TERRAIN_CMAP = ListedColormap(
-    plt.get_cmap("terrain")(np.linspace(0.25, 1, plt.get_cmap("terrain").N))
-)
 
 
 def init_map(
@@ -122,7 +117,7 @@ def add_geopotential_height(
         geop["longitude"],
         geop["latitude"],
         height,
-        cmap=TERRAIN_CMAP,
+        cmap=config.TERRAIN_CMAP,
         transform=ccrs.PlateCarree(),
     )
     if add_colorbar:
