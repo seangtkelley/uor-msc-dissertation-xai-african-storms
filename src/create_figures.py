@@ -836,3 +836,72 @@ ax.legend()
 
 plt.tight_layout()
 plotting.save_plot("min_bt_over_lifecycle_by_init_type.png")
+
+# %%
+print("Binning tcwv by latitude and longitude.")
+tcwv_mean_lon, tcwv_mean_lat, tcwv_mean_grid = processing.calc_2d_agg(
+    df,
+    "domain_mean_tcwv",
+    agg_func="mean",
+)
+
+# %%
+print("Plotting Mean of TCWV by Location.")
+plotting.plot_2d_agg_map(
+    tcwv_mean_lon,
+    tcwv_mean_lat,
+    tcwv_mean_grid,
+    cmap=config.DEFAULT_MAP_CMAP,
+    cbar_aspect=40,
+    cbar_shrink=0.63,
+    cbar_label="Mean Total Column Water Vapour",
+    title="Mean of TCWV by Location.",
+    filename="tcwv_mean_by_loc.png",
+    save_dir=config.EXPLORATION_FIGURES_DIR,
+)
+
+# %%
+print("Binning u850 by latitude and longitude.")
+u850_mean_lon, u850_mean_lat, u850_mean_grid = processing.calc_2d_agg(
+    df,
+    "mean_u850",
+    agg_func="mean",
+)
+
+# %%
+print("Plotting Mean of u850 by Location.")
+plotting.plot_2d_agg_map(
+    u850_mean_lon,
+    u850_mean_lat,
+    u850_mean_grid,
+    cmap=config.DEFAULT_MAP_CMAP,
+    cbar_aspect=40,
+    cbar_shrink=0.63,
+    cbar_label="Mean 850 hPa zonal wind",
+    title="Mean of 850 hPa zonal wind by Location.",
+    filename="u850_mean_by_loc.png",
+    save_dir=config.EXPLORATION_FIGURES_DIR,
+)
+
+# %%
+print("Binning v850 by latitude and longitude.")
+v850_mean_lon, v850_mean_lat, v850_mean_grid = processing.calc_2d_agg(
+    df,
+    "mean_v850",
+    agg_func="mean",
+)
+
+# %%
+print("Plotting Mean of v850 by Location.")
+plotting.plot_2d_agg_map(
+    v850_mean_lon,
+    v850_mean_lat,
+    v850_mean_grid,
+    cmap=config.DEFAULT_MAP_CMAP,
+    cbar_aspect=40,
+    cbar_shrink=0.63,
+    cbar_label="Mean 850 hPa meridional wind",
+    title="Mean of 850 hPa meridional wind by Location.",
+    filename="v850_mean_by_loc.png",
+    save_dir=config.EXPLORATION_FIGURES_DIR,
+)
