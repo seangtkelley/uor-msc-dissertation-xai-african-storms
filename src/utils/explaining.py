@@ -172,7 +172,7 @@ def plot_shap_over_time(
             markers="",
             linewidth=2,
         )
-        ax2.set_ylabel(f"Feature value: {agg_val}")
+        ax2.set_ylabel(f"Feature value ({config.FEATURE_COL_UNITS[agg_y]})")
         ax2.grid(False)
 
     if xtick_interval is not None:
