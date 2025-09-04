@@ -51,10 +51,10 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their entir
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
  & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Points Only} \\
 \hline \hline
-\multirow{2}{*}{\textbf{RMSE}} & All & 2.7610 & 4.4872 & 7.2265 \\
+\multirow{2}{*}{\textbf{RMSE} (\unit{\kelvin})} & All & 2.7610 & 4.4872 & 7.2265 \\
  & \acrshort{era5} & 2.7503 & 4.1075 & 7.4673 \\
 \hline
-\textbf{Target Std} & Both & 9.1679 & 8.8540 & 8.9432 \\
+\textbf{Target Std} (\unit{\kelvin}) & Both & 9.1679 & 8.8540 & 8.9432 \\
 \hline \hline
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Points} & \multicolumn{2}{c|}{\textit{First Points}} \\ \cline{3-5}
  & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
@@ -87,17 +87,17 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 
 \begin{table}[ht]
 \centering
-\caption{Experiment results for storm direction prediction}
+\caption{Experimental results for storm direction prediction}
 \label{tab:storm_direction_results}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
  & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Points Only} \\
 \hline \hline
-\multirow{2}{*}{\textbf{RMSE}} & All & 21.7822 & 32.7166 & 49.8792 \\
+\multirow{2}{*}{\textbf{RMSE} (\unit{\degree})} & All & 21.7822 & 32.7166 & 49.8792 \\
  & \acrshort{era5} & 19.0178 & 30.3470 & 49.5919 \\
 \hline
-\textbf{Target Std} & Both & 61.3066 & 61.6789 & 64.1756 \\
+\textbf{Target Std} (\unit{\degree}) & Both & 61.3066 & 61.6789 & 64.1756 \\
 \hline \hline
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Points} & \multicolumn{2}{c|}{\textit{First Points}} \\ \cline{3-5}
  & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
@@ -139,20 +139,20 @@ These experiments aim to predict the immediate characteristics of a storm based 
 
 \begin{table}[h!]
 \centering
-\caption{Immediate Characteristic at Observation Results}
+\caption{Experimental results for immediate characteristic at observation prediction}
 \label{tab:obs_experiment_results}
 \begin{tabular}{lccc}
 \hline
-\textbf{Experiment} & \textbf{Test RMSE} & \textbf{Target Std} & \textbf{R-squared} \\
+\textbf{Experiment} & \textbf{Test RMSE} & \textbf{Target Std} & \textbf{Units} \\
 \hline
-Intensification All & 2.8149  & \multirow{2}{*}{4.4840}  & 0.6073 \\
-Intensification \acrshort{era5} & 3.0828  & & 0.5278 \\
-Direction All & 62.3535 & \multirow{2}{*}{72.9832} & 0.2998 \\
-Direction \acrshort{era5} & 62.4498 & & 0.2976 \\
-Distance All & 12.0634 & \multirow{2}{*}{13.1260} & 0.1559 \\
-Distance \acrshort{era5} & 12.6901 & & 0.0656 \\
-Precipitation All & 0.0488  & \multirow{2}{*}{0.1835}  & 0.9296 \\
-Precipitation \acrshort{era5} & 0.0851  & & 0.7887 \\
+Intensification All & 2.8149  & \multirow{2}{*}{4.4840}  & \multirow{2}{*}{\unit{\kelvin}} \\
+Intensification \acrshort{era5} & 3.0828  & &  \\ \hline
+Direction All & 62.3535 & \multirow{2}{*}{72.9832} & \multirow{2}{*}{\unit{\degree}} \\
+Direction \acrshort{era5} & 62.4498 & & \\ \hline
+Distance All & 12.0634 & \multirow{2}{*}{13.1260} & \multirow{2}{*}{\unit{\km}} \\
+Distance \acrshort{era5} & 12.6901 & & \\ \hline
+Precipitation All & 0.0488  & \multirow{2}{*}{0.1835}  & \multirow{2}{*}{\unit{\milli\meter}} \\
+Precipitation \acrshort{era5} & 0.0851  & & \\
 \hline
 \end{tabular}
 \end{table}
