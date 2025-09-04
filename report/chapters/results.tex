@@ -71,7 +71,7 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their entir
 
 In Figure \ref{fig:storm_max_intensity_summary} a detailed comparison is presented of the model performance and the most influential features for predicting storm maximum intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable, mean \acrshort{cape}, appears among the top five most important features. The results of the all features model also reveal that stronger storms tend to develop in the late evening (Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, panel (c) \texttt{eat\_hours}). Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
-Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive shap values, meaning that these southerlies hinder MCS intensity. In the winter months, the influence tends to be negative or neutral over the entire domain.
+Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive \acrshort{shap} values, meaning that these southerlies hinder \acrshort{mcs} intensity. In the winter months, the influence tends to be negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
@@ -195,7 +195,7 @@ Notwithstanding, perhaps the most important interpretation of these results is t
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/geographic_corr/obs_intensification_era5_shap_mean_tcwv_map_by_hour.png}
-    \caption{Feature contribution of \acrshort{tcwv} over East Africa by hour for rate of intensification prediction using \acrshort{era5} features. Plots are paired by hour to compare mean \acrshort{shap} values (left) with feature values (right). For example, panel (a) shows mean \acrshort{shap} values for mean \acrshort{tcwv} for the hours 00:00 - 03:59 \acrshort{eat} measured in the units of the target variable (\unit{\kelvin\per\hour}) and panel (b) shows the respective feature values for ,mean \acrshort{tcwv} for the hours 00:00 - 03:59 \acrshort{eat} in \unit{\kilogram\per\meter\squared}.}
+    \caption{Feature contribution of \acrshort{tcwv} over East Africa by hour for rate of intensification prediction using \acrshort{era5} features. Plots are paired by hour to compare mean \acrshort{shap} values (left) with feature values (right). For example, panel (a) shows mean \acrshort{shap} values for mean \acrshort{tcwv} for the hours 00:00 - 03:59 \acrshort{eat} measured in the units of the target variable (\unit{\kelvin\per\hour}) and panel (b) shows the respective feature values for mean \acrshort{tcwv} for the hours 00:00 - 03:59 \acrshort{eat} in \unit{\kilogram\per\meter\squared}.}
     \label{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour}
 \end{figure}
 
