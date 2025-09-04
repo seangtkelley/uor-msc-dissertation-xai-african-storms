@@ -32,13 +32,14 @@ Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{
     \label{fig:min_bt_over_lifecycle_by_init_type}
 \end{figure}
 
-Finally, as coarse representation of the general climatology of the region, Figure \ref{fig:figures} shows the mean values of meteorological variables across the study region which are relevant in the explainability analyses below.
-\begin{figure}
+Finally, the mean value of \acrshort{tcwv}, \SI{850}{\hecto\pascal} zonal wind, and \SI{850}{\hecto\pascal} meridional wind are shown in Figure \ref{fig:figures}. These specific features are relevant to the explainability analyses conducted later in this chapter and thus a reference to their general climatology is provided here.
+
+\begin{figure}[ht]
 \centering
 \begin{subfigure}[t]{0.4\textwidth}
     \includegraphics[width=\textwidth]{../figures/generated/exploration/tcwv_mean_by_loc.png}
     \caption{\acrfull{tcwv}.}
-    \label{fig:first}
+    \label{fig:tcwv_mean_by_loc}
 \end{subfigure}
 \hfill
 \begin{subfigure}[t]{0.4\textwidth}
@@ -195,13 +196,13 @@ Although the \acrshort{rmse} of the models are acceptable, it is evident that th
 
 As for the feature contributions, surface characteristics seem to be especially important. In the \acrshort{era5} model, land skin and sea surface both appear in the top ten features. Across both models, high land skin temperature contributes to storm intensification. Related is the high importance of soil moisture, but the specific nature of its contribution is less clear as both high and low feature values can accelerate or decelerate intensification. Storms also tend to intensify more when they spend longer periods over the ocean. As for other meteorological variables, in contrast to storm maximum intensity, \acrshort{cape} is less important for predicting intensification. The contributions of mean \acrshort{cape} and domain mean \acrshort{cape} notably have opposite effects on intensification. One interpretation of this result is that localised, anomalous instability may play a more significant role than broader atmospheric conditions.
 
-\acrfull{tcwv}'s feature contribution for the model trained on only \acrshort{era5} data is quite peculiar. On the one hand, the fact it has strong contributions to both models should be expected based on established literature \citep{Li2023,Muetzelfeldt2025,Klein2020}. However, the relationship between the its contribution and feature value should theoretically be reversed. According to the the beeswarm plot d) in Figure \ref{fig:obs_intensification_summary}, higher values of mean \acrshort{tcwv} tend to slow intensification where as low values accelerate it.
+\acrfull{tcwv}'s feature contribution for the model trained on only \acrshort{era5} data is quite peculiar. On the one hand, the fact it has strong contributions to both models should be expected based on established literature \citep{Li2023,Muetzelfeldt2025,Klein2020}. However, the relationship between its contribution and the feature value should theoretically be reversed. According to the beeswarm plot d) in Figure \ref{fig:obs_intensification_summary}, higher values of mean \acrshort{tcwv} tend to slow intensification whereas low values accelerate it.
 
-Looking at the spatial and temporal distribution of mean \acrshort{tcwv} values and their corresponding SHAP values in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} sheds light on what might be driving this unexpected relationship. As can be seen, low values of mean \acrshort{tcwv} are generally concentrated over the Ethiopian Highlands and surrounding elevated terrain. This relationship is confirmed in the correlation heatmap in Appendix \insertref{appendix corr heatmap} where mean \acrshort{tcwv} has a correlation coefficient of -0.59 with elevation.
+The spatial and temporal distribution of mean \acrshort{tcwv} values and their corresponding SHAP values in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} sheds light on what might be driving this unexpected relationship. As can be seen, low values of mean \acrshort{tcwv} are generally concentrated over the Ethiopian Highlands and surrounding elevated terrain. This relationship is confirmed in the correlation heatmap in Appendix \insertref{appendix corr heatmap} where mean \acrshort{tcwv} has a correlation coefficient of -0.59 with elevation and visually in Figure \ref{fig:tcwv_mean_by_loc}.
 
 The optimistic interpretation of this result could be that orographic lifting causes moist air to rise and condense, leading to precipitation and thus lower \acrshort{tcwv} values. The storms are then more likely to intensify when they are situated over or near elevated terrain, where orographic effects can enhance convection. This hypothesis may be bolstered by subplots g) and i) in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} which show enhanced intensification over the highlands in the late afternoon, as is consistent with the diurnal cycle of orographic lifting \citep{Colle2015,Negash2024,Zardi2013}.
 
-Alternately, the counterintuitive relationship may be an artifact of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features (c) in Figure \ref{fig:obs_intensification_summary}) shows that orographic elevation has a strong positive contribution to intensification. Farther down the same plot, mean \acrshort{tcwv}'s contribution is shows no clear pattern. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may essentially be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
+Alternately, the counter-intuitive relationship may be a result of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features (c) in Figure \ref{fig:obs_intensification_summary}) shows that orographic elevation has a strong positive contribution to intensification. Farther down the in same plot, the feature value of mean \acrshort{tcwv} shows no clear pattern for slowing or accelerating intensification. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may essentially be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
 
 \begin{figure}[ht]
     \centering
