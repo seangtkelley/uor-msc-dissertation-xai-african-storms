@@ -839,7 +839,7 @@ ax.set_xticks(
     labels=[f"{round(x/10, 2)*100}" for x in range(0, n_points)],
 )
 ax.set_ylabel("Mean Minimum Brightness Temperature (K)")
-ax.set_title("Mean Min BT Over Storm Life Cycle by Initiation Type")
+# ax.set_title("Mean Min BT Over Storm Life Cycle by Initiation Type")
 ax.legend()
 
 plt.tight_layout()
