@@ -841,8 +841,7 @@ plotting.save_plot("min_bt_over_lifecycle_by_init_type.png")
 # %%
 print("Binning tcwv by latitude and longitude.")
 tcwv_mean_lon, tcwv_mean_lat, tcwv_mean_grid = processing.calc_2d_agg(
-    df,
-    "domain_mean_tcwv"
+    df, "mean_tcwv"
 )
 
 # %%
@@ -854,8 +853,8 @@ plotting.plot_2d_agg_map(
     cmap=config.DEFAULT_MAP_CMAP,
     cbar_aspect=40,
     cbar_shrink=0.63,
-    cbar_label="Mean Total Column Water Vapour",
-    title="Mean of TCWV by Location.",
+    cbar_label=f"Mean Total Column Water Vapour ({config.FEATURE_COL_UNITS['mean_tcwv']})",
+    # title="Mean of TCWV by Location.",
     filename="tcwv_mean_by_loc.png",
     save_dir=config.EXPLORATION_FIGURES_DIR,
 )
@@ -863,8 +862,7 @@ plotting.plot_2d_agg_map(
 # %%
 print("Binning u850 by latitude and longitude.")
 u850_mean_lon, u850_mean_lat, u850_mean_grid = processing.calc_2d_agg(
-    df,
-    "mean_u850"
+    df, "mean_u850"
 )
 
 # %%
@@ -876,8 +874,8 @@ plotting.plot_2d_agg_map(
     cmap=config.DEFAULT_MAP_CMAP,
     cbar_aspect=40,
     cbar_shrink=0.63,
-    cbar_label="Mean 850 hPa zonal wind",
-    title="Mean of 850 hPa zonal wind by Location.",
+    cbar_label=f"Mean 850 hPa zonal wind ({config.FEATURE_COL_UNITS['mean_u850']})",
+    # title="Mean of 850 hPa zonal wind by Location.",
     filename="u850_mean_by_loc.png",
     save_dir=config.EXPLORATION_FIGURES_DIR,
 )
@@ -885,8 +883,7 @@ plotting.plot_2d_agg_map(
 # %%
 print("Binning v850 by latitude and longitude.")
 v850_mean_lon, v850_mean_lat, v850_mean_grid = processing.calc_2d_agg(
-    df,
-    "mean_v850"
+    df, "mean_v850"
 )
 
 # %%
@@ -898,8 +895,8 @@ plotting.plot_2d_agg_map(
     cmap=config.DEFAULT_MAP_CMAP,
     cbar_aspect=40,
     cbar_shrink=0.63,
-    cbar_label="Mean 850 hPa meridional wind",
-    title="Mean of 850 hPa meridional wind by Location.",
+    cbar_label=f"Mean 850 hPa meridional wind ({config.FEATURE_COL_UNITS['mean_v850']})",
+    # title="Mean of 850 hPa meridional wind by Location.",
     filename="v850_mean_by_loc.png",
     save_dir=config.EXPLORATION_FIGURES_DIR,
 )
