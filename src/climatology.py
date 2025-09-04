@@ -60,7 +60,7 @@ dataset_skt["skt"].plot.contourf(
     ax=ax,
     levels=10,
     alpha=0.5,
-    cmap="YlOrRd",
+    cmap="YlOrRd_r",
     cbar_kwargs={
         "label": "Mean Skin Surface Temperature (°K)",
         "location": "bottom",
