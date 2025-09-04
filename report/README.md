@@ -64,7 +64,6 @@ The following are the minimum required settings needed to compile the `thesis.te
             "chapters/introduction.tex",
             "chapters/methodology.tex",
             "chapters/results.tex",
-            "chapters/discussion.tex",
             "chapters/conclusion.tex",
             "-out=wordcount.tex"
         ],

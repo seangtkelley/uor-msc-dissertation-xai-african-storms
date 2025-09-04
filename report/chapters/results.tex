@@ -1,7 +1,7 @@
-\chapter{Results}
+\chapter{Results and Discussion}
 \label{ch:results}
 
-The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed interpretation of the results, including relevant figures and tables to support the findings. Further analysis of the results and their implications will follow in Chapter \ref{ch:discuss}.
+The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed interpretation of the results and their limitations, including relevant figures and tables to support the findings.
 
 \section{General characteristics of storms from the database}
 
@@ -64,7 +64,7 @@ The following two sections provide an overview of the experimental results obtai
 
 \subsection{Storm Maximum Intensity}
 
-Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate a lower overall minimum \acrshort{bt} and thus a textit{stronger} \acrshort{mcs}. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to train on only the first observation leads to a substantial drop in performance. Subsequent explainability analysis will only focus on the all observations models.
+Table \ref{tab:storm_max_intensity_results} details the performance metrics for storm maximum intensity prediction across the different experimental setups. Note that the target predictand was \texttt{storm\_min\_bt} so lower values indicate a lower overall minimum \acrshort{bt} and thus a stronger \acrshort{mcs}. The result metrics indicate that ERA5 features alone perform comparably to using all available features, suggesting that the meteorological variables capture most of the relevant information for predicting storm maximum intensity. However, restricting the models to train on only the first observation leads to a substantial drop in performance. It should be noted though that the first observations are likely noisy and highly dependent on the storm tracking algorithm and its parameters. Techniques which may compensate for this are further discussed below in Section \ref{sec:results-propagation}. As a result, subsequent explainability analysis will only focus on the all observations models.
 
 \begin{table}[ht]
 \centering
@@ -159,7 +159,7 @@ As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, th
 \clearpage
 \section{Predict Immediate Characteristics at an Observation}
 
-These experiments aim to predict the immediate characteristics of a storm based on its current observation and Table \ref{tab:obs_experiment_results} shows performance metrics of the models. Unfortunately, \acrshort{xgb} struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable and the resulting low R-squared values between the predicted and actual values. As such, no further explainability analysis will be conducted on those experiments. However, possible reasons for this poor performance and future directions for improvement are discussed in Chapter \ref{ch:discuss}.
+These experiments aim to predict the immediate characteristics of a storm based on its current observation and Table \ref{tab:obs_experiment_results} shows performance metrics of the models. Unfortunately, \acrshort{xgb} struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable and the resulting low R-squared values between the predicted and actual values. As such, no further explainability analysis will be conducted on those experiments. However, possible reasons for this poor performance and future directions for improvement are discussed in Section \ref{sec:results-propagation}.
 
 \begin{table}[h!]
 \centering
@@ -204,6 +204,8 @@ The optimistic interpretation of this result could be that orographic lifting ca
 
 Alternately, the counter-intuitive relationship may be a result of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features (c) in Figure \ref{fig:obs_intensification_summary}) shows that orographic elevation has a strong positive contribution to intensification. Farther down the in same plot, the feature value of mean \acrshort{tcwv} shows no clear pattern for slowing or accelerating intensification. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may essentially be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
 
+Notwithstanding, perhaps the most important interpretation of these results is that a cautious and deliberate approach must be undertaken when using \acrshort{ml} models to study complex atmospheric phenomena. While these models are powerful and clearly capable of capturing complex patterns in data, the accuracy in their predictions may engender a false sense of confidence, especially if they are not carefully validated against domain knowledge. Therefore, it is crucial to combine \acrshort{ml} with meteorological expertise to ensure robust and trustworthy implementations.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/geographic_corr/obs_intensification_era5_shap_mean_tcwv_map_by_hour.png}
@@ -232,6 +234,13 @@ Lastly for the intensification experiment, Figure \ref{fig:obs_intensification_s
     \label{fig:obs_intensification_sst_skt_by_hour}
 \end{figure}
 
+\section{Propagation}
+\label{sec:results-propagation}
+
+As shown in Tables \ref{tab:storm_direction_results} and \ref{tab:obs_experiment_results} respectively, storm direction models perform well, but models predicting the direction and distance to the next observation perform poorly. This could be due to several factors. The calculation of the next direction relies on the centroid of the storm provided by \cite{Hill2023}. For \acrshortpl{mcs}, the centroid might be weakly defined as the storm structure does not often have a clear centre of circulation compared to other systems like tropical cyclones. For example, squall lines are linear features and the centroid location outputted by the tracking algorithm may vary significantly between each time step based on the shape and orientation of the line. This would lead to particularly noisy data. To mitigate this, future work might investigate smoothing the centroid trajectory to reduce noise and improve the reliability of movement estimates.
+
+For direction specifically, although modifications were made to the \acrshort{rmse} function used to train and evaluate the models to account for the nature of circular data, this still appeared to limit the capabilities of the models. Alternative approaches, such as using categorical representations of the compass bearing (i.e., N, NNE, NE, etc.) or transforming the degrees using sine and cosine functions may prove to be helpful for the models to effectively predict direction. Although the categorical approach would be more intuitive, it would sacrifice granularity. Sine and cosine transformations would likely be the optimal choice as they allow for continuous predictions. However, this would require either a multiple-output model or multiple models, thus increasing the complexity of the training process and explainability analysis. An analogue for this approach would be to use the zonal and meridional speed vectors instead of distance and direction as was done in \cite{Hunt2024}. Across all these methods, the same challenges of a weakly-defined storm centroid would still apply, and an investigation into the stability of the storm tracks would be necessary.
+
 \clearpage
 \subsection{Precipitation}
 
@@ -252,3 +261,5 @@ Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year} 
     \caption{Temporal variability of SHAP values for domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
     \label{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}
 \end{figure}
+
+It should be noted that the precipitation data has a direct relation with the predictands due to their common origin in the \acrshort{era5} data. This may lead to overfitting, as the models could learn to predict the precipitation values based on their inherent relationship with the storm characteristics rather than capturing the underlying physical processes. Indeed, we do observe that \acrshort{olr} has a high feature importance in the precipitation models, which is expected given its use in the parametrisation schemes for precipitation in \acrshort{era5} \citep{Hersbach2020}. This highlights the need for caution when interpreting the results and suggests that future work should consider incorporating independent precipitation datasets to validate the findings. For example, this thesis considered the inclusion of precipitation data from the Global Precipitation Measurement (GPM) mission, but ultimately did not include it due to over 70\% of storm observations lacking corresponding GPM data. While the universal availability of \acrshort{era5} data makes it a more practical choice for widespread application, the inclusion of other datasets would reduce interdependence between predictands and predictors, even if viable data coverage is reduced.
