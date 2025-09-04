@@ -31,6 +31,7 @@ dataset_uwind = load_climatology_data("uwnd_850_")
 dataset_vwind = load_climatology_data("vwnd_850_")
 dataset_shum = load_climatology_data("shum_850_")
 dataset_swvl = load_climatology_data("swvl1_d1_", squeeze=False)
+dataset_skt = load_climatology_data("skt_sfc_", squeeze=False)
 
 # Plot humidity
 print("Plotting mean humidity...")
@@ -51,6 +52,26 @@ plotting.add_gridlines(ax)
 plotting.add_borders(ax)
 ax.set_title("")
 plotting.save_plot("mean_shum_850.png", show=True)
+
+# Plot skin surface temperature
+print("Plotting skin surface temperature...")
+ax = plotting.init_map()
+dataset_skt["skt"].plot.contourf(
+    ax=ax,
+    levels=10,
+    alpha=0.5,
+    cmap="YlOrRd",
+    cbar_kwargs={
+        "label": "Mean Skin Surface Temperature (°K)",
+        "location": "bottom",
+        "shrink": 0.8,
+        "orientation": "horizontal",
+    },
+)
+plotting.add_gridlines(ax)
+plotting.add_borders(ax)
+ax.set_title("")
+plotting.save_plot("mean_skt.png", show=True)
 
 # Plot mean soil water volume
 print("Plotting mean soil water volume...")
