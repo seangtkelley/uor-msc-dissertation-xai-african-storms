@@ -1,61 +1,35 @@
 \chapter{Results and Discussion}
 \label{ch:results}
 
-The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the research questions outlined in Chapter \ref{ch:intro}. Each section provides a detailed interpretation of the results and their limitations, including relevant figures and tables to support the findings.
+The results of the experiments conducted in this study are presented in this chapter. The findings are organised according to the experimental design outlined in Section \ref{sec:experimental-setup}. Each section provides a detailed interpretation of the results and their limitations, including relevant figures and tables to support the findings.
 
 \section{General characteristics of storms from the database}
 
-Before modelling, a limited exploratory data analysis was conducted to understand the general characteristics of the filtered dataset assembled for the study. Special attention was paid to the geographic and temporal distribution of the storms. Figure \ref{fig:orography_storm_init_end_kde} shows the density of storm start and end locations within the study region. The distribution is highly concentrated around the Ethiopian Highlands and diminishes quickly closer to the coastline with the Indian Ocean. For the modelling problem, this spatial distribution suggests a strong orographic influence on storm genesis and dissipation.
+As depicted in Figure \ref{fig:orography_storm_init_end_kde}, the distribution of storm start and end locations are both highly concentrated around the Ethiopian Highlands and diminish quickly closer to the coastline with the Indian Ocean. For the modelling problem, this spatial distribution suggests a strong orographic influence on storm genesis and dissipation.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/exploration/orography_storm_init_end_kde.png}
-    \caption{Storm start and end location density. Storms were selected if 1) they last longer than 3 hours to precipitation contributions, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter \ref{ch:method} for details. Elevation was calculated from \acrshort{era5} geopotential height data.}
+    \caption{Storm start and end location density plotted geographically alongside elevation. Storms were selected if 1) they last longer than 3 hours to precipitation contributions, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter \ref{ch:method} for details. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Storm start location density, (c) Storm end location density.}
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
-Figure \ref{fig:orography_storm_init_eat_hours_mode_mean} shows the distribution of storm genesis local time with multiple distinct phenomena present. First, although the density of storms of the coast of Somalia is limited, it is clear that storms tend to form over the ocean during the early morning hours whereas storms formed over land occur during the late afternoon. This is in agreement with the general understanding of convection over the ocean \citep{Hall1999,Houze2004}. However, orography also appears to play a role pushing genesis later into the night, with clear anomalies near the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{Zardi2013}.
+In Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, the geographic distribution of storm genesis local time is shown. Although the density of storms of the coast of Somalia is limited, it is clear that storms tend to form over the ocean during the early morning hours whereas storms formed over land occur during the late afternoon. This is in agreement with the general understanding of convection over the ocean \citep{Hall1999,Houze2004}. However, orography also appears to play a role pushing genesis later into the night, with clear evening initiations near the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{Zardi2013}. On average, storms last approximately X hours and 95\% percentile of duration is XX hours.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/exploration/orography_storm_init_eat_hours_mode_mean.png}
-    \caption{Storm Genesis Local Time (\acrlong{eat}). Elevation was calculated from \acrshort{era5} geopotential height data.}
+    \caption{Storm genesis local time (\acrlong{eat}) plotted geographically alongside elevation. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Mean local time of day at which storms initiate, (c) Mode local time of day at which storms initiate.}
     \label{fig:orography_storm_init_eat_hours_mode_mean}
 \end{figure}
 
-Figure \ref{fig:min_bt_over_lifecycle_by_init_type} shows the minimum \acrshort{bt} over the lifecycle of storms, categorised by their initiation type. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
+In Figure \ref{fig:min_bt_over_lifecycle_by_init_type}, the minimum \acrfull{bt} over the lifecycle of storms, categorised by their initiation type is plotted. For this specific analysis, minimum \acrshort{bt} was interpolated over the storm lifecycle and 11 equally spaced points were extracted so as to facilitate comparison across storms of varying durations. Interestingly, on average, storms which initiated over the ocean and during the night tend to be weaker over the entire storm duration. This dynamic may be picked up by the models and should surface in the importance of features like local time (\texttt{eat\_hours}) and the over land flag (\texttt{over\_land}). 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\textwidth]{../figures/generated/exploration/min_bt_over_lifecycle_by_init_type.png}
-    \caption{Minimum \acrfull{bt} over the lifecycle of storms, categorised by their initiation type.}
+    \includegraphics[width=0.7\textwidth]{../figures/generated/exploration/min_bt_over_lifecycle_by_init_type.png}
+    \caption{Minimum \acrfull{bt} over the lifecycle of storms, interpolated over storm duration and categorised by storm initiation type.}
     \label{fig:min_bt_over_lifecycle_by_init_type}
-\end{figure}
-
-Finally, the mean value of \acrshort{tcwv}, \SI{850}{\hecto\pascal} zonal wind, and \SI{850}{\hecto\pascal} meridional wind are shown in Figure \ref{fig:figures}. These specific features are relevant to the explainability analyses conducted later in this chapter and thus a reference to their general climatology is provided here.
-
-\begin{figure}[ht]
-\centering
-\begin{subfigure}[t]{0.4\textwidth}
-    \includegraphics[width=\textwidth]{../figures/generated/exploration/tcwv_mean_by_loc.png}
-    \caption{\acrfull{tcwv}.}
-    \label{fig:tcwv_mean_by_loc}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.4\textwidth}
-    \includegraphics[width=\textwidth]{../figures/generated/exploration/u850_mean_by_loc.png}
-    \caption{850 hPa zonal wind component.}
-    \label{fig:u850_mean_by_loc}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.4\textwidth}
-    \includegraphics[width=\textwidth]{../figures/generated/exploration/v850_mean_by_loc.png}
-    \caption{850 hPa meridional wind component.}
-    \label{fig:v850_mean_by_loc}
-\end{subfigure}
-
-\caption{Mean values of meteorological variables across the study region.}
-\label{fig:figures}
 \end{figure}
 
 \section{Predict Storm Aggregate Features}
@@ -198,7 +172,7 @@ As for the feature contributions, surface characteristics seem to be especially 
 
 \acrfull{tcwv}'s feature contribution for the model trained on only \acrshort{era5} data is quite peculiar. On the one hand, the fact it has strong contributions to both models should be expected based on established literature \citep{Li2023,Muetzelfeldt2025,Klein2020}. However, the relationship between its contribution and the feature value should theoretically be reversed. According to the beeswarm plot d) in Figure \ref{fig:obs_intensification_summary}, higher values of mean \acrshort{tcwv} tend to slow intensification whereas low values accelerate it.
 
-The spatial and temporal distribution of mean \acrshort{tcwv} values and their corresponding SHAP values in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} sheds light on what might be driving this unexpected relationship. As can be seen, low values of mean \acrshort{tcwv} are generally concentrated over the Ethiopian Highlands and surrounding elevated terrain. This relationship is confirmed in the correlation heatmap in Appendix \insertref{appendix corr heatmap} where mean \acrshort{tcwv} has a correlation coefficient of -0.59 with elevation and visually in Figure \ref{fig:tcwv_mean_by_loc}.
+The spatial and temporal distribution of mean \acrshort{tcwv} values and their corresponding SHAP values in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} sheds light on what might be driving this unexpected relationship. As can be seen, low values of mean \acrshort{tcwv} are generally concentrated over the Ethiopian Highlands and surrounding elevated terrain. This relationship is confirmed in the correlation heatmap in Appendix \insertref{appendix corr heatmap} where mean \acrshort{tcwv} has a correlation coefficient of -0.59 with elevation and visually in Figure \insertref{fig:tcwv_mean_by_loc}.
 
 The optimistic interpretation of this result could be that orographic lifting causes moist air to rise and condense, leading to precipitation and thus lower \acrshort{tcwv} values. The storms are then more likely to intensify when they are situated over or near elevated terrain, where orographic effects can enhance convection. This hypothesis may be bolstered by subplots g) and i) in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} which show enhanced intensification over the highlands in the late afternoon, as is consistent with the diurnal cycle of orographic lifting \citep{Colle2015,Negash2024,Zardi2013}.
 
