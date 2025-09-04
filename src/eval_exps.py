@@ -402,10 +402,16 @@ for exp_group_name, exp_names in exp_groups.items():
                         if "tcwv" in value_column
                         else (
                             config.WINDS_MAP_CMAP
-                            if "u850" in value_column or "v850" in value_column
+                            if "mean_u" in value_column
+                            or "mean_v" in value_column
                             else config.DEFAULT_MAP_CMAP
                         )
                     )
+                ),
+                sym_cmap_centre=(
+                    0
+                    if "mean_u" in value_column or "mean_v" in value_column
+                    else None
                 ),
                 cbar_label=f"Mean {feature} ({config.FEATURE_COL_UNITS[feature]})",
                 cbar_aspect=40,
@@ -561,8 +567,15 @@ for exp_group_name, exp_names in exp_groups.items():
 
             value_column = f"feature_{feature}"
             # cmap values for features
-            vmin = min(merge_df[value_column])
-            vmax = max(merge_df[value_column])
+            if "mean_u" in value_column or "mean_v" in value_column:
+                vmax = max(
+                    abs(min(merge_df[value_column])),
+                    abs(max(merge_df[value_column])),
+                )
+                vmin = -vmax
+            else:
+                vmin = min(merge_df[value_column])
+                vmax = max(merge_df[value_column])
 
             delta = 4
             idx = 0
@@ -612,8 +625,8 @@ for exp_group_name, exp_names in exp_groups.items():
                             if "tcwv" in value_column
                             else (
                                 config.WINDS_MAP_CMAP
-                                if "u850" in value_column
-                                or "v850" in value_column
+                                if "mean_u" in value_column
+                                or "mean_v" in value_column
                                 else config.DEFAULT_MAP_CMAP
                             )
                         )
@@ -715,8 +728,15 @@ for exp_group_name, exp_names in exp_groups.items():
 
             value_column = f"feature_{feature}"
             # cmap values for features
-            vmin = min(merge_df[value_column])
-            vmax = max(merge_df[value_column])
+            if "mean_u" in value_column or "mean_v" in value_column:
+                vmax = max(
+                    abs(min(merge_df[value_column])),
+                    abs(max(merge_df[value_column])),
+                )
+                vmin = -vmax
+            else:
+                vmin = min(merge_df[value_column])
+                vmax = max(merge_df[value_column])
 
             idx = 0
             for month in range(1, 13):
@@ -763,8 +783,8 @@ for exp_group_name, exp_names in exp_groups.items():
                             if "tcwv" in value_column
                             else (
                                 config.WINDS_MAP_CMAP
-                                if "u850" in value_column
-                                or "v850" in value_column
+                                if "mean_u" in value_column
+                                or "mean_v" in value_column
                                 else config.DEFAULT_MAP_CMAP
                             )
                         )

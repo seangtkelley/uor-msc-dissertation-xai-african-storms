@@ -310,7 +310,13 @@ plt.figure(figsize=(10, 6))
 plt.hist(df["area"], bins=50)
 plt.yscale("log")
 
-# plot vertical lines for 75, 90, and 98th percentiles
+# plot vertical lines for mean and 75, 90, and 98th percentiles
+plt.axvline(
+    df["area"].mean(),
+    color="yellow",
+    linestyle="--",
+    label="Mean",
+)
 plt.axvline(
     df["area"].quantile(0.75),
     color="orange",
@@ -333,8 +339,9 @@ plt.legend()
 
 plt.xlabel("Area (km²)")
 plt.ylabel("Frequency")
-plt.title("Storm Area Histogram")
+# plt.title("Storm Area Histogram")
 plotting.save_plot("storm_area_hist.png")
+print(f"Mean storm area: {df['area'].mean()} km²")
 
 # %%
 print("Plotting histogram of zonal speed for 98th percentile area storms.")
@@ -478,12 +485,33 @@ fig.write_image(
 # %%
 print("Plotting histogram of storm total duration.")
 plt.figure(figsize=(10, 6))
-plt.hist(df["storm_total_duration"], bins=50)
+plt.hist(storm_inits["storm_total_duration"], bins=50)
 
+plt.axvline(
+    storm_inits["storm_total_duration"].mean(),
+    color="red",
+    linestyle="--",
+    label="Mean",
+)
+plt.axvline(
+    storm_inits["storm_total_duration"].quantile(0.95),
+    color="orange",
+    linestyle="--",
+    label="95th Percentile",
+)
+
+plt.legend()
 plt.xlabel("Duration (hours)")
 plt.ylabel("Frequency")
-plt.title("Storm Duration Histogram")
+# plt.title("Storm Duration Histogram")
 plotting.save_plot("storm_duration_hist.png")
+
+print(
+    f"Mean storm total duration: {storm_inits['storm_total_duration'].mean()} hours"
+)
+print(
+    f"95th percentile storm total duration: {storm_inits['storm_total_duration'].quantile(0.95)} hours"
+)
 
 # %%
 print(
@@ -832,73 +860,8 @@ ax.set_xticks(
     labels=[f"{round(x/10, 2)*100}" for x in range(0, n_points)],
 )
 ax.set_ylabel("Mean Minimum Brightness Temperature (K)")
-ax.set_title("Mean Min BT Over Storm Life Cycle by Initiation Type")
+# ax.set_title("Mean Min BT Over Storm Life Cycle by Initiation Type")
 ax.legend()
 
 plt.tight_layout()
 plotting.save_plot("min_bt_over_lifecycle_by_init_type.png")
-
-# %%
-print("Binning tcwv by latitude and longitude.")
-tcwv_mean_lon, tcwv_mean_lat, tcwv_mean_grid = processing.calc_2d_agg(
-    df, "mean_tcwv"
-)
-
-# %%
-print("Plotting Mean of TCWV by Location.")
-plotting.plot_2d_agg_map(
-    tcwv_mean_lon,
-    tcwv_mean_lat,
-    tcwv_mean_grid,
-    cmap=config.TCWV_MAP_CMAP,
-    cbar_aspect=40,
-    cbar_shrink=0.63,
-    cbar_label=f"Mean Total Column Water Vapour ({config.FEATURE_COL_UNITS['mean_tcwv']})",
-    # title="Mean of TCWV by Location.",
-    filename="tcwv_mean_by_loc.png",
-    save_dir=config.EXPLORATION_FIGURES_DIR,
-)
-
-# %%
-print("Binning u850 by latitude and longitude.")
-u850_mean_lon, u850_mean_lat, u850_mean_grid = processing.calc_2d_agg(
-    df, "mean_u850"
-)
-
-# %%
-print("Plotting Mean of u850 by Location.")
-plotting.plot_2d_agg_map(
-    u850_mean_lon,
-    u850_mean_lat,
-    u850_mean_grid,
-    sym_cmap_centre=0,
-    cmap=config.WINDS_MAP_CMAP,
-    cbar_aspect=40,
-    cbar_shrink=0.63,
-    cbar_label=f"Mean 850 hPa zonal wind ({config.FEATURE_COL_UNITS['mean_u850']})",
-    # title="Mean of 850 hPa zonal wind by Location.",
-    filename="u850_mean_by_loc.png",
-    save_dir=config.EXPLORATION_FIGURES_DIR,
-)
-
-# %%
-print("Binning v850 by latitude and longitude.")
-v850_mean_lon, v850_mean_lat, v850_mean_grid = processing.calc_2d_agg(
-    df, "mean_v850"
-)
-
-# %%
-print("Plotting Mean of v850 by Location.")
-plotting.plot_2d_agg_map(
-    v850_mean_lon,
-    v850_mean_lat,
-    v850_mean_grid,
-    sym_cmap_centre=0,
-    cmap=config.WINDS_MAP_CMAP,
-    cbar_aspect=40,
-    cbar_shrink=0.63,
-    cbar_label=f"Mean 850 hPa meridional wind ({config.FEATURE_COL_UNITS['mean_v850']})",
-    # title="Mean of 850 hPa meridional wind by Location.",
-    filename="v850_mean_by_loc.png",
-    save_dir=config.EXPLORATION_FIGURES_DIR,
-)
