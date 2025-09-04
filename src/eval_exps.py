@@ -402,7 +402,8 @@ for exp_group_name, exp_names in exp_groups.items():
                         if "tcwv" in value_column
                         else (
                             config.WINDS_MAP_CMAP
-                            if "u850" in value_column or "v850" in value_column
+                            if "mean_u" in value_column
+                            or "mean_v" in value_column
                             else config.DEFAULT_MAP_CMAP
                         )
                     )
@@ -612,8 +613,8 @@ for exp_group_name, exp_names in exp_groups.items():
                             if "tcwv" in value_column
                             else (
                                 config.WINDS_MAP_CMAP
-                                if "u850" in value_column
-                                or "v850" in value_column
+                                if "mean_u" in value_column
+                                or "mean_v" in value_column
                                 else config.DEFAULT_MAP_CMAP
                             )
                         )
@@ -763,8 +764,8 @@ for exp_group_name, exp_names in exp_groups.items():
                             if "tcwv" in value_column
                             else (
                                 config.WINDS_MAP_CMAP
-                                if "u850" in value_column
-                                or "v850" in value_column
+                                if "mean_u" in value_column
+                                or "mean_v" in value_column
                                 else config.DEFAULT_MAP_CMAP
                             )
                         )
