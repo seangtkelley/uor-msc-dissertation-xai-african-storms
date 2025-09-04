@@ -71,7 +71,7 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their entir
 
 In Figure \ref{fig:storm_max_intensity_summary} a detailed comparison is presented of the model performance and the most influential features for predicting storm maximum intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable, mean \acrshort{cape}, appears among the top five most important features. The results of the all features model also reveal that stronger storms tend to develop in the late evening (Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, panel (c) \texttt{eat\_hours}). Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
-Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, the influence is predominantly positive over the Somali coastal plains and negative over the Ethiopian Highlands, indicating a diminishing effect on storm intensity in the southeast. Conversely, in the winter months, the influence tends to be negative or neutral over the entire domain.
+Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive shap values, meaning that these southerlies hinder MCS intensity. In the winter months, the influence tends to be negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
@@ -105,12 +105,12 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 \end{tabular}
 \end{table}
 
-For better context in interpreting the meaning of the \acrshort{shap} values, Figure \ref{fig:storm_cardinal_directions_distribution} shows the distribution of storm cardinal directions in the dataset. The distribution indicates that the majority of storms move in a westerly direction and indeed the mean storm direction is approximately \ang{258}. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
+For better context in interpreting the meaning of the \acrshort{shap} values, the distribution of storm cardinal directions in the dataset is shown as a radar plot in Figure \ref{fig:storm_cardinal_directions_distribution}. The distribution indicates that the majority of storms move in a westerly direction and indeed the mean storm direction is approximately \ang{258}. Thus, generally for this experiment, positive \acrshort{shap} values can be interpreted as shifting the predicted storm direction northward, while negative values indicate a southward shift.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.6\textwidth]{../figures/generated/exploration/storm_cardinal_directions_distribution.png}
-    \caption{Distribution of storm cardinal directions in the dataset.}
+    \caption{Distribution of storm cardinal directions in the dataset. The radius of each point is equal to the proportion of storms in the database whose overall direction is closest to that cardinal direction.}
     \label{fig:storm_cardinal_directions_distribution}
 \end{figure}
 
@@ -121,7 +121,7 @@ For better context in interpreting the meaning of the \acrshort{shap} values, Fi
     \label{fig:storm_direction_summary}
 \end{figure}
 
-High-level winds are by far the most important factors for predicting storm direction, as shown in Figure \ref{fig:storm_direction_summary} c) and d). Positive values of both meridional and zonal winds, southerly and westerly winds respectively, tend to shift the predicted storm direction northward and vice versa.
+High-level winds are by far the most important factors for predicting storm direction, as can be seen in panels (c) and (d) in Figure \ref{fig:storm_direction_summary}. Positive values of both meridional and zonal winds, southerly and westerly winds respectively, tend to shift the predicted storm direction northward and vice versa.
 
 As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the effect of low-level meridional winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian. During the winter months, however, the influence appears mostly negative over the entire domain.
 
