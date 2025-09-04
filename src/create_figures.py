@@ -310,7 +310,7 @@ plt.figure(figsize=(10, 6))
 plt.hist(df["area"], bins=50)
 plt.yscale("log")
 
-# plot vertical lines for 75, 90, and 98th percentiles
+# plot vertical lines for mean and 75, 90, and 98th percentiles
 plt.axvline(
     df["area"].quantile(0.5),
     color="yellow",
@@ -500,9 +500,10 @@ plt.axvline(
     label="95th Percentile",
 )
 
+plt.legend()
 plt.xlabel("Duration (hours)")
 plt.ylabel("Frequency")
-plt.title("Storm Duration Histogram")
+# plt.title("Storm Duration Histogram")
 plotting.save_plot("storm_duration_hist.png")
 
 print(
