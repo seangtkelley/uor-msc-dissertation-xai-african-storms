@@ -73,6 +73,8 @@ if args.exp_group_names is not None:
 else:
     exp_groups = config.EXPERIMENT_GROUPS
 
+results = []
+
 print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
@@ -146,6 +148,12 @@ for exp_group_name, exp_names in exp_groups.items():
             test_rmse = root_mean_squared_error(y_test, y_pred)
             test_std = np.std(y_test)
 
+        results_dict = {
+            "exp_group": exp_group_name,
+            "exp_name": exp_name,
+            "test_rmse": round(test_rmse, 4),
+            "test_std": round(test_std, 4),
+        }
         # print RMSE and standard deviation
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
@@ -179,6 +187,12 @@ for exp_group_name, exp_names in exp_groups.items():
             print(
                 f"Test target standard deviation (first points): {test_std_first_points:.4f}"
             )
+            results_dict["test_rmse_first_points"] = round(
+                test_rmse_first_points, 4
+            )
+            results_dict["test_std_first_points"] = round(
+                test_std_first_points, 4
+            )
 
         # plot model verification and compute R2
         if exp_config["target_units"] == "degrees":
@@ -205,6 +219,9 @@ for exp_group_name, exp_names in exp_groups.items():
             )
 
         print(f"R-squared: {r_squared:.4f}")
+        results_dict["r_squared"] = round(r_squared, 4)
+
+        results.append(results_dict)
 
         if r_squared < config.R_SQUARED_THRESHOLD:
             continue
@@ -798,3 +815,6 @@ for exp_group_name, exp_names in exp_groups.items():
         # endregion
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)
+
+results_df = pd.DataFrame(results)
+results_df.to_csv(f"experiments_summary.csv", index=False)
