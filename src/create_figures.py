@@ -312,6 +312,12 @@ plt.yscale("log")
 
 # plot vertical lines for 75, 90, and 98th percentiles
 plt.axvline(
+    df["area"].quantile(0.5),
+    color="yellow",
+    linestyle="--",
+    label="Mean",
+)
+plt.axvline(
     df["area"].quantile(0.75),
     color="orange",
     linestyle="--",
@@ -335,6 +341,7 @@ plt.xlabel("Area (km²)")
 plt.ylabel("Frequency")
 plt.title("Storm Area Histogram")
 plotting.save_plot("storm_area_hist.png")
+print(f"Mean storm area: {df['area'].quantile(0.5)} km²")
 
 # %%
 print("Plotting histogram of zonal speed for 98th percentile area storms.")
