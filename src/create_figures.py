@@ -312,7 +312,7 @@ plt.yscale("log")
 
 # plot vertical lines for mean and 75, 90, and 98th percentiles
 plt.axvline(
-    df["area"].quantile(0.5),
+    df["area"].mean(),
     color="yellow",
     linestyle="--",
     label="Mean",
@@ -341,7 +341,7 @@ plt.xlabel("Area (km²)")
 plt.ylabel("Frequency")
 # plt.title("Storm Area Histogram")
 plotting.save_plot("storm_area_hist.png")
-print(f"Mean storm area: {df['area'].quantile(0.5)} km²")
+print(f"Mean storm area: {df['area'].mean()} km²")
 
 # %%
 print("Plotting histogram of zonal speed for 98th percentile area storms.")
@@ -488,7 +488,7 @@ plt.figure(figsize=(10, 6))
 plt.hist(storm_inits["storm_total_duration"], bins=50)
 
 plt.axvline(
-    storm_inits["storm_total_duration"].quantile(0.5),
+    storm_inits["storm_total_duration"].mean(),
     color="red",
     linestyle="--",
     label="Mean",
@@ -507,7 +507,7 @@ plt.ylabel("Frequency")
 plotting.save_plot("storm_duration_hist.png")
 
 print(
-    f"Mean storm total duration: {storm_inits['storm_total_duration'].quantile(0.5)} hours"
+    f"Mean storm total duration: {storm_inits['storm_total_duration'].mean()} hours"
 )
 print(
     f"95th percentile storm total duration: {storm_inits['storm_total_duration'].quantile(0.95)} hours"
