@@ -66,6 +66,8 @@ TERRAIN_CMAP = ListedColormap(
 )
 # default cmap for feature value maps
 DEFAULT_MAP_CMAP = "plasma"
+TCWV_MAP_CMAP = "Blues"
+WINDS_MAP_CMAP = "PuOr_r"
 
 
 # ==============================================================================
