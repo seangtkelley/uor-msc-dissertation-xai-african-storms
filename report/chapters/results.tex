@@ -10,7 +10,7 @@ As depicted in Figure \ref{fig:orography_storm_init_end_kde}, the distribution o
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/exploration/orography_storm_init_end_kde.png}
-    \caption{Storm start and end location density plotted geographically alongside elevation. Storms were selected if 1) they last longer than 3 hours to precipitation contributions, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter \ref{ch:method} for details. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Storm start location density, (c) Storm end location density.}
+    \caption{Storm start and end location density plotted geographically alongside elevation. Storms were selected if 1) they lasted longer than 3 hours to precipitation contributions, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter \ref{ch:method} for details. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Storm start location density, (c) Storm end location density.}
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
@@ -117,7 +117,7 @@ For better context in interpreting the meaning of the \acrshort{shap} values, th
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_summary.png}
-    \caption{Comparison of performance and top features for storm direction.}
+    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting storm direction. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
     \label{fig:storm_direction_summary}
 \end{figure}
 
@@ -174,7 +174,7 @@ It should be noted that in panel (b), there are a significant number of points w
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_summary.png}
-    \caption{Comparison of performance and top features for intensification.}
+    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting storm intensification. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
     \label{fig:obs_intensification_summary}
 \end{figure}
 
@@ -235,7 +235,7 @@ Unlike the other experiments, there is a meaningful discrepancy in performance b
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/obs_precipitation_summary.png}
-    \caption{Comparison of performance and top features for precipitation.}
+    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting precipitation. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
     \label{fig:obs_precipitation_summary}
 \end{figure}
 
