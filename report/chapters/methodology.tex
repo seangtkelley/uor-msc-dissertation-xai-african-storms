@@ -7,14 +7,14 @@ This section details the methodology employed in this research. The approach is 
 
 \subsection{Database of East African Mesoscale Convective Systems}
 
-In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery from 2014 to 2019 \citep{Stein2020}. The tracking algorithm identifies contiguous areas of \acrfull{bt} below a threshold of \SI{233}{\kelvin}. The algorithm tracks these areas over time based on their spatial overlap in consecutive images. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery \citep{Huffman2015}.
+In their paper, \cite{Hill2023} used a variant of the "simple-track" object tracking algorithm to identify and track \acrshortpl{mcs} over East Africa from infrared satellite imagery from 2014 to 2019. The tracking algorithm identifies contiguous areas of \acrfull{bt} below a threshold of \SI{233}{\kelvin}. The algorithm tracks these areas over time based on their spatial overlap in consecutive images \citep{Stein2020}. The resulting database contains detailed information on the location, size, intensity, and duration of each \acrshort{mcs}, as well as precipitation amounts derived from Global Precipitation Measurement (GPM) satellite imagery \citep{Huffman2015}.
 
 From this comprehensive storm database, a subset of 27,982 \acrshortpl{mcs} was selected for analysis. Two criteria were used to filter for storms relevant to this study: 1) storms must last longer than 3 hours, and 2) all storm centroids must be located within the geographical bounds of \degN{3} - \degN{15} and \degE{34} - \degE{52}. The 3-hour threshold was chosen because storms of this duration account for 92\% of \acrshort{mcs}-related precipitation \citep{Hill2023}.
 
 \subsection{ERA5 Data}
 \label{sec:era5-data}
 
-\acrshort{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering \degN{2} - \degN{16} and \degE{31} - \degE{53}. This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients. The data was downloaded at a spatial resolution of \SI{0.25}{\degree} and includes the following meteorological variables relevant to storm development and propagation (Table \ref{tab:era5-file-patterns}).
+\acrshort{era5} is a reanalysis dataset produced by the \acrfull{ecmwf} which includes atmospheric, land, and oceanic climate variables from 1950 onwards \citep{Hersbach2020}. For this thesis, hourly data separated into yearly files was downloaded from the Copernicus Climate Change Service (C3S) Climate Data Store (CDS). The region for the data download was chosen to be slightly larger than the storm database region, covering \degN{2} - \degN{16} and \degE{31} - \degE{53}. This buffer ensures that all storms are fully captured and to facilitate the calculation of gradients at the edges of the domain. The data is at a spatial resolution of \SI{0.25}{\degree} (approximately \SI{28}{\km} in the tropics) and includes the following meteorological variables relevant to storm development and propagation (Table \ref{tab:era5-file-patterns}).
 
 \begin{table}[ht]
     \centering
@@ -22,20 +22,20 @@ From this comprehensive storm database, a subset of 27,982 \acrshortpl{mcs} was 
     \label{tab:era5-file-patterns}
     \begin{tabular}{p{0.28\linewidth} p{0.42\linewidth} p{0.2\linewidth}}
         \toprule
-        File Pattern & Description & Units/Notes \\
+        File Pattern & Description & Units \\
         \midrule
         \texttt{cape\_0\_YEAR.nc} & \acrfull{cape} & \unit{\joule\per\kilogram} \\
-        \texttt{olr\_toa\_YEAR.nc} & Top-of-atmosphere outgoing longwave flux (proxy for convection/clouds) & \unit{\watt\per\meter\squared} \\
-        \texttt{prcp\_tot\_YEAR.nc} & Thickness of rainfall amount (hourly accumulations) & \unit{\meter} \\
-        \texttt{rhum\_PRESSURE\_YEAR.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} (used for theta e calculations) \\
+        \texttt{olr\_toa\_YEAR.nc} & Top-of-atmosphere outgoing longwave flux (\acrfull{olr}) & \unit{\watt\per\meter\squared} \\
+        \texttt{prcp\_tot\_YEAR.nc} & Thickness of rainfall amount in hourly accumulations & \unit{\meter} \\
+        \texttt{rhum\_PRESSURE\_YEAR.nc} & Relative humidity at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\percent} \\
         \texttt{shum\_PRESSURE\_YEAR.nc} & Specific humidity at 200, 500, 850 \unit{\hecto\pascal} & \unit{\kilogram\per\kilogram} \\
         \texttt{skt\_sfc\_YEAR.nc} & Land skin temperature & \unit{\kelvin} \\
         \texttt{sst\_sfc\_YEAR.nc} & Sea surface temperature & \unit{\kelvin} \\
         \texttt{swvl1\_d1\_YEAR.nc} & Volumetric soil water layer 1 & \unit{\meter\cubed\per\meter\cubed} \\
         \texttt{swvl2\_d2\_YEAR.nc} & Volumetric soil water layer 2 & \unit{\meter\cubed\per\meter\cubed} \\
-        \texttt{ta\_PRESSURE\_YEAR.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (used for theta e calculations) \\
+        \texttt{ta\_PRESSURE\_YEAR.nc} & Air temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} \\
         \texttt{tcwv\_tot\_YEAR.nc} & Thickness of atmosphere mass content of water vapour (\acrfull{tcwv}) & \unit{\kilogram\per\meter\squared} \\
-        \texttt{thetae\_PRESSURE\_YEAR.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} (dew point, LCL temperature, theta e via MetPy) \\
+        \texttt{thetae\_PRESSURE\_YEAR.nc} & Equivalent potential temperature at 500, 750 and 900 \unit{\hecto\pascal} & \unit{\kelvin} \\
         \texttt{uwnd\_PRESSURE\_YEAR.nc} & Zonal wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
         \texttt{vwnd\_PRESSURE\_YEAR.nc} & Meridional wind at 200, 500 and 850 \unit{\hecto\pascal} & \unit{\meter\per\second} \\
         \bottomrule
@@ -45,7 +45,7 @@ From this comprehensive storm database, a subset of 27,982 \acrshortpl{mcs} was 
 
 \subsection{Feature Engineering and Selection}
 
-Table \ref{tab:features} lists the features used for this thesis and their respective units. These features were obtained from the \cite{Hill2023} storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix (e.g. \texttt{mean\_land\_frac}) are calculated over a 400 km radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix (e.g. \texttt{domain\_mean\_cape}) are calculated over the entire domain of the \acrshort{era5} data, as defined in Section \ref{sec:era5-data}, and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm. The features without these prefixes are either directly sourced from the storm database or derived from the \acrshort{era5} data at the closest grid point to the storm centroids. Finally, \acrshort{mjo} phase and amplitude were obtained from \href{https://www.bom.gov.au/climate/mjo/}{Australian Government Bureau of Meteorology}, which are calculated using the All-Season Real-time Multivariate \acrshort{mjo} index from \cite{Wheeler2004}.
+Table \ref{tab:features} lists the features used for this thesis and their respective units. These features were obtained from the \cite{Hill2023} storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix (e.g. \texttt{mean\_land\_frac}) are calculated over a 400 km radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix (e.g. \texttt{domain\_mean\_cape}) are calculated over the entire domain of the \acrshort{era5} data, as defined in Section \ref{sec:era5-data}, and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm given the average storm area is \SI{3341}{\km\squared}. The features without these prefixes are either directly sourced from the storm database or derived from the \acrshort{era5} data at the closest grid point to the storm centroids. Finally, \acrfull{mjo} phase and amplitude were obtained from \href{https://www.bom.gov.au/climate/mjo/}{Australian Government Bureau of Meteorology}, which are calculated using the All-Season Real-time Multivariate \acrshort{mjo} index from \cite{Wheeler2004}.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\linewidth} p{0.50\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
@@ -93,9 +93,9 @@ Table \ref{tab:features} lists the features used for this thesis and their respe
     \texttt{distance\_from\_prev} & Distance traversed from previous observation & \unit{\km} \\
     \texttt{distance\_to\_next} & Distance to next observation & \unit{\km} \\
     \texttt{distance\_traversed} & Cumulative sum of \texttt{distance\_from\_prev} & \unit{\km} \\
-    \texttt{storm\_bearing} & Compass bearing from first to last the \acrshort{mcs} centre & \unit{\degree} from  N \\
+    \texttt{storm\_bearing} & Compass bearing from the first to the last \acrshort{mcs} centre & \unit{\degree} from  N \\
     \texttt{storm\_distance\_ traversed} & Total cumulative distance traversed by the \acrshort{mcs} centre & \unit{\km} \\
-    \texttt{storm\_straight\_ line\_distance} & Distance from first to last the \acrshort{mcs} centre & \unit{\km} \\
+    \texttt{storm\_straight\_ line\_distance} & Distance from the first to the last \acrshort{mcs} centre & \unit{\km} \\
     \midrule
     \multicolumn{3}{c}{\textit{\acrshort{era5} meteorological features}} \\
     \midrule
