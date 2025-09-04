@@ -72,7 +72,7 @@ Table \ref{tab:features} lists the features used for this thesis and their respe
     \multicolumn{3}{c}{\textit{Geographic and temporal features}} \\
     \midrule
     \texttt{date\_angle} & Angle representation of current day of year (\ang{0}=Jan 1) & \unit{\degree} \\
-    \texttt{eat\_hours} & Time step hour of day & \acrlong{eat} \\
+    \texttt{eat\_hours} & Time step hour and minute as decimal & \acrlong{eat} \\
     \texttt{storm\_total\_duration} & Total duration of the \acrshort{mcs} & \unit{\hour} \\
     \texttt{lon} & Longitude of the \acrshort{mcs} centre & \unit{\degree}E \\
     \texttt{lat} & Latitude of the \acrshort{mcs} centre & \unit{\degree}N \\
@@ -84,8 +84,8 @@ Table \ref{tab:features} lists the features used for this thesis and their respe
     \texttt{acc\_land\_time} & Accumulated time where \texttt{over\_land}=True & \unit{\hour} \\
     \texttt{storm\_total\_land\_time} & Final value of \texttt{acc\_land\_time} for the \acrshort{mcs} & \unit{\hour} \\
     \texttt{mean\_land\_frac} & Fraction of area within 400 km that is over land & ratio ($[0,1]$) \\
-    \texttt{zonal\_speed} & $x$-component of the \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
-    \texttt{meridional\_speed} & $y$-component of the \acrshort{mcs} centre propagation vector & \unit{\km\per\hour} \\
+    \texttt{zonal\_speed} & zonal component of the \acrshort{mcs} centre propagation vector & \unit{\meter\per\second} \\
+    \texttt{meridional\_speed} & meridional component of the \acrshort{mcs} centre propagation vector & \unit{\meter\per\second} \\
     \texttt{area} & Area of the the \acrshort{mcs} & \unit{\km\squared} \\
     \texttt{storm\_max\_area} & Maximum value of \texttt{area} for the \acrshort{mcs} & \unit{\km\squared} \\
     \texttt{bearing\_from\_prev} & Compass bearing from previous observation & \unit{\degree} from  N \\
@@ -152,7 +152,7 @@ The following highly correlated features were identified and removed to prevent 
 \end{itemize}
 A full correlation heatmap is available in Appendix \insertref{app:correlation-heatmap}. 
 
-Additionally, measures were implemented to prevent data leakage via the careful exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time (Table \ref{tab:excluded_features}). These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+Additionally, measures were implemented to prevent data leakage by the exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time (Table \ref{tab:excluded_features}). These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.4\linewidth} >{\raggedright\arraybackslash}p{0.6\linewidth}}

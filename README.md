@@ -119,8 +119,8 @@ Notes:
 | `acc_land_time` | Accumulated time where `over_land=True` | h |
 | `storm_total_land_time` | Final value of `acc_land_time` for MCS | h |
 | `mean_land_frac` | Fraction of area within 400 km that is over land | ratio ($[0,1]$) |
-| `zonal_speed` | $x$-component of MCS centre propagation vector | km/h |
-| `meridional_speed` | $y$-component of MCS centre propagation vector | km/h |
+| `zonal_speed` | zonal component of MCS centre propagation vector | m/s |
+| `meridional_speed` | meridional component of MCS centre propagation vector | m/s |
 | `area` | Area of the MCS | km² |
 | `storm_max_area` | Max value of `area` for MCS | km² |
 | `bearing_from_prev` | Compass bearing from previous observation | ° from N |
