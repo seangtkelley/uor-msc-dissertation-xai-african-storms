@@ -324,8 +324,6 @@ def plot_2d_agg_map(
 
     if title is not None:
         ax.set_title(title)
-    else:
-        ax.set_title(f"Aggregated Value over Map")
 
     if filename is not None and save_dir is not None:
         save_plot(filename, save_dir)

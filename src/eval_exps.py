@@ -73,6 +73,8 @@ if args.exp_group_names is not None:
 else:
     exp_groups = config.EXPERIMENT_GROUPS
 
+results = []
+
 print(f"Evaluating {', '.join(exp_groups.keys())}...")
 for exp_group_name, exp_names in exp_groups.items():
 
@@ -146,6 +148,12 @@ for exp_group_name, exp_names in exp_groups.items():
             test_rmse = root_mean_squared_error(y_test, y_pred)
             test_std = np.std(y_test)
 
+        results_dict = {
+            "exp_group": exp_group_name,
+            "exp_name": exp_name,
+            "test_rmse": round(test_rmse, 4),
+            "test_std": round(test_std, 4),
+        }
         # print RMSE and standard deviation
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test target standard deviation: {test_std:.4f}")
@@ -179,6 +187,12 @@ for exp_group_name, exp_names in exp_groups.items():
             print(
                 f"Test target standard deviation (first points): {test_std_first_points:.4f}"
             )
+            results_dict["test_rmse_first_points"] = round(
+                test_rmse_first_points, 4
+            )
+            results_dict["test_std_first_points"] = round(
+                test_std_first_points, 4
+            )
 
         # plot model verification and compute R2
         if exp_config["target_units"] == "degrees":
@@ -205,6 +219,9 @@ for exp_group_name, exp_names in exp_groups.items():
             )
 
         print(f"R-squared: {r_squared:.4f}")
+        results_dict["r_squared"] = round(r_squared, 4)
+
+        results.append(results_dict)
 
         if r_squared < config.R_SQUARED_THRESHOLD:
             continue
@@ -380,9 +397,17 @@ for exp_group_name, exp_names in exp_groups.items():
                 cmap=(
                     config.TERRAIN_CMAP
                     if "orography" in value_column
-                    else config.DEFAULT_MAP_CMAP
+                    else (
+                        config.TCWV_MAP_CMAP
+                        if "tcwv" in value_column
+                        else (
+                            config.WINDS_MAP_CMAP
+                            if "u850" in value_column or "v850" in value_column
+                            else config.DEFAULT_MAP_CMAP
+                        )
+                    )
                 ),
-                cbar_label=f"Mean {feature}",
+                cbar_label=f"Mean {feature} ({config.FEATURE_COL_UNITS[feature]})",
                 cbar_aspect=40,
                 cbar_shrink=0.8,
                 cbar_pad=0.15,
@@ -390,11 +415,11 @@ for exp_group_name, exp_names in exp_groups.items():
                 title=f"b) Mean Feature Value",
             )
 
-            plt.suptitle(
-                f"{feature} over Map for {exp_name}",
-                y=0.85,
-                fontsize=17,
-            )
+            # plt.suptitle(
+            #     f"{feature} over Map for {exp_name}",
+            #     y=0.85,
+            #     fontsize=17,
+            # )
 
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map.png",
@@ -430,7 +455,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 xtick_offset=0,
                 xtick_convert=lambda x: f"{x//4}:00",
                 xtick_rotation=45,
-                title=f"Mean SHAP Value of {feature} by Hour",
+                title=f"{feature} by Hour",
                 xlabel="Time (UTC+3)",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 y_value_labels=shap_descriptions,
@@ -465,7 +490,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 cmap=shap_map_cmap,
                 edgecolor="none",
                 xtick_interval=30,
-                title=f"Mean SHAP Value of {feature} over Year",
+                title=f"{feature} over Year",
                 xlabel="Day of Year",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 y_value_labels=shap_descriptions,
@@ -506,7 +531,7 @@ for exp_group_name, exp_names in exp_groups.items():
                 cmap=shap_map_cmap,
                 xtick_interval=1,
                 xtick_convert=week_to_month_fun,
-                title=f"Mean SHAP Value of {feature} over Year",
+                title=f"{feature} over Year",
                 xlabel="Month",
                 ylabel=f"Mean SHAP Value ({exp_config['target_units']})",
                 y_value_labels=shap_descriptions,
@@ -582,7 +607,16 @@ for exp_group_name, exp_names in exp_groups.items():
                     cmap=(
                         config.TERRAIN_CMAP
                         if "orography" in value_column
-                        else config.DEFAULT_MAP_CMAP
+                        else (
+                            config.TCWV_MAP_CMAP
+                            if "tcwv" in value_column
+                            else (
+                                config.WINDS_MAP_CMAP
+                                if "u850" in value_column
+                                or "v850" in value_column
+                                else config.DEFAULT_MAP_CMAP
+                            )
+                        )
                     ),
                     vmin=vmin,
                     vmax=vmax,
@@ -602,7 +636,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 cax=cbar_ax,
                 orientation="horizontal",
             )
-            cbar.set_label(f"Feature Value: {feature}")
+            cbar.set_label(
+                f"Feature Value: {feature} ({config.FEATURE_COL_UNITS[feature]})"
+            )
 
             # adjust figure size
             fig.subplots_adjust(
@@ -645,11 +681,11 @@ for exp_group_name, exp_names in exp_groups.items():
                 transform=cbar_ax.transAxes,
             )
 
-            fig.suptitle(
-                f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
-                fontsize=17,
-                y=1.05,
-            )
+            # fig.suptitle(
+            #     f"{exp_name}: Mean SHAP Value of {feature} by Hour over Map",
+            #     fontsize=17,
+            #     y=1.05,
+            # )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_hour.png",
                 exp_group_geo_corr_fig_dir,
@@ -722,7 +758,16 @@ for exp_group_name, exp_names in exp_groups.items():
                     cmap=(
                         config.TERRAIN_CMAP
                         if "orography" in value_column
-                        else config.DEFAULT_MAP_CMAP
+                        else (
+                            config.TCWV_MAP_CMAP
+                            if "tcwv" in value_column
+                            else (
+                                config.WINDS_MAP_CMAP
+                                if "u850" in value_column
+                                or "v850" in value_column
+                                else config.DEFAULT_MAP_CMAP
+                            )
+                        )
                     ),
                     vmin=vmin,
                     vmax=vmax,
@@ -742,7 +787,9 @@ for exp_group_name, exp_names in exp_groups.items():
                 cax=cbar_ax,
                 orientation="horizontal",
             )
-            cbar.set_label(f"Feature Value: {feature}")
+            cbar.set_label(
+                f"Feature Value: {feature} ({config.FEATURE_COL_UNITS[feature]})"
+            )
 
             # adjust figure size
             fig.subplots_adjust(
@@ -785,11 +832,11 @@ for exp_group_name, exp_names in exp_groups.items():
                 transform=cbar_ax.transAxes,
             )
 
-            fig.suptitle(
-                f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
-                fontsize=17,
-                y=1,
-            )
+            # fig.suptitle(
+            #     f"{exp_name}: Mean SHAP Value of {feature} by Month over Map",
+            #     fontsize=17,
+            #     y=1,
+            # )
             plotting.save_plot(
                 f"{exp_name}_shap_{feature}_map_by_month.png",
                 exp_group_geo_corr_fig_dir,
@@ -798,3 +845,6 @@ for exp_group_name, exp_names in exp_groups.items():
         # endregion
 
     plotting.save_plot(f"{exp_group_name}_summary.png", exp_group_fig_dir)
+
+results_df = pd.DataFrame(results)
+results_df.to_csv(f"experiments_summary.csv", index=False)

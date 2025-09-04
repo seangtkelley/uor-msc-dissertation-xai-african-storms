@@ -13,9 +13,9 @@ __status__ = "Development"
 
 from pathlib import Path
 
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
-import numpy as np
 
 # ==============================================================================
 #                           PATH CONFIGURATION
@@ -66,6 +66,8 @@ TERRAIN_CMAP = ListedColormap(
 )
 # default cmap for feature value maps
 DEFAULT_MAP_CMAP = "plasma"
+TCWV_MAP_CMAP = "Blues"
+WINDS_MAP_CMAP = "PuOr_r"
 
 
 # ==============================================================================
@@ -164,6 +166,74 @@ ALL_FEATURE_COLS = (
         "mjo_amplitude",
     ]
 )
+
+FEATURE_COL_UNITS = {
+    "storm_id": "-",
+    "storm_obs_idx": "-",
+    "timestamp": "UTC",
+    "date_angle": "°",
+    "eat_hours": "EAT (UTC+3)",
+    "storm_total_duration": "h",
+    "lon": "° E",
+    "lat": "° N",
+    "orography_height": "m",
+    "anor": "radians from E",
+    "upslope_bearing": "° from N",
+    "slope_angle": "°",
+    "over_land": "boolean",
+    "acc_land_time": "h",
+    "storm_total_land_time": "h",
+    "mean_land_frac": "ratio [0,1]",
+    "zonal_speed": "km/h",
+    "meridional_speed": "km/h",
+    "area": "km²",
+    "storm_max_area": "km²",
+    "bearing_from_prev": "° from N",
+    "bearing_to_next": "° from N",
+    "distance_from_prev": "km",
+    "distance_to_next": "km",
+    "distance_traversed": "km",
+    "storm_bearing": "° from N",
+    "storm_distance_traversed": "km",
+    "storm_straight_line_distance": "km",
+    "mean_skt": "K",
+    "mean_land_skt": "K",
+    "mean_sst": "K",
+    "mean_swvl1": "m³/m³",
+    "mean_swvl2": "m³/m³",
+    "mean_u850": "m/s",
+    "mean_u500": "m/s",
+    "mean_u200": "m/s",
+    "mean_v850": "m/s",
+    "mean_v500": "m/s",
+    "mean_v200": "m/s",
+    "domain_mean_u500": "m/s",
+    "mean_u_shear_850_500": "m/s",
+    "mean_v_shear_850_500": "m/s",
+    "mean_u_shear_850_200": "m/s",
+    "mean_v_shear_850_200": "m/s",
+    "wind_direction_850": "° from N",
+    "wind_angle_upslope": "° from upslope_bearing",
+    "mean_tcwv": "kg/m²",
+    "domain_mean_tcwv": "kg/m²",
+    "mean_q_850": "kg/kg",
+    "mean_q_500": "kg/kg",
+    "mean_q_200": "kg/kg",
+    "mean_cape": "J/kg",
+    "domain_mean_cape": "J/kg",
+    "olr_90": "W/m²",
+    "olr_75": "W/m²",
+    "olr_50": "W/m²",
+    "mean_prcp_400": "mm",
+    "min_bt": "K",
+    "dmin_bt_dt": "K/h",
+    "mean_bt": "K",
+    "dmean_bt_dt": "K/h",
+    "storm_min_bt": "K",
+    "storm_min_bt_reached": "boolean",
+    "mjo_phase": "integer [1-8]",
+    "mjo_amplitude": "-",
+}
 
 TARGET_COLS = [
     "mean_prcp_400",
@@ -306,25 +376,25 @@ EXPERIMENT_CONFIG = {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
-        "target_units": "K",
+        "target_units": FEATURE_COL_UNITS["storm_min_bt"],
     },
     "storm_max_intensity_all_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "all",
-        "target_units": "K",
+        "target_units": FEATURE_COL_UNITS["storm_min_bt"],
     },
     "storm_max_intensity_era5": {
         "first_points_only": False,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
-        "target_units": "K",
+        "target_units": FEATURE_COL_UNITS["storm_min_bt"],
     },
     "storm_max_intensity_era5_first_points": {
         "first_points_only": True,
         "target_col": "storm_min_bt",
         "feature_cols": "era5",
-        "target_units": "K",
+        "target_units": FEATURE_COL_UNITS["storm_min_bt"],
     },
     "storm_direction_all": {
         "first_points_only": False,

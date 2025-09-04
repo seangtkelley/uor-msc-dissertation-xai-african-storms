@@ -1,0 +1,17 @@
+exp_group,exp_name,test_rmse,test_std,test_rmse_first_points,test_std_first_points,r_squared
+storm_max_intensity,storm_max_intensity_all,2.761,9.1679,4.4872,8.854,0.9098
+storm_max_intensity,storm_max_intensity_era5,2.7503,9.1679,4.1075,8.854,0.9134
+storm_max_intensity_first_points,storm_max_intensity_all_first_points,7.2265,8.9432,,,0.3478
+storm_max_intensity_first_points,storm_max_intensity_era5_first_points,7.4673,8.9432,,,0.3034
+storm_direction,storm_direction_all,21.7822,61.3066,32.7166,61.6789,0.8935
+storm_direction,storm_direction_era5,19.0178,61.3066,30.347,61.6789,0.9188
+storm_direction_first_points,storm_direction_all_first_points,49.8792,64.1756,,,0.4857
+storm_direction_first_points,storm_direction_era5_first_points,49.5919,64.1756,,,0.4916
+obs_intensification,obs_intensification_all,2.8149,4.484,,,0.6073
+obs_intensification,obs_intensification_era5,3.0828,4.484,,,0.5278
+obs_next_direction,obs_next_direction_all,62.3535,72.9832,,,0.2998
+obs_next_direction,obs_next_direction_era5,62.4498,72.9832,,,0.2976
+obs_next_distance,obs_next_distance_all,12.0489,13.126,,,0.1582
+obs_next_distance,obs_next_distance_era5,12.7096,13.126,,,0.0634
+obs_precipitation,obs_precipitation_all,0.0488,0.1835,,,0.9296
+obs_precipitation,obs_precipitation_era5,0.0851,0.1835,,,0.7887
