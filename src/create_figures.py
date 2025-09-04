@@ -339,7 +339,7 @@ plt.legend()
 
 plt.xlabel("Area (km²)")
 plt.ylabel("Frequency")
-plt.title("Storm Area Histogram")
+# plt.title("Storm Area Histogram")
 plotting.save_plot("storm_area_hist.png")
 print(f"Mean storm area: {df['area'].quantile(0.5)} km²")
 
