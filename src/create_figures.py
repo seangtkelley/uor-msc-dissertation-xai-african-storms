@@ -485,12 +485,32 @@ fig.write_image(
 # %%
 print("Plotting histogram of storm total duration.")
 plt.figure(figsize=(10, 6))
-plt.hist(df["storm_total_duration"], bins=50)
+plt.hist(storm_inits["storm_total_duration"], bins=50)
+
+plt.axvline(
+    storm_inits["storm_total_duration"].quantile(0.5),
+    color="red",
+    linestyle="--",
+    label="Mean",
+)
+plt.axvline(
+    storm_inits["storm_total_duration"].quantile(0.95),
+    color="orange",
+    linestyle="--",
+    label="95th Percentile",
+)
 
 plt.xlabel("Duration (hours)")
 plt.ylabel("Frequency")
 plt.title("Storm Duration Histogram")
 plotting.save_plot("storm_duration_hist.png")
+
+print(
+    f"Mean storm total duration: {storm_inits['storm_total_duration'].quantile(0.5)} hours"
+)
+print(
+    f"95th percentile storm total duration: {storm_inits['storm_total_duration'].quantile(0.95)} hours"
+)
 
 # %%
 print(
