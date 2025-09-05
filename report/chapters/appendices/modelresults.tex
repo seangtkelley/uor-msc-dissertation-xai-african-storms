@@ -3,21 +3,22 @@
 
 \section{Verification Plots for Poor Performing Models}
 
-\subsection{Storm Maximum Intensity First Points Only}
+\subsection{Storm Maximum Intensity First Observations Only}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity_first_points/storm_max_intensity_first_points_summary.png}
-    \caption{Comparison of performance and top features for storm maximum intensity (First Points Only).}
+    \caption{Comparison of performance and top features for storm maximum intensity (First Observations Only). Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot.}
     \label{fig:storm_max_intensity_first_points_summary}
 \end{figure}
 
-\subsubsection{Storm Direction First Points Only}
+\clearpage
+\subsection{Storm Direction First Observations Only}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction_first_points/storm_direction_first_points_summary.png}
-    \caption{Comparison of performance and top features for storm direction (First Points Only).}
+    \caption{Comparison of performance and top features for storm direction (First Observations Only). Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot.}
     \label{fig:storm_direction_first_points_summary}
 \end{figure}
 
@@ -26,34 +27,29 @@
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_next_direction/obs_next_direction_summary.png}
-    \caption{Comparison of performance and top features for next direction.}
+    \caption{Comparison of performance and top features for next direction. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot.}
     \label{fig:obs_direction_summary}
 \end{figure}
+
+\clearpage 
 
 \subsection{Next Distance}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_next_distance/obs_next_distance_summary.png}
-    \caption{Comparison of performance and top features for next distance.}
+    \caption{Comparison of performance and top features for next distance. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot.}
     \label{fig:obs_distance_summary}
 \end{figure}
+
+\clearpage 
 
 \section{SHAP Correlation Heatmaps}
 \label{appn:shap-heatmaps}
 
 \subsection{Storm Maximum Intensity}
 \label{appn:shap-heatmaps-smi}
-
-\subsubsection{All Feature Set}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_all_shap_correlation_heatmap.png}
-    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm maximum intensity prediction task using all features.}
-    \label{fig:storm_max_intensity_all_shap_heatmap}
-\end{figure}
-
-\subsubsection{ERA5 Feature Set}
+    
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_era5_shap_correlation_heatmap.png}
@@ -61,18 +57,18 @@
     \label{fig:storm_max_intensity_era5_shap_heatmap}
 \end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/storm_max_intensity_all_shap_correlation_heatmap.png}
+    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm maximum intensity prediction task using all features.}
+    \label{fig:storm_max_intensity_all_shap_heatmap}
+\end{figure}
+
+\clearpage
+
 \subsection{Storm Direction}
 \label{appn:shap-heatmaps-sd}
 
-\subsubsection{All Feature Set}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_all_shap_correlation_heatmap.png}
-    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm direction prediction task using all features.}
-    \label{fig:storm_direction_all_shap_heatmap}
-\end{figure}
-
-\subsubsection{ERA5 Feature Set}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_era5_shap_correlation_heatmap.png}
@@ -80,18 +76,18 @@
     \label{fig:storm_direction_era5_shap_heatmap}
 \end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_all_shap_correlation_heatmap.png}
+    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm direction prediction task using all features.}
+    \label{fig:storm_direction_all_shap_heatmap}
+\end{figure}
+
+\clearpage 
+
 \subsection{Intensification}
 \label{appn:shap-heatmaps-int}
 
-\subsubsection{All Feature Set}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_all_shap_correlation_heatmap.png}
-    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for intensification prediction task using all features.}
-    \label{fig:obs_intensification_all_shap_heatmap}
-\end{figure}
-
-\subsubsection{ERA5 Feature Set}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_era5_shap_correlation_heatmap.png}
@@ -99,21 +95,28 @@
     \label{fig:obs_intensification_era5_shap_heatmap}
 \end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_all_shap_correlation_heatmap.png}
+    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for intensification prediction task using all features.}
+    \label{fig:obs_intensification_all_shap_heatmap}
+\end{figure}
+
+\clearpage 
+
 \subsection{Precipitation}
 \label{appn:shap-heatmaps-precip}
 
-\subsubsection{All Feature Set}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/obs_precipitation_all_shap_correlation_heatmap.png}
-    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm precipitation prediction task using all features.}
-    \label{fig:obs_precipitation_all_shap_heatmap}
-\end{figure}
-
-\subsubsection{ERA5 Feature Set}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/obs_precipitation_era5_shap_correlation_heatmap.png}
     \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm precipitation prediction task using ERA5 features.}
     \label{fig:obs_precipitation_era5_shap_heatmap}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/obs_precipitation_all_shap_correlation_heatmap.png}
+    \caption{Correlation heatmap of \acrshort{shap} values against latitude, longitude, time of day and time of year, for storm precipitation prediction task using all features.}
+    \label{fig:obs_precipitation_all_shap_heatmap}
 \end{figure}
