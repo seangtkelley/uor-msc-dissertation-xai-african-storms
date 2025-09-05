@@ -130,7 +130,26 @@ For better context in interpreting the meaning of the \acrshort{shap} values, th
     \label{fig:storm_direction_summary}
 \end{figure}
 
-High-level winds are by far the most important factors for predicting storm direction, as can be seen in panels (c) and (d) in Figure \ref{fig:storm_direction_summary}. Positive values of both meridional and zonal winds, southerly and westerly winds respectively, tend to shift the predicted storm direction northward and vice versa.
+High-level winds are by far the most important factors for predicting storm direction, as can be seen in panels (c) and (d) in Figure \ref{fig:storm_direction_summary}. Positive values of both meridional and zonal winds, southerly and westerly winds respectively, are associated with positive \acrshort{shap} values and thus tend to shift the predicted storm direction northward. The opposite is true for negative values of both wind components. North-easterly winds are most prominent during the summer months, as shown in Figure \ref{fig:storm_direction_wind_200_by_week_over_year}, indicating a seasonal pattern in storm direction prediction.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/temporal_corr/storm_direction_all_shap_mean_u200_by_week_over_year.png}
+        \caption{Temporal variability of SHAP values for zonal wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+        \label{fig:storm_direction_all_shap_mean_u200_by_week_over_year}
+    \end{subfigure}
+    \vspace{1em}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/temporal_corr/storm_direction_all_shap_mean_v200_by_week_over_year.png}
+        \caption{Temporal variability of SHAP values for meridional wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+        \label{fig:storm_direction_all_shap_mean_v200_by_week_over_year}
+    \end{subfigure}
+    \caption{Comparison of mean \acrshort{shap} value for zonal and meridional wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+    \label{fig:storm_direction_wind_200_by_week_over_year}
+\end{figure}
 
 As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the effect of low-level meridional winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian (panels (i) through (r)), which corresponds to the convergence zone as depicted in Figure \ref{fig:mean_humidity_wind}. During the winter months, however, the \SI{850}{\hecto\pascal} meridional component is primarly northerly over the entire domain and resulting influence appears mostly negative, generally pushing storms southward (panels (a) through (h) and (s) through (x)).
 
