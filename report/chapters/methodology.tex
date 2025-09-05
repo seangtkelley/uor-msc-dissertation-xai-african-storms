@@ -18,7 +18,7 @@ From this comprehensive storm database, a subset of 27,982 \acrshortpl{mcs} was 
 
 \begin{table}[ht]
     \centering
-    \caption{\acrshort{era5} Data File Patterns, Descriptions, and Units.}
+    \caption{\acrshort{era5} Data File Patterns, Descriptions, and Units. "PRESSURE" and "YEAR" in the file patterns are placeholders for the respective pressure levels and year (2014-2019). The specific pressure levels available for each variable are detailed in the description.}
     \label{tab:era5-file-patterns}
     \begin{tabular}{p{0.28\linewidth} p{0.42\linewidth} p{0.2\linewidth}}
         \toprule
@@ -48,8 +48,8 @@ Table \ref{tab:features} lists the features used for this thesis and their respe
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.25\linewidth} p{0.50\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth}}
-    \caption{Features Used in the Study.}
-    \label{tab:features} \\ 
+    \caption{Features used in this thesis with descriptions and units.}
+    \label{tab:features} \\
     \toprule
     \textbf{Feature name} & \textbf{Description} & \textbf{Units} \\
     \midrule
@@ -164,8 +164,8 @@ Additionally, measures were implemented to prevent data leakage by the exclusion
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.4\linewidth} >{\raggedright\arraybackslash}p{0.6\linewidth}}
-    \caption{Excluded features.}
-    \label{tab:excluded_features} \\ 
+    \caption{All features excluded in this thesis, including those removed for data leakage, high correlations, and future information.}
+    \label{tab:excluded_features} \\
     \toprule
     \textbf{Category / Target Feature} & \textbf{Excluded Features} \\
     \midrule
@@ -312,7 +312,7 @@ The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.27\linewidth} p{0.43\linewidth} >{\raggedright\arraybackslash}p{0.20\linewidth}}
-    \caption{Experiments Summary.}
+    \caption{Summary of all experiments conducted in this thesis.}
     \label{tab:experimental-setup} \\ 
     \toprule
     \textbf{Experiment alias} & \textbf{Description} & \textbf{Predictand} \\
