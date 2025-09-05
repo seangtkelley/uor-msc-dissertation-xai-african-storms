@@ -44,19 +44,19 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their respe
 
 \begin{table}[ht]
 \centering
-\caption{Experimental results for storm maximum intensity prediction.}
+\caption{Experimental results for storm maximum intensity prediction. The top header indicates the training set used for the models whilst the bottom header indicates the unseen test set used to evaluate model performance. For example, the second column of values represents the results for the model trained on all observations but evaluated on the first observations only.}
 \label{tab:storm_max_intensity_results}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
- & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Points Only} \\
+ & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Observations} \\
 \hline \hline
-\multirow{2}{*}{\textbf{RMSE} (\unit{\kelvin})} & All & 2.7610 & 4.4872 & 7.2265 \\
+\multirow{2}{*}{\textbf{Test RMSE} (\unit{\kelvin})} & All & 2.7610 & 4.4872 & 7.2265 \\
  & \acrshort{era5} & 2.7503 & 4.1075 & 7.4673 \\
 \hline
 \textbf{Target Std} (\unit{\kelvin}) & Both & 9.1679 & 8.8540 & 8.9432 \\
 \hline \hline
-\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Points} & \multicolumn{2}{c|}{\textit{First Points}} \\ \cline{3-5}
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Observations} & \multicolumn{2}{c|}{\textit{First Observations}} \\ \cline{3-5}
  & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
 \hline
 \end{tabular}
@@ -96,19 +96,19 @@ Table \ref{tab:storm_direction_results} details the performance metrics for stor
 
 \begin{table}[ht]
 \centering
-\caption{Experimental results for storm direction prediction}
+\caption{Experimental results for storm direction prediction. The top header indicates the training set used for the models whilst the bottom header indicates the unseen test set used to evaluate model performance. For example, the second column of values represents the results for the model trained on all observations but evaluated on the first observations only.}
 \label{tab:storm_direction_results}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \multicolumn{3}{c|}{\textbf{Training Set} } \\ \cline{3-5}
- & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Points Only} \\
+ & & \multicolumn{2}{c|}{\textit{All Observations}} & \textit{First Observations} \\
 \hline \hline
-\multirow{2}{*}{\textbf{RMSE} (\unit{\degree})} & All & 21.7822 & 32.7166 & 49.8792 \\
+\multirow{2}{*}{\textbf{Test RMSE} (\unit{\degree})} & All & 21.7822 & 32.7166 & 49.8792 \\
  & \acrshort{era5} & 19.0178 & 30.3470 & 49.5919 \\
 \hline
 \textbf{Target Std} (\unit{\degree}) & Both & 61.3066 & 61.6789 & 64.1756 \\
 \hline \hline
-\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Points} & \multicolumn{2}{c|}{\textit{First Points}} \\ \cline{3-5}
+\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{Feature Set}} & \textit{All Observations} & \multicolumn{2}{c|}{\textit{First Observations}} \\ \cline{3-5}
  & & \multicolumn{3}{c|}{\textbf{Test Set}} \\ 
 \hline
 \end{tabular}
@@ -173,7 +173,7 @@ Contrary to the results for predicting storm maximum intensity, the performance 
 
 \begin{table}[h!]
 \centering
-\caption{Experimental results for immediate characteristic at observation prediction}
+\caption{Experimental results for immediate characteristic at observation prediction. The models were trained on all observations and evaluated on an unseen test set also containing all observations.}
 \label{tab:obs_experiment_results}
 \begin{tabular}{lccc}
 \hline
