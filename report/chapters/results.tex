@@ -126,7 +126,7 @@ For better context in interpreting the meaning of the \acrshort{shap} values, th
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/storm_direction_summary.png}
-    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting storm direction. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
+    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting storm direction. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. The clusters in in the top left and bottom right corners in panels (a) and (b) are artifacts of the circular target variable. In reality, these clusters represent low error predictions where the predicted and actual directions are near the \ang{0}/\ang{360} boundary. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
     \label{fig:storm_direction_summary}
 \end{figure}
 
