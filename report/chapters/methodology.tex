@@ -42,7 +42,6 @@ From this comprehensive storm database, a subset of 27,982 \acrshortpl{mcs} was 
     \end{tabular}
 \end{table}
 
-
 \subsection{Feature Engineering and Selection}
 
 Table \ref{tab:features} lists the features used for this thesis and their respective units. These features were obtained from the \cite{Hill2023} storm database and \acrshort{era5} data through a series of processing steps. The features can be broadly categorised into three groups: storm-specific features, meteorological features, and geographical features. Features with the \texttt{mean\_} prefix (e.g. \texttt{mean\_land\_frac}) are calculated over a \SI{400}{\km} radius square-area from the \acrshort{mcs} centre and are instantaneous unless otherwise specified. Features with the \texttt{domain\_mean\_} prefix (e.g. \texttt{domain\_mean\_cape}) are calculated over the entire domain of the \acrshort{era5} data, as defined in Section \ref{sec:era5-data}, and are also instantaneous unless otherwise specified. The \SI{400}{\km} radius was chosen to align with the original study by \cite{Hunt2024} and to capture the mesoscale environment surrounding each storm given the average storm area is \SI{9682}{\km\squared} (Appendix \ref{appn:storm-area}). The features without these prefixes are either directly sourced from the storm database or derived from the \acrshort{era5} data at the closest grid point to the storm centroids. Finally, \acrfull{mjo} phase and amplitude were obtained from \href{https://www.bom.gov.au/climate/mjo/}{Australian Government Bureau of Meteorology}, which are calculated using the All-Season Real-time Multivariate \acrshort{mjo} index from \cite{Wheeler2004}.
@@ -152,9 +151,11 @@ The following highly correlated features were identified and removed to prevent 
 \end{itemize}
 A full correlation heatmap is available in Figure \ref{fig:correlation_heatmap}. 
 
-\begin{figure}[h]
+\clearpage
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/exploration/feature_correlation_heatmap.png}
+    \includegraphics[width=0.95\textwidth]{../figures/generated/exploration/feature_correlation_heatmap.png}
     \caption{Correlation heatmap of features used in the study.}
     \label{fig:correlation_heatmap}
 \end{figure}
@@ -242,14 +243,14 @@ Bayesian optimisation is employed to efficiently explore the hyperparameter spac
 
 Within each trial, cross-validation is utilised to ensure that the model does not overfit to a specific subset of the data. Specifically, the dataset is first split into a training set and a test set to ensure that part of the data remains completely unseen throughout the training process. To train the model, k-fold cross-validation is applied, where the training dataset is divided into $k$ subsets and the model is trained $k$ times, each time using a different subset as the validation set and the remaining subsets combined as the training set. Once all folds are complete, the best performing model over all folds is chosen as the result of that trial. This method provides a more reliable estimate of model performance on the given hyperparameters \citep{Lopez2023,Singh2021}. A visual representation of this process is shown in Figure \ref{fig:cross_validation_process}.
 
-For regression tasks, many metrics can be used to evaluate model performance. In this thesis, \acrfull{rmse} is used because, by square rooting the mean of the squared errors, it provides a measure of error in the same units as the original predictions and is therefore more interpretable. For circular variables, such as degrees, root mean angular squared error is implemented to account for the periodic nature of the data. Thus, \acrshort{xgb} is set to minimise the \acrshort{rmse} of the training set and Bayesian optimisation is set to minimise the \acrshort{rmse} of the validation set.
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{../figures/static/grid_search_cross_validation.png}
     \caption{Visual depiction of cross-validation process from \href{https://scikit-learn.org/stable/modules/cross_validation.html}{Scikit-learn documentation} \citep{Pedregosa2011}. The orange test set represents the unseen data used for final evaluation, while the green and blue sets represent the training and validation folds, respectively.}
     \label{fig:cross_validation_process}
 \end{figure}
+
+For regression tasks, many metrics can be used to evaluate model performance. In this thesis, \acrfull{rmse} is used because, by square rooting the mean of the squared errors, it provides a measure of error in the same units as the original predictions and is therefore more interpretable. For circular variables, such as degrees, root mean angular squared error is implemented to account for the periodic nature of the data. Thus, \acrshort{xgb} is set to minimise the \acrshort{rmse} of the training set and Bayesian optimisation is set to minimise the \acrshort{rmse} of the validation set.
 
 The specific hyperparameters tuned and the corresponding values or distributions used for the sweep are included in Table \ref{tab:wandb-sweep-config}. The remaining hyperparameters were kept at their default values as defined in the \acrshort{xgb} \href{https://xgboost.readthedocs.io/en/stable/python/python_api.html\#module-xgboost.sklearn}{Python implementation}.
 
