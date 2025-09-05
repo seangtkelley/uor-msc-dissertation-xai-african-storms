@@ -80,6 +80,15 @@ Particularly striking for these models is that the importance of low-level merid
     \label{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month}
 \end{figure}
 
+In Figure \ref{fig:storm_max_intensity_all_shap_mean_q_200_by_week_over_year}, upper-level moisture appears to be hindering maximum storm intensity during the spring and early summer. This is unexpected as moisture at upper levels is generally thought to enhance convection \citep{Houze2004,Klein2021}. It may be that upper-level moisture is correlated with other meteorological or geographic features not included in the data. For instance, residual moisture from previous convection could suppress further convective development. Investigation into this relationship should be done using the parent id variable from \cite{Hill2023}'s database which is provided if a storm has been identified as a child of a previous storm.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/temporal_corr/storm_max_intensity_all_shap_mean_q_200_by_week_over_year.png}
+    \caption{Temporal variability of SHAP values for specific humidity at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+    \label{fig:storm_max_intensity_all_shap_mean_q_200_by_week_over_year}
+\end{figure}
+
 \clearpage
 \subsection{Storm Direction}
 
