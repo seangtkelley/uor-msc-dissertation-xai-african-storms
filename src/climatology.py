@@ -32,6 +32,7 @@ dataset_vwind = load_climatology_data("vwnd_850_")
 dataset_shum = load_climatology_data("shum_850_")
 dataset_swvl = load_climatology_data("swvl1_d1_", squeeze=False)
 dataset_skt = load_climatology_data("skt_sfc_", squeeze=False)
+dataset_tcwv = load_climatology_data("tcwv_tot_", squeeze=False)
 
 # Plot humidity
 print("Plotting mean humidity...")
@@ -72,6 +73,25 @@ plotting.add_gridlines(ax)
 plotting.add_borders(ax)
 ax.set_title("")
 plotting.save_plot("mean_skt.png", show=True)
+
+print("Plotting total column water vapor...")
+ax = plotting.init_map()
+dataset_tcwv["tcwv"].plot.contourf(
+    ax=ax,
+    levels=10,
+    alpha=0.5,
+    cmap="Blues",
+    cbar_kwargs={
+        "label": "Total Column Water Vapor (kg/m²)",
+        "location": "bottom",
+        "shrink": 0.8,
+        "orientation": "horizontal",
+    },
+)
+plotting.add_gridlines(ax)
+plotting.add_borders(ax)
+ax.set_title("")
+plotting.save_plot("mean_tcwv.png", show=True)
 
 # Plot mean soil water volume
 print("Plotting mean soil water volume...")
