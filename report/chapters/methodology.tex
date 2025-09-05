@@ -151,8 +151,6 @@ The following highly correlated features were identified and removed to prevent 
 \end{itemize}
 A full correlation heatmap is available in Figure \ref{fig:correlation_heatmap}. 
 
-\clearpage
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.95\textwidth]{../figures/generated/exploration/feature_correlation_heatmap.png}
@@ -161,6 +159,8 @@ A full correlation heatmap is available in Figure \ref{fig:correlation_heatmap}.
 \end{figure}
 
 Additionally, measures were implemented to prevent data leakage by the exclusion of features that are directly related to the target variable or contain information from future time steps that would not be available at prediction time (Table \ref{tab:excluded_features}). These steps help ensure that the model learns meaningful relationships from the data and that its predictive performance is not artificially inflated by access to information that would not be present in a real-world forecasting scenario.
+
+\clearpage
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.4\linewidth} >{\raggedright\arraybackslash}p{0.6\linewidth}}
@@ -309,6 +309,8 @@ For all experiments, \acrshort{xgb} was trained on two different feature sets: a
 As a note, any element of the implementation involving random processes was controlled by setting a fixed random seed to ensure reproducibility of results. It is assumed that due to the dataset size, the effect of random variation on the results will be minimal.
 
 The experiments conducted are summarised in Table \ref{tab:experimental-setup}.
+
+\clearpage
 
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.27\linewidth} p{0.43\linewidth} >{\raggedright\arraybackslash}p{0.20\linewidth}}
