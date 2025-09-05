@@ -34,7 +34,7 @@
             
             {\large           
                 \emph{Primary Supervisor:} Dr. Eliza Karlowska\\
-                \emph{Co-supervisors:} Dr. Kieran Hunt, Prof. Andy Turner 
+                \emph{Co-supervisors:} Assoc. Prof. Kieran Hunt, Prof. Andy Turner 
             }\\[1cm]
             
             \large A report submitted in partial fulfilment of the requirements of\\the University of Reading for the degree of\\
@@ -45,9 +45,13 @@
         \end{center}
     \end{titlepage}
     
-    \input{chapters/declaration}
+    \onehalfspacing
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt}
     
     \input{chapters/abstract}
+
+    \input{chapters/declaration}
 
     \input{chapters/acknowledgments}
 
@@ -66,9 +70,6 @@
     \newpage
 
     \mainmatter
-    
-    % TODO: remove for final draft!
-    \doublespacing
 
     \input{chapters/introduction}
     \input{chapters/methodology}
@@ -78,6 +79,7 @@
     \bibliography{references}
     
     \begin{appendices}
+        \input{chapters/appendices/exploration.tex}
         \input{chapters/appendices/modelresults.tex}
     \end{appendices}
     
