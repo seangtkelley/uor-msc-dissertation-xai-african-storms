@@ -10,7 +10,7 @@ As depicted in Figure \ref{fig:orography_storm_init_end_kde}, the distribution o
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/exploration/orography_storm_init_end_kde.png}
-    \caption{Storm start and end location density plotted geographically alongside elevation. Storms were selected if 1) they lasted longer than 3 hours to precipitation contributions, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter~\ref{ch:method} for details. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Storm start location density, (c) Storm end location density.}
+    \caption{Storm start and end location density plotted geographically alongside elevation. Storms were selected if 1) they lasted longer than 3 hours, and 2) their centroids are located within \degN{3} - \degN{15} and \degE{34} - \degE{52} \citep{Hill2023}. See Chapter~\ref{ch:method} for details. (a) Elevation over the domain calculated from \acrshort{era5} geopotential height, (b) Storm start location density, (c) Storm end location density.}
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
@@ -71,7 +71,7 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their respe
 
 In Figure \ref{fig:storm_max_intensity_summary} a detailed comparison is presented of the model performance and the most influential features for predicting storm maximum intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable, mean \acrshort{cape}, appears among the top five most important features. The results of the all features model also reveal that stronger storms tend to develop in the late evening (Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, panel (c) \texttt{eat\_hours}). Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
-Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive \acrshort{shap} values, meaning that these southerlies hinder \acrshort{mcs} intensity. In the winter, the influence is negative or neutral over the entire domain.
+Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive \acrshort{shap} values, meaning that these southerlies hinder \acrshort{mcs} intensity. In the winter months, the influence is negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
@@ -281,7 +281,6 @@ Displayed in Figure \ref{fig:obs_precipitation_cape_by_week_over_year} is a comp
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_mean_cape_by_week_over_year.png}
-        \caption{Temporal variability of SHAP values for mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
         \caption{Bar plot of mean \acrshort{shap} value per week for \acrshort{cape} for the \acrshort{era5} features model predicting precipitation. Overlaid is a line plot of the mean feature value per week for \acrshort{cape}.}
         \label{fig:obs_precipitation_era5_shap_mean_cape_by_week_over_year}
     \end{subfigure}
