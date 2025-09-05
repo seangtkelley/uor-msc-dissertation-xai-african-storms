@@ -14,7 +14,7 @@ As depicted in Figure \ref{fig:orography_storm_init_end_kde}, the distribution o
     \label{fig:orography_storm_init_end_kde}
 \end{figure}
 
-In Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, the geographic distribution of storm genesis local time is shown. Although the density of storms of the coast of Somalia is limited, it is clear that storms tend to form over the ocean during the early morning hours whereas storms formed over land occur during the late afternoon. This is in agreement with the general understanding of convection over the ocean \citep{Hall1999,Houze2004}. However, orography also appears to play a role pushing genesis later into the night, with clear evening initiations near the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{Zardi2013}. On average, storms last approximately 5 hours and 15 minutes, and the 95\% percentile of duration is 11 hours (Appendix \ref{appn:storm-duration}).
+In Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, the geographic distribution of storm genesis local time is shown. Although the density of storms off the coast of Somalia is limited, it is clear that storms tend to form over the ocean during the early morning hours whereas storms formed over land occur during the late afternoon. This is in agreement with the general understanding of convection over the ocean \citep{Hall1999,Houze2004}. However, orography also appears to play a role pushing genesis later into the night, with clear evening initiations near the strong ridge line at \degE{40} in northeast Ethiopia and around the Abaya Lake valley region. This is potentially due to the influence of mountain-valley breezes which can enhance convection in the late evening and early night hours \citep{Zardi2013}. On average, storms last approximately 5 hours and 15 minutes, and the 95\% percentile of duration is 11 hours (Appendix \ref{appn:storm-duration}).
 
 \begin{figure}[ht]
     \centering
@@ -71,7 +71,7 @@ With comparable \acrshort{rmse} values of $2.7503$ and $2.7610$ over their respe
 
 In Figure \ref{fig:storm_max_intensity_summary} a detailed comparison is presented of the model performance and the most influential features for predicting storm maximum intensity using all features versus \acrshort{era5} only. Notably, for the all features model, only one meteorological variable, mean \acrshort{cape}, appears among the top five most important features. The results of the all features model also reveal that stronger storms tend to develop in the late evening (Figure \ref{fig:orography_storm_init_eat_hours_mode_mean}, panel (c) \texttt{eat\_hours}). Across both models, \acrshort{cape} consistently emerges as the most important meteorological factor.
 
-Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive \acrshort{shap} values, meaning that these southerlies hinder \acrshort{mcs} intensity. In the winter months, the influence tends to be negative or neutral over the entire domain.
+Particularly striking for these models is that the importance of low-level meridional winds changes with time of day, date, and location. Figure \ref{fig:storm_max_intensity_era5_shap_mean_v850_map_by_month} illustrates this variability over the study region throughout the year. During the summer months, strong southerlies are observed on the Somali coastal plains, which correspond to positive \acrshort{shap} values, meaning that these southerlies hinder \acrshort{mcs} intensity. In the winter, the influence is negative or neutral over the entire domain.
 
 \begin{figure}[ht]
     \centering
@@ -85,7 +85,7 @@ In Figure \ref{fig:storm_max_intensity_all_shap_mean_q_200_by_week_over_year}, u
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_max_intensity/temporal_corr/storm_max_intensity_all_shap_mean_q_200_by_week_over_year.png}
-    \caption{Temporal variability of SHAP values for specific humidity at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+    \caption{Bar plot of mean \acrshort{shap} value per week for specific humidity at \SI{200}{\hecto\pascal} for the all features model predicting storm maximum intensity. Overlaid is a line plot of the mean feature value per week for specific humidity at \SI{200}{\hecto\pascal}.}
     \label{fig:storm_max_intensity_all_shap_mean_q_200_by_week_over_year}
 \end{figure}
 
@@ -137,21 +137,21 @@ High-level winds are by far the most important factors for predicting storm dire
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/temporal_corr/storm_direction_all_shap_mean_u200_by_week_over_year.png}
-        \caption{Temporal variability of SHAP values for zonal wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+        \caption{Bar plot of mean \acrshort{shap} value per week for zonal wind at \SI{200}{\hecto\pascal} for the all features model predicting storm direction. Overlaid is a line plot of the mean feature value per week for zonal wind at \SI{200}{\hecto\pascal}.}
         \label{fig:storm_direction_all_shap_mean_u200_by_week_over_year}
     \end{subfigure}
     \vspace{1em}
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/storm_direction/temporal_corr/storm_direction_all_shap_mean_v200_by_week_over_year.png}
-        \caption{Temporal variability of SHAP values for meridional wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+        \caption{Bar plot of mean \acrshort{shap} value per week for meridional wind at \SI{200}{\hecto\pascal} for the all features model predicting storm direction. Overlaid is a line plot of the mean feature value per week for meridional wind at \SI{200}{\hecto\pascal}.}
         \label{fig:storm_direction_all_shap_mean_v200_by_week_over_year}
     \end{subfigure}
-    \caption{Comparison of mean \acrshort{shap} value for zonal and meridional wind at \SI{200}{\hecto\pascal} by week for the all features model predicting storm maximum intensity.}
+    \caption{Comparison of mean \acrshort{shap} value for wind components at \SI{200}{\hecto\pascal} by week for the all features model predicting storm direction.}
     \label{fig:storm_direction_wind_200_by_week_over_year}
 \end{figure}
 
-As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the effect of low-level meridional winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian (panels (i) through (r)), which corresponds to the convergence zone as depicted in Figure \ref{fig:mean_humidity_wind}. During the winter months, however, the \SI{850}{\hecto\pascal} meridional component is primarly northerly over the entire domain and resulting influence appears mostly negative, generally pushing storms southward (panels (a) through (h) and (s) through (x)).
+As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, the effect of low-level meridional winds varies with location and time of year. From late spring to late summer, the influence is predominantly positive over the Somali coastal plains and negative over the northeastern Ethiopian (panels (i) through (r)), which corresponds to the convergence zone as depicted in Figure \ref{fig:mean_humidity_wind}. During the winter months, however, the \SI{850}{\hecto\pascal} meridional component is primarily northerly over the entire domain and resulting influence appears mostly negative, generally pushing storms southward (panels (a) through (h) and (s) through (x)).
 
 \begin{figure}[ht]
     \centering
@@ -164,12 +164,6 @@ As shown in Figure \ref{fig:storm_direction_all_shap_mean_v850_map_by_month}, th
 \section{Predict Immediate Characteristics at an Observation}
 
 These experiments aim to predict the immediate characteristics of a storm based on its current observation and Table \ref{tab:obs_experiment_results} shows performance metrics of the models. 
-
-Unfortunately, \acrshort{xgb} struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable. For storm direction, the \acrshort{rmse} was $62.3535$ and $62.4498$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $72.9832$. Similarly, for storm distance, the \acrshort{rmse} was $12.0634$ and $12.6901$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $13.1260$. As such, no further explainability analysis will be conducted on those experiments. However, possible reasons for this poor performance and future directions for improvement are discussed in Section \ref{sec:results-propagation}.
-
-Models predicting intensification and precipitation did show more promise, with lower \acrshort{rmse} values compared to their corresponding target standard deviations. For intensification, the \acrshort{rmse} was $2.8149$ and $3.0828$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $4.4840$. For precipitation, the \acrshort{rmse} was $0.0488$ and $0.0851$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $0.1835$.
-
-Contrary to the results for predicting storm maximum intensity, the performance of the models using all features was better than those using only \acrshort{era5} features for both intensification and precipitation. This suggests that the non-meteorological features provide valuable information for these tasks.
 
 \begin{table}[h!]
 \centering
@@ -191,7 +185,12 @@ Precipitation \acrshort{era5} & 0.0851  & & \\
 \end{tabular}
 \end{table}
 
-\clearpage
+Unfortunately, \acrshort{xgb} struggled to accurately predict the next direction and distance of the storm, as indicated by the \acrshort{rmse} values being only slightly lower than the standard deviation of the target variable. For storm direction, the \acrshort{rmse} was $62.3535$ and $62.4498$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $72.9832$. Similarly, for storm distance, the \acrshort{rmse} was $12.0634$ and $12.6901$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $13.1260$. As such, no further explainability analysis will be conducted on those experiments. However, possible reasons for this poor performance and future directions for improvement are discussed in Section \ref{sec:results-propagation}.
+
+Models predicting intensification and precipitation did show more promise, with lower \acrshort{rmse} values compared to their corresponding target standard deviations. For intensification, the \acrshort{rmse} was $2.8149$ and $3.0828$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $4.4840$. For precipitation, the \acrshort{rmse} was $0.0488$ and $0.0851$ for all features and \acrshort{era5} features respectively, compared to a standard deviation of $0.1835$.
+
+Contrary to the results for predicting storm maximum intensity, the performance of the models using all features was better than those using only \acrshort{era5} features for both intensification and precipitation. This suggests that the non-meteorological features provide valuable information for these tasks.
+
 \subsection{Intensification}
 \label{sec:results-intensification}
 
@@ -202,7 +201,7 @@ It should be noted that in panel (b), there are a significant number of points w
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/obs_intensification_summary.png}
-    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting storm intensification. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
+    \caption{Comparison of performance and top features between the models trained on all features and ERA5 data only when predicting intensification. Panels (a) and (b) show a comparison between predicted and actual values. The black dashed line shows the line of best fit and the resulting linear correlation coefficient between the actual and predicted values is displayed at the top of the plot. Panels (c) and (d) show top 12 predictors sorted by descending mean \acrshort{shap} value.}
     \label{fig:obs_intensification_summary}
 \end{figure}
 
@@ -214,12 +213,6 @@ In contrast to storm maximum intensity, \acrshort{cape} is less important for pr
 
 The spatial and temporal distribution of mean \acrshort{tcwv} values and their corresponding SHAP values in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} sheds light on what might be driving this unexpected relationship. As can be seen, low values of mean \acrshort{tcwv} are generally concentrated over the Ethiopian Highlands and surrounding elevated terrain. This relationship is confirmed in the correlation heatmap in Figure \ref{fig:correlation_heatmap} where mean \acrshort{tcwv} has a correlation coefficient of -0.59 with elevation and visually depicted in Figure \ref{fig:mean_tcwv}.
 
-One interpretation of this result could be that orographic lifting causes moist air to rise and condense, leading to precipitation and thus lower \acrshort{tcwv} values. The storms are then more likely to intensify when they are situated over or near elevated terrain, where orographic effects can enhance convection. This hypothesis may be bolstered by subplots g) and i) in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} which show enhanced intensification over the highlands in the late afternoon, as is consistent with the diurnal cycle of orographic lifting \citep{Colle2015,Negash2024,Zardi2013}.
-
-Alternately, the counter-intuitive relationship may be a result of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features ((c) in Figure \ref{fig:obs_intensification_summary}) shows that high elevation has a strong positive contribution to intensification. Farther down the in same plot, the feature value of mean \acrshort{tcwv} shows no clear pattern for slowing or accelerating intensification. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
-
-Notwithstanding, perhaps the most important interpretation of these results is that a cautious and deliberate approach must be undertaken when using \acrshort{ml} models to study complex atmospheric phenomena. While these models are powerful and clearly capable of capturing complex patterns, their accuracy may engender a false sense of confidence, especially if they are not carefully validated against domain knowledge. Therefore, it is crucial to combine \acrshort{ml} with meteorological expertise to ensure robust and trustworthy implementations.
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/geographic_corr/obs_intensification_era5_shap_mean_tcwv_map_by_hour.png}
@@ -227,26 +220,34 @@ Notwithstanding, perhaps the most important interpretation of these results is t
     \label{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour}
 \end{figure}
 
+One interpretation of this result could be that orographic lifting causes moist air to rise and condense, leading to precipitation and thus lower \acrshort{tcwv} values. The storms are then more likely to intensify when they are situated over or near elevated terrain, where orographic effects can enhance convection. This hypothesis may be bolstered by subplots g) and i) in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} which show enhanced intensification over the highlands in the late afternoon, as is consistent with the diurnal cycle of orographic lifting \citep{Colle2015,Negash2024,Zardi2013}.
+
+Alternately, the counter-intuitive relationship may be a result of excluding orographic variables from the model. Indeed, the beeswarm plot for feature contribution of the model trained on all features ((c) in Figure \ref{fig:obs_intensification_summary}) shows that high elevation has a strong positive contribution to intensification. Farther down the in same plot, the feature value of mean \acrshort{tcwv} shows no clear pattern for slowing or accelerating intensification. Thus, the behaviour displayed in Figure \ref{fig:obs_intensification_era5_shap_mean_tcwv_map_by_hour} may be an artifact of the dataset, where storms over the Ethiopian Highlands tend to form during the early afternoon and intensify rapidly. However, orographic elevation does not show this same relationship for storm max intensity, further complicating the interpretation.
+
+Notwithstanding, perhaps the most important interpretation of these results is that a cautious and deliberate approach must be undertaken when using \acrshort{ml} models to study complex atmospheric phenomena. While these models are powerful and clearly capable of capturing complex patterns, their accuracy may engender a false sense of confidence, especially if they are not carefully validated against domain knowledge. Therefore, it is crucial to combine \acrshort{ml} with meteorological expertise to ensure robust and trustworthy implementations.
+
 Lastly for the intensification experiment, Figure \ref{fig:obs_intensification_sst_skt_by_hour} shows the temporal variability of the mean SHAP values for \acrfull{sst} (panel (a)) and land skin temperature (panel (b)). Here we might postulate that the slight offset between the hours where each variable contributes most strongly to intensification corresponds to the diurnal cycle of the heating of the Earth surface, with land skin temperature peaking during midday and \acrshort{sst} lagging by a few hours. This analysis could be used to calibrate threshold values at which these variables begin to contribute to \acrshort{mcs} intensification for convection parametrisation schemes. In addition to threshold values, the relative importance of these two variables could also be used to inform the weighting of land versus ocean surface fluxes as well as the magnitude of the effect based on the relationship between the change in \acrshort{shap} value per unit change in surface temperature.
 
 \begin{figure}[ht]
     \centering
     \begin{subfigure}[t]{\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/temporal_corr/obs_intensification_all_shap_mean_skt_by_hour.png}
-        \caption{Temporal variability of SHAP values for mean land skin temperature by hour for the intensification model with all features.}
-        \label{fig:obs_intensification_all_shap_mean_skt_by_hour}
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/temporal_corr/obs_intensification_era5_shap_mean_land_skt_by_hour.png}
+        \caption{Bar plot of mean \acrshort{shap} value per 15-minute interval for land skin temperature for the \acrshort{era5} features model predicting intensification. Overlaid is a line plot of the mean feature value per 15-minute interval for land skin temperature.}
+        \label{fig:obs_intensification_era5_shap_mean_land_skt_by_hour}
     \end{subfigure}
     \vspace{1em}
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_intensification/temporal_corr/obs_intensification_era5_shap_mean_sst_by_hour.png}
-        \caption{Temporal variability of SHAP values for mean sea surface temperature by hour for the intensification model with only \acrshort{era5} features.}
+        \caption{Bar plot of mean \acrshort{shap} value per 15-minute interval for \acrlong{sst} for the \acrshort{era5} features model predicting intensification. Overlaid is a line plot of the mean feature value per 15-minute interval for \acrlong{sst}.}
         \label{fig:obs_intensification_era5_shap_mean_sst_by_hour}
     \end{subfigure}
-    \caption{Comparison of mean \acrshort{shap} value for \acrshort{sst} and land skin temperature by hour for the intensification models.}
+    \caption{Comparison of mean \acrshort{shap} value for \acrlong{sst} and land skin temperature by hour for the \acrshort{era5} features model predicting intensification.}
     \label{fig:obs_intensification_sst_skt_by_hour}
 \end{figure}
+
+\clearpage
 
 \subsection{Propagation}
 \label{sec:results-propagation}
@@ -255,7 +256,6 @@ As shown in Tables \ref{tab:storm_direction_results} and \ref{tab:obs_experiment
 
 For direction specifically, although modifications were made to the \acrshort{rmse} function used to train and evaluate the models to account for the nature of circular data, this still appeared to limit the capabilities of the models. Alternative approaches, such as using categorical representations of the compass bearing (i.e., N, NNE, NE, etc.) or transforming the degrees using sine and cosine functions may prove to be helpful for the models to effectively predict direction. Although the categorical approach would be more intuitive, it would sacrifice granularity. Sine and cosine transformations would likely be the optimal choice as they allow for continuous predictions. However, this would require either a multiple-output model or multiple models, thus increasing the complexity of the training process and explainability analysis. An analogue for this approach would be to use the zonal and meridional speed vectors instead of distance and direction as was done in \cite{Hunt2024}. Across all these methods, the same challenges of a weakly-defined storm centroid would still apply, and an investigation into the stability of the storm tracks would be necessary.
 
-\clearpage
 \subsection{Precipitation}
 
 Unlike the other experiments, there is a meaningful discrepancy in performance between the \acrshort{era5}-only feature set and all features. The \acrshort{rmse} for the model trained on all features was $0.0488$, almost half that of the \acrshort{era5}-only features model with $0.0851$ \acrshort{rmse}. This would indicate that the included meteorological variables are insufficient to fully capture the factors influencing precipitation. This is further supported by the top feature for the \acrshort{era5}-only model being mean land skin temperature (panel (d) in Figure \ref{fig:obs_precipitation_summary}), a feature that is highly correlated with time of day as depicted in Figure \ref{fig:obs_precipitation_era5_shap_mean_land_skt_by_hour}. Although included in the all features model, \acrfull{bt} does not appear among the top features. However, \acrfull{olr}, a known proxy for cloud cover, is an important feature. This may indicate that overall cloud cover is more important than storm intensity for predicting precipitation. As in the previous experiment, mean \acrshort{cape} and domain mean \acrshort{cape} have opposite contributions to precipitation.
@@ -270,11 +270,11 @@ Unlike the other experiments, there is a meaningful discrepancy in performance b
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_mean_land_skt_by_hour.png}
-    \caption{Temporal variability of SHAP values for mean land skin temperature by hour for the \acrshort{era5} model predicting precipitation.}
+    \caption{Bar plot of mean \acrshort{shap} value per 15-minute interval for land skin temperature for the \acrshort{era5} features model predicting precipitation. Overlaid is a line plot of the mean feature value per 15-minute interval for land skin temperature.}
     \label{fig:obs_precipitation_era5_shap_mean_land_skt_by_hour}
 \end{figure}
 
-Displayed in Figure \ref{fig:obs_precipitation_cape_by_week_over_year} is a comparison of the change in contribution of mean \acrshort{cape} and domain mean \acrshort{cape} to precipitation by week over the year. The periods of high values of both variables correspond well with the two rainy seasons in the region. However, the contribution of domain mean \acrshort{cape} reduces rainfall during these periods, while the contribution of mean \acrshort{cape} increases rainfall. As hinted at in Section \ref{sec:results-intensification}, this may suggest that when the overall atmospheric instability is high across the region, it may not be as conducive for individual storms produce significant precipitation. Instead, more isolated pockets of high instability (i.e., high mean \acrshort{cape}) may be more favourable for heavy precipitation.
+Displayed in Figure \ref{fig:obs_precipitation_cape_by_week_over_year} is a comparison of the change in contribution of mean \acrshort{cape} and domain mean \acrshort{cape} to precipitation by week over the year. The periods of high values of both variables correspond well with the two rainy seasons in the region. However, the contribution of domain mean \acrshort{cape} reduces rainfall during these periods, while the contribution of mean \acrshort{cape} increases rainfall. As hinted at in Section \ref{sec:results-intensification}, this may suggest that when the overall atmospheric instability is high across the region, it may not be as conducive for individual storms to produce significant precipitation. Instead, more isolated pockets of high instability (i.e., high mean \acrshort{cape}) may be more favourable for heavy precipitation.
 
 \begin{figure}[ht]
     \centering
@@ -282,16 +282,17 @@ Displayed in Figure \ref{fig:obs_precipitation_cape_by_week_over_year} is a comp
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_mean_cape_by_week_over_year.png}
         \caption{Temporal variability of SHAP values for mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+        \caption{Bar plot of mean \acrshort{shap} value per week for \acrshort{cape} for the \acrshort{era5} features model predicting precipitation. Overlaid is a line plot of the mean feature value per week for \acrshort{cape}.}
         \label{fig:obs_precipitation_era5_shap_mean_cape_by_week_over_year}
     \end{subfigure}
     \vspace{1em}
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year.png}
-        \caption{Temporal variability of SHAP values for domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+        \caption{Bar plot of mean \acrshort{shap} value per week for domain \acrshort{cape} for the \acrshort{era5} features model predicting precipitation. Overlaid is a line plot of the mean feature value per week for domain \acrshort{cape}.}
         \label{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}
     \end{subfigure}
-    \caption{Comparison of mean \acrshort{shap} value for mean \acrshort{cape} and domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+    \caption{Comparison of mean \acrshort{shap} value for \acrshort{cape} and domain \acrshort{cape} by week for the \acrshort{era5} features model predicting precipitation.}
     \label{fig:obs_precipitation_cape_by_week_over_year}
 \end{figure}
 
