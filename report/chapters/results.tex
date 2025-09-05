@@ -246,13 +246,25 @@ Unlike the other experiments, there is a meaningful discrepancy in performance b
     \label{fig:obs_precipitation_era5_shap_mean_land_skt_by_hour}
 \end{figure}
 
-Figure \ref{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year} displays the change in contribution of domain mean \acrshort{cape} to precipitation by week over the year. The periods of high values in domain mean \acrshort{cape} correspond well with the two rainy seasons in the region. However, the contribution of domain mean \acrshort{cape} to precipitation is negative during these periods. As hinted at in Section \ref{sec:results-intensification}, this may suggest that when the overall atmospheric instability is high across the region, it may not be as conducive for individual storms to intensify or produce significant precipitation. Instead, more isolated pockets of high instability (i.e., high mean \acrshort{cape}) may be more favourable for fast intensification and/or heavy precipitation.
+Displayed in Figure \ref{fig:obs_precipitation_cape_by_week_over_year} is a comparison of the change in contribution of mean \acrshort{cape} and domain mean \acrshort{cape} to precipitation by week over the year. The periods of high values of both variables correspond well with the two rainy seasons in the region. However, the contribution of domain mean \acrshort{cape} reduces rainfall during these periods, while the contribution of mean \acrshort{cape} increases rainfall. As hinted at in Section \ref{sec:results-intensification}, this may suggest that when the overall atmospheric instability is high across the region, it may not be as conducive for individual storms produce significant precipitation. Instead, more isolated pockets of high instability (i.e., high mean \acrshort{cape}) may be more favourable for heavy precipitation.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year.png}
-    \caption{Temporal variability of SHAP values for domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
-    \label{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_mean_cape_by_week_over_year.png}
+        \caption{Temporal variability of SHAP values for mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+        \label{fig:obs_precipitation_era5_shap_mean_cape_by_week_over_year}
+    \end{subfigure}
+    \vspace{1em}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../figures/generated/experiments/obs_precipitation/temporal_corr/obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year.png}
+        \caption{Temporal variability of SHAP values for domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+        \label{fig:obs_precipitation_era5_shap_domain_mean_cape_by_week_over_year}
+    \end{subfigure}
+    \caption{Comparison of mean \acrshort{shap} value for mean \acrshort{cape} and domain mean \acrshort{cape} by week over the year for the \acrshort{era5} model.}
+    \label{fig:obs_precipitation_cape_by_week_over_year}
 \end{figure}
 
 It should be noted that the precipitation data has a direct relation with the predictands due to their common origin in the \acrshort{era5} data. This may lead to overfitting, as the models could learn to predict the precipitation values based on their inherent relationship with the storm characteristics rather than capturing the underlying physical processes. Indeed, we do observe that \acrshort{olr} has a high feature importance in the precipitation models, which is expected given its connection to the parametrisation schemes used for precipitation in \acrshort{era5} \citep{Hersbach2020}. This highlights the need for caution when interpreting the results and suggests that future work should consider incorporating independent precipitation datasets to validate the findings. For example, this thesis considered the inclusion of precipitation data from the Global Precipitation Measurement (GPM) mission, but ultimately did not include it due to over 70\% of storm observations lacking corresponding high-quality GPM data. A possible approach would be to recomputed the dataset using all available Integrated Multi-satellitE Retrievals for GPM (IMERG) data, regardless of quality, to increase coverage. While the availability of \acrshort{era5} data makes it a more practical choice for widespread application, the inclusion of other datasets would reduce interdependence between predictands and predictors, even if viable data coverage is reduced.
