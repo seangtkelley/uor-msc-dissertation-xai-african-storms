@@ -5,7 +5,14 @@
 
 \acrfullpl{mcs} are defined as ensembles of thunderstorms organised in lines or clusters. As such, they typically cover areas on the scale of thousands of square kilometres and last for several hours \citep{Houze2004}. These storm systems have been shown to account for over 60\% of extreme rainfall in Ethiopia and Somalia \citep{Hill2023}. Such events can have a devastating impact on local communities, leading to loss of life, displacement, and sizeable economic damages. While aggregate data over recent decades is limited, in 2020 alone, nearly 500,000 people were displaced by floods in Ethiopia \citep{Mekuria2022}. Intense flooding in this region not only affects the local population, but can also impact countries as far as Egypt since the Ethiopian Highlands are a watershed origin for countless rivers \citep{Mamo2019,Legese2020,Zaroug2014}. Projections also show that climate change is likely to alter the frequency and intensity of these storms \citep{Endris2019,Das2016,Li2023}. Thus, it is important to understand the factors which contribute to the intensification and propagation of \acrshortpl{mcs} in this region.
 
-The Horn of Africa has a unique confluence of large-scale climatic variability that affects \acrshort{mcs} development. In contrast to Sub-Saharan West Africa, the \acrfull{itcz} passes over the Horn of Africa twice per year providing the foundation for two distinct rainy seasons during the spring and autumn \citep{Palmer2023,Tefera2025}. The \acrfull{tej} is a key regional feature enhancing vertical wind shear, which can both facilitate or hinder \acrshort{mcs} development \citep{Farnsworth2011,Vashisht2021}. The \acrfull{mjo} also contributes to intra-seasonal changes in atmospheric conditions, its active phases coinciding with increased convection and extreme rainfall events \citep{Camberlin2019,Ochieng2023,Pohl2006}. Additionally, the \acrfull{enso} and the \acrfull{iod} have also been shown to modulate rainfall patterns in the region \citep{Dubache2019,Endris2019,Vashisht2021,Zaroug2014}. El Niño and positive \acrshort{iod} phases are typically associated with increased rainfall in East Africa, while La Niña and negative \acrshort{iod} phases tend to bring drier conditions \citep{Camberlin2019,Endris2019}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/generated/exploration/mean_humidity_wind.png}
+    \caption{\SI{850}{\hecto\pascal} wind components overlaid on mean \SI{850}{\hecto\pascal} specific humidity}
+    \label{fig:mean_humidity_wind}
+\end{figure}
+
+The Horn of Africa has a unique confluence of large-scale climatic variability that affects \acrshort{mcs} development. In contrast to Sub-Saharan West Africa, the \acrfull{itcz} passes over the Horn of Africa twice per year providing the foundation for two distinct rainy seasons during the spring and autumn \citep{Palmer2023,Tefera2025}. On average, this results in diverging low-level winds in the south, and a weak convergence zone along the ridge line which extends north-eastward out from the Ethiopian Highlands (Figure \ref{fig:mean_humidity_wind}). The \acrfull{tej} is a key regional feature enhancing vertical wind shear, which can both facilitate or hinder \acrshort{mcs} development \citep{Farnsworth2011,Vashisht2021}. The \acrfull{mjo} also contributes to intra-seasonal changes in atmospheric conditions, its active phases coinciding with increased convection and extreme rainfall events \citep{Camberlin2019,Ochieng2023,Pohl2006}. Additionally, the \acrfull{enso} and the \acrfull{iod} have also been shown to modulate rainfall patterns in the region \citep{Dubache2019,Endris2019,Vashisht2021,Zaroug2014}. El Niño and positive \acrshort{iod} phases are typically associated with increased rainfall in East Africa, while La Niña and negative \acrshort{iod} phases tend to bring drier conditions \citep{Camberlin2019,Endris2019}.
 
 \begin{figure}[ht]
     \centering
@@ -14,7 +21,31 @@ The Horn of Africa has a unique confluence of large-scale climatic variability t
     \label{fig:horn-of-africa}
 \end{figure}
 
-The region is also geographically diverse, with a range of topographical features that influence local weather patterns (Figure \ref{fig:horn-of-africa}). From the west, the Sahel fades into the Ethiopian Highlands and later the East African Rift Valley, which is characterised by high topographic relief and complex orography. These highlands then transition into the low-lying coastal plains of Somalia. Unlike most other countries at this latitude, most of Somalia is arid or semi-arid, with the exception of its border region with Kenya \citep{Beck2023}. This contrast in geography is reflected in storm development and rainfall patterns. The mountains of Ethiopia dominate local convective processes while the low-lying areas on the south-eastern coast of the region are not nearly as conducive to \acrshort{mcs} development \citep{Negash2024,Camberlin2024}. Thus, the coast is much more susceptible to storm patterns over the Indian Ocean and the Gulf of Aden \citep{Camberlin2024}. The combination of land surface skin temperature and soil moisture also impact the storm development and intensification. Notably, multiple studies over distinct regions have demonstrated that strong soil moisture gradients can intensify convection \citep{Barton2021,Klein2020,Taylor2017}. These processes are likewise relevant to the Horn of Africa, especially in transitional climates bridging arid and humid zones.
+The region is also geographically diverse, with a range of topographical features that influence local weather patterns (Figure \ref{fig:horn-of-africa}). From the west, the Sahel fades into the Ethiopian Highlands and later the East African Rift Valley, which is characterised by high topographic relief and complex orography. These highlands then transition into the low-lying coastal plains of Somalia. Unlike most other countries at this latitude, most of Somalia is arid or semi-arid, with the exception of its border region with Kenya \citep{Beck2023} (Figure \ref{fig:mean_swvl1}). This contrast in geography is reflected in storm development and rainfall patterns. The mountains of Ethiopia dominate local convective processes while the low-lying areas on the south-eastern coast of the region are not nearly as conducive to \acrshort{mcs} development \citep{Negash2024,Camberlin2024}. Thus, the coast is much more susceptible to storm patterns over the Indian Ocean and the Gulf of Aden \citep{Camberlin2024}. The combination of land surface skin temperature and soil moisture also impact the storm development and intensification (Figure \ref{fig:mean_swvl1} and \ref{fig:mean_skt}). Notably, multiple studies over distinct regions have demonstrated that strong soil moisture gradients can intensify convection \citep{Barton2021,Klein2020,Taylor2017}. These processes are likewise relevant to the Horn of Africa, especially in transitional climates bridging arid and humid zones.
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/mean_tcwv.png}
+    \caption{Mean \acrfull{tcwv}}
+    \label{fig:mean_tcwv}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/mean_swvl1.png}
+    \caption{Mean soil moisture over the Horn of Africa}
+    \label{fig:mean_swvl1}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{../figures/generated/exploration/mean_skt.png}
+    \caption{Mean skin temperature over the Horn of Africa}
+    \label{fig:mean_skt}
+\end{subfigure}
+
+\caption{Mean values of meteorological variables across the study region.}
+\label{fig:figures}
+\end{figure}
 
 The primary challenge in rainfall prediction is that \acrfull{nwp} models have historically not operated at high enough resolutions to resolve convective processes and instead use sub-grid parametrisation schemes to more accurately replicate storm behaviour \citep{Stevens2019,Yano2018}. Newer kilometre-scale models are showing promise in more faithfully representing these processes, but large discrepancies still exist between model outputs and observed phenomena \citep{Feng2025,Yano2018}. For example, these models tend to underestimate \acrshort{mcs} precipitation totals while overestimating the intensity of precipitation \citep{Feng2025,Stevens2019}. Further complicating the modelling landscape is the mid-latitude bias of many \acrshort{nwp} models, which tend to perform worse in the tropics and subtropics at shorter lead times \citep{Keane2025}. 
 
